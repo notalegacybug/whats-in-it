@@ -1,0 +1,6 @@
+# Downloaded originals stay out of git; only the CSVs and README are committed.
+original/
+
+# HELD BACK pending the owner: IARC terms require written permission to reproduce substantial portions.
+# See README.md ("IARC reuse terms"). Delete this line only after that is settled.
+iarc.csv
