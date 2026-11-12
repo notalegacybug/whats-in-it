@@ -9,9 +9,12 @@
     "preview": "vite preview",
     "test": "vitest run",
     "e2e": "playwright test",
-    "reference:build": "tsx scripts/reference/build.ts"
+    "reference:build": "tsx scripts/reference/build.ts",
+    "tesseract:copy": "node scripts/copy-tesseract.mjs",
+    "postinstall": "node scripts/copy-tesseract.mjs"
   },
   "dependencies": {
+    "@tesseract.js-data/eng": "^1.0.0",
     "fastest-levenshtein": "^1.0.16",
     "idb": "^8.0.4",
     "papaparse": "^5.7.1",
@@ -37,5 +40,9 @@
     "vite": "^8.3.6",
     "vite-plugin-pwa": "^2.0.0",
     "vitest": "^5.1.0"
+  },
+  "allowScripts": {
+    "esbuild@0.28.2": true,
+    "tesseract.js": false
   }
 }
