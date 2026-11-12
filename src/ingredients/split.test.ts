@@ -38,3 +38,15 @@ test('matchGroups handles square brackets, alternatives in brackets and drops du
 test('extractIngredients does not split inside square brackets and collapses spacing', () => {
   expect(extractIngredients('Ingredients: Oil   blend [palm, sunflower], Salt.')).toEqual(['Oil blend [palm, sunflower]', 'Salt'])
 })
+
+test('digit-comma chemical names stay whole', () => {
+  expect(extractIngredients('Ingredients: Water, 1,2-Hexanediol, 1,4-Dioxane'))
+    .toEqual(['Water', '1,2-Hexanediol', '1,4-Dioxane'])
+  expect(matchGroups('Solvent (1,4-Dioxane, Water)').groups)
+    .toEqual([['solvent'], ['1,4-dioxane'], ['water']])
+  expect(matchGroups('1,3-Butylene Glycol').groups).toEqual([['1,3-butylene glycol']])
+})
+test('nested brackets are decomposed recursively', () => {
+  expect(matchGroups('Wheat flour (wheat flour (calcium carbonate), iron)').groups)
+    .toEqual([['wheat flour'], ['calcium carbonate'], ['iron']])
+})

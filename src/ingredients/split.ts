@@ -5,15 +5,20 @@ const STOP = /may contain|contains:|allergy advice|directions|warning|caution|di
 const OPEN = '(['
 const CLOSE = ')]'
 
-/** Split on the given separators, but only outside brackets. */
+/**
+ * Split on the given separators, but only outside brackets. A comma with a
+ * digit directly on both sides (1,4-Dioxane) is part of a chemical name.
+ */
 function splitTopLevel(text: string, separators: string): string[] {
   const parts: string[] = []
   let depth = 0
   let current = ''
-  for (const ch of text) {
+  for (let i = 0; i < text.length; i++) {
+    const ch = text[i]
     if (OPEN.includes(ch)) depth++
     else if (CLOSE.includes(ch)) depth = Math.max(0, depth - 1)
-    if (depth === 0 && separators.includes(ch)) {
+    const digitComma = ch === ',' && /\d/.test(text[i - 1] ?? '') && /\d/.test(text[i + 1] ?? '')
+    if (depth === 0 && separators.includes(ch) && !digitComma) {
       parts.push(current)
       current = ''
     } else {
@@ -47,16 +52,13 @@ export function extractIngredients(text: string): string[] {
   return items
 }
 
-/**
- * Break one ingredient into components: the text outside brackets, then each
- * comma-separated part inside them. Each component lists its `/` alternatives.
- */
-export function matchGroups(ingredient: string): { whole: string; groups: string[][] } {
+/** Separate text outside brackets from the contents of each top-level bracket pair. */
+function splitBrackets(text: string): { outside: string; inner: string[] } {
   let outside = ''
   const inner: string[] = []
   let depth = 0
   let current = ''
-  for (const ch of ingredient) {
+  for (const ch of text) {
     if (OPEN.includes(ch)) {
       if (depth++ === 0) continue
     } else if (CLOSE.includes(ch)) {
@@ -71,11 +73,24 @@ export function matchGroups(ingredient: string): { whole: string; groups: string
     else current += ch
   }
   if (current) inner.push(current) // unclosed bracket
+  return { outside, inner }
+}
 
-  const texts = [outside, ...inner.flatMap((s) => splitTopLevel(s, ','))]
+/** Component texts of an item: its outside text, then (recursively) each bracketed part. */
+function componentTexts(text: string): string[] {
+  const { outside, inner } = splitBrackets(text)
+  return [outside, ...inner.flatMap((s) => splitTopLevel(s, ',').flatMap(componentTexts))]
+}
+
+/**
+ * Break one ingredient into components: the text outside brackets, then each
+ * comma-separated part inside them, recursing into nested brackets. Each
+ * component lists its `/` alternatives.
+ */
+export function matchGroups(ingredient: string): { whole: string; groups: string[][] } {
   const seen = new Set<string>()
   const groups: string[][] = []
-  for (const text of texts) {
+  for (const text of componentTexts(ingredient)) {
     const names = text.split('/').map(normalizeName).filter(Boolean)
     const key = names.join('/')
     if (!key || seen.has(key)) continue

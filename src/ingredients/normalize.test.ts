@@ -9,3 +9,7 @@ test.each([
   ['Café extract', 'cafe extract'],
   ['Sodium‑Laureth–Sulfate', 'sodium-laureth-sulfate'],
 ])('normalizeName(%j)', (raw, out) => expect(normalizeName(raw)).toBe(out))
+
+test('normalizeName keeps digit-comma names intact', () => {
+  expect(normalizeName('1,4-Dioxane')).toBe('1,4-dioxane')
+})
