@@ -1,0 +1,52 @@
+import { SOURCE_LABEL } from '../../copy'
+import type { IngredientResult, Listing, Match } from '../../reference/types'
+
+function ListingLine({ listing }: { listing: Listing }) {
+  const text = [SOURCE_LABEL[listing.source], listing.classification, listing.year]
+    .filter((part) => part !== null)
+    .join(' · ')
+  return (
+    <li>
+      <a href={listing.url} target="_blank" rel="noopener noreferrer">
+        {text}
+      </a>
+      {listing.qualifier && <span> {listing.qualifier}</span>}
+    </li>
+  )
+}
+
+function WatchMatch({ input, match }: { input: string; match: Match }) {
+  const entry = match.entry!
+  return (
+    <div className="match">
+      {entry.name.toLowerCase() !== input.trim().toLowerCase() && <p>Matched as {entry.name}</p>}
+      {entry.note && <p>{entry.note}</p>}
+      {entry.caveat && <p>{entry.caveat}</p>}
+      <ul>
+        {entry.listings.map((l, i) => (
+          <ListingLine key={i} listing={l} />
+        ))}
+      </ul>
+      {entry.euCosmeticsBanned && <p>Also banned in EU cosmetics</p>}
+    </div>
+  )
+}
+
+/** One analysed ingredient: its label text, then whatever the reference says about it. */
+export function ResultItem({ result }: { result: IngredientResult }) {
+  const watching = result.matches.filter((m) => m.verdict === 'watch_strong' || m.verdict === 'watch_possible')
+  const first = result.matches[0]?.entry
+
+  return (
+    <li className="item">
+      <strong>{result.input}</strong>
+      {result.verdict === 'not_recognised' && <p>We couldn't check this one.</p>}
+      {result.verdict === 'no_known_concern' && (first?.note ?? first?.functionNote) && (
+        <p>{first?.note ?? first?.functionNote}</p>
+      )}
+      {watching.map((m) => (
+        <WatchMatch key={m.key} input={result.input} match={m} />
+      ))}
+    </li>
+  )
+}

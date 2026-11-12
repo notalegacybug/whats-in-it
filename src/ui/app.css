@@ -1,0 +1,138 @@
+:root {
+  font-family: system-ui, sans-serif;
+  line-height: 1.5;
+  color: #1a1a1a;
+  background: #fff;
+}
+
+body {
+  margin: 0;
+}
+
+main {
+  max-width: 36rem;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+ul {
+  padding-left: 1.25rem;
+}
+
+button,
+input:not([type='radio']),
+textarea {
+  font: inherit;
+  min-height: 2.75rem;
+  padding: 0.5rem 0.75rem;
+  box-sizing: border-box;
+}
+
+button {
+  margin: 0.25rem 0.25rem 0.25rem 0;
+  cursor: pointer;
+}
+
+button.primary {
+  font-weight: 600;
+  border-width: 2px;
+}
+
+.field {
+  display: block;
+  margin: 1rem 0 0.5rem;
+  font-weight: 600;
+}
+
+.field input,
+.field textarea {
+  display: block;
+  width: 100%;
+  margin-top: 0.25rem;
+  font-weight: 400;
+}
+
+fieldset label {
+  display: block;
+  min-height: 2.75rem;
+}
+
+.rows {
+  list-style: none;
+  padding: 0;
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  margin-bottom: 0.5rem;
+}
+
+.row label {
+  flex: 1 1 12rem;
+}
+
+.row input {
+  width: 100%;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* The verdict is always in the heading text; the border is decoration, never the only signal. */
+.verdict {
+  margin: 1.5rem 0;
+  padding-left: 0.75rem;
+  border-left: 0.35rem solid #888;
+}
+
+.verdict.watch_strong {
+  border-left-color: #b00020;
+}
+
+.verdict.watch_possible {
+  border-left-color: #b26a00;
+}
+
+.verdict ul {
+  list-style: none;
+  padding: 0;
+}
+
+.item {
+  margin-bottom: 1rem;
+}
+
+.item p,
+.match ul {
+  margin: 0.25rem 0;
+}
+
+.match {
+  margin-left: 0.5rem;
+}
+
+.match ul {
+  padding-left: 1rem;
+  list-style: disc;
+}
+
+.disclaimer {
+  font-size: 0.9rem;
+}
+
+progress {
+  width: 100%;
+}
+
+[role='alert'] {
+  color: #b00020;
+  font-weight: 600;
+}

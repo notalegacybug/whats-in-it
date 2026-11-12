@@ -1,4 +1,4 @@
-import type { Verdict } from './reference/types';
+import type { SourceId, Verdict } from './reference/types';
 
 export const VERDICT_LABEL: Record<Verdict, string> = {
   watch_strong: 'Watch for (strong evidence)',
@@ -11,3 +11,10 @@ export const DISCLAIMER =
   'Not medical advice. Results show whether an ingredient appears on published cancer hazard lists. A listing describes a hazard, not the risk from this product.';
 
 export const OCR_EMPTY_MESSAGE = "We couldn't read any ingredients. Type or paste them below.";
+
+export const SOURCE_LABEL: Record<SourceId, string> = {
+  IARC: 'IARC',
+  NTP: 'NTP',
+  PROP65: 'Prop 65',
+  EU_CLP: 'EU CLP',
+};
