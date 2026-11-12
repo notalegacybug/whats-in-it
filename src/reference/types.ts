@@ -26,6 +26,8 @@ export interface RefEntry {
 export interface Reference {
   version: string
   builtAt: string
+  /** Hazard lists that went into this build (shown on the About screen). */
+  sources?: SourceId[]
   entries: RefEntry[]
 }
 
