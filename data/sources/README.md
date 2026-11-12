@@ -64,6 +64,13 @@ reconstructed from memory. When the real files arrive, compare their headers wit
   `CAS No.`, `Date Listed` (the adapter reads only these; if the real headers differ, edit `COLUMNS` in
   `scripts/reference/adapters/prop65.ts` and the test fixture). Record here the download date, the "last
   updated" date and row count.
+
+**Assumed cell formats, unverified** (the adapter was written without seeing the real file; if the real wording differs it could silently drop every cancer row):
+- `Type of Toxicity` contains the word `cancer`, possibly alongside other toxicities, comma-separated (e.g. `cancer, developmental, male`).
+- `Date Listed` contains a four-digit year somewhere in the cell.
+- In `Chemical`, a trailing parenthetical in the name becomes the qualifier only if it contains one of: airborne, inhalation, inhalable, respirable, oral, dermal, particles, fibres, fibers, dust, unbound, aerosol, mist, vapour, vapor (`ROUTE_WORDS` in `scripts/reference/util.ts`). Any other bracket stays in the name, so `Chromium (hexavalent compounds)` is not shortened to `Chromium`.
+- The build step refuses a source that yields 0 records or lacks its expected headers (guard implemented in the next task).
+
 - **Reuse terms:** not checked (site blocked). Check OEHHA's conditions of use before committing the file.
 
 ## eu-clp.csv - MISSING
@@ -76,4 +83,11 @@ reconstructed from memory. When the real files arrive, compare their headers wit
   `data/sources/eu-clp.csv`. The header row must contain `International Chemical Identification`, `CAS No`,
   `Hazard Class and Category Code(s)`. Record here the download date, ATP edition and its year (the build
   passes that year to `parseEuClp` as `annexYear`) and row count.
+
+**Assumed cell formats, unverified** (same risk: wrong wording could silently drop every Carc. row):
+- `Hazard Class and Category Code(s)` separates several codes by a newline or `;`, and a carcinogenicity code reads `Carc. 1A`, `Carc. 1B` or `Carc. 2`.
+- A route may follow the code in brackets, e.g. `Carc. 2 (inhalation)`; it goes to the qualifier and the classification is stored as `Carc. 2`.
+- In `International Chemical Identification`, a trailing parenthetical in the name becomes the qualifier only if it contains one of: airborne, inhalation, inhalable, respirable, oral, dermal, particles, fibres, fibers, dust, unbound, aerosol, mist, vapour, vapor (`ROUTE_WORDS` in `scripts/reference/util.ts`). Any other bracket stays in the name, so `Chromium (hexavalent compounds)` is not shortened to `Chromium`.
+- The build step refuses a source that yields 0 records or lacks its expected headers (guard implemented in the next task).
+
 - **Reuse terms:** not checked (site blocked). Check ECHA's legal notice before committing the file.

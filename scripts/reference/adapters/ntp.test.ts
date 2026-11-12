@@ -45,3 +45,11 @@ test('NTP: year from the Year column, null when blank; empty CAS kept as []', ()
 test('NTP: rows with missing cells do not throw and are skipped when nameless', () => {
   expect(parseNtp([{ Listing: KNOWN }, { Name: 'X' }])).toEqual([])
 })
+
+test('NTP: cross-references containing brackets are removed in full', () => {
+  const out = parseNtp([
+    { Name: 'Bis(chloromethyl) Ether (see Bis(chloromethyl) Ether and Technical-Grade Chloromethyl Methyl Ether)', CAS: '542-88-1', Listing: KNOWN },
+    { Name: 'a-Hexachlorocyclohexane (see Lindane, Hexachlorocyclohexane Technical Grade), and Other Hexachlorocyclohexane Isomers)', CAS: '319-84-6', Listing: RAHC },
+  ])
+  expect(out.map((r) => r.name)).toEqual(['Bis(chloromethyl) Ether', 'a-Hexachlorocyclohexane'])
+})

@@ -14,7 +14,8 @@ const row = (
   'Additional information': info,
 })
 
-// Rows copied from data/sources/iarc.csv (IARC list of classifications, Volumes 1-142).
+// Rows copied from data/sources/iarc.csv (IARC list of classifications, Volumes 1-142). That file is
+// git-ignored (reuse terms pending), so this provenance cannot be checked on a clean checkout.
 const fixture: Record<string, string>[] = [
   row('50-00-0', 'Formaldehyde', '1', '2012'),
   row('13463-67-7', 'Titanium dioxide', '2B', '2010'),
@@ -70,4 +71,12 @@ test('IARC: CAS parsed, and kept as an empty array when absent', () => {
 
 test('IARC: rows with missing cells or no name do not throw and are skipped', () => {
   expect(parseIarc([{ Agent: '', Group: '1' }, { Group: '2B' }, { Agent: 'Benzene' }])).toEqual([])
+})
+
+test('IARC: "(see also ...)" cross-references are removed from the name', () => {
+  const out = parseIarc([
+    row('62-53-3', 'Aniline (see also Aniline hydrochloride)', '2A', '2021 online'),
+    row('', 'Automotive gasoline (see also Gasoline engine exhaust, and Aviation gasoline)', '1', '2026 online'),
+  ])
+  expect(out.map((r) => r.name)).toEqual(['Aniline', 'Automotive gasoline'])
 })

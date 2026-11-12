@@ -1,6 +1,6 @@
 import { parseCas } from '../cas'
 import type { Listing, Row, SourceRecord } from '../types'
-import { cell, splitTrailingParenthetical } from '../util'
+import { cell, splitRouteQualifier } from '../util'
 
 export const URL = 'https://echa.europa.eu/information-on-chemicals/annex-vi-to-clp'
 
@@ -35,7 +35,7 @@ function carcinogenicity(hazardCell: string): { classification: string; level: L
 export function parseEuClp(rows: Row[], annexYear: number): SourceRecord[] {
   const out: SourceRecord[] = []
   for (const row of rows) {
-    const { name, qualifier: nameQualifier } = splitTrailingParenthetical(cell(row, COLUMNS.name))
+    const { name, qualifier: nameQualifier } = splitRouteQualifier(cell(row, COLUMNS.name))
     const carc = carcinogenicity(cell(row, COLUMNS.hazard))
     if (!name || !carc) continue
 

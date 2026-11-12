@@ -13,7 +13,7 @@ const fixture: Record<string, string>[] = [
   row('benzene', '71-43-2', 'Flam. Liq. 2\nCarc. 1A\nMuta. 1B'),
   row('formaldehyde', '50-00-0', 'Carc. 1B'),
   row('titanium dioxide', '13463-67-7', 'Carc. 2 (inhalation)'),
-  row('silicon carbide (fibrous)', '409-21-2', 'Carc. 2'),
+  row('silicon carbide (fibres)', '409-21-2', 'Carc. 2'),
   row('toluene', '108-88-3', 'Flam. Liq. 2; Repr. 2'),
   row('cobalt dichloride (inhalation)', '7646-79-9', 'Carc. 1B'),
 ]
@@ -46,7 +46,7 @@ test('EU CLP: a route in the classification cell goes to the qualifier', () => {
 
 test('EU CLP: a trailing parenthetical in the name goes to the qualifier', () => {
   const out = parseEuClp(fixture, 2024)
-  expect(out.find((r) => r.name === 'silicon carbide')!.listing.qualifier).toBe('fibrous')
+  expect(out.find((r) => r.name === 'silicon carbide')!.listing.qualifier).toBe('fibres')
   expect(out.find((r) => r.name === 'cobalt dichloride')!.listing.qualifier).toBe('inhalation')
 })
 
@@ -62,4 +62,10 @@ test('EU CLP: CAS parsed; rows with missing cells do not throw', () => {
       2024,
     ),
   ).toEqual([])
+})
+
+test('EU CLP: a non-route parenthetical stays in the name', () => {
+  const out = parseEuClp([row('chromium (hexavalent compounds)', '18540-29-9', 'Carc. 1B')], 2024)
+  expect(out[0].name).toBe('chromium (hexavalent compounds)')
+  expect(out[0].listing).not.toHaveProperty('qualifier')
 })

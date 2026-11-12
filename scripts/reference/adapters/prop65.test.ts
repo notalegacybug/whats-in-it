@@ -45,3 +45,14 @@ test('Prop 65: a name without a trailing parenthetical has no qualifier key', ()
 test('Prop 65: rows with missing cells do not throw and are skipped when nameless', () => {
   expect(parseProp65([{ 'Type of Toxicity': 'cancer' }, { Chemical: 'X' }])).toEqual([])
 })
+
+test('Prop 65: only a route/form parenthetical becomes the qualifier; other brackets stay in the name', () => {
+  const out = parseProp65([
+    row('Chromium (hexavalent compounds)', 'cancer', '18540-29-9', 'February 27, 1987'),
+    row('Titanium dioxide (airborne, unbound particles of respirable size)', 'cancer', '13463-67-7', 'September 2, 2011'),
+  ])
+  expect(out[0].name).toBe('Chromium (hexavalent compounds)')
+  expect(out[0].listing).not.toHaveProperty('qualifier')
+  expect(out[1].name).toBe('Titanium dioxide')
+  expect(out[1].listing.qualifier).toBe('airborne, unbound particles of respirable size')
+})
