@@ -55,7 +55,7 @@ export function fakeStore(seed: ProductRecord[] = []) {
       return rec
     }),
     get: vi.fn(async (id: string) => rows.find((r) => r.id === id) ?? null),
-    search: vi.fn(async () => []),
+    search: vi.fn(async (_text: string): Promise<ProductRecord[]> => []),
   }
   return store satisfies ProductStore
 }
