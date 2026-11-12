@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import type { FormEvent } from 'react'
 import { Navigate, useNavigate } from 'react-router-dom'
 import type { NewProduct, ProductRecord, ProductType } from '../../products/types'
@@ -19,6 +19,9 @@ export function Details() {
   const [type, setType] = useState<ProductType | null>(null)
   const [existing, setExisting] = useState<ProductRecord | null>(null)
   const [error, setError] = useState<string | null>(null)
+  // The ref is the guard (two events in one tick both see stale state); state only disables the buttons.
+  const inFlight = useRef(false)
+  const [busy, setBusy] = useState(false)
 
   if (arrivedEmpty) return <Navigate to="/" replace />
 
@@ -31,28 +34,45 @@ export function Details() {
     referenceVersion: index!.version,
   })
 
-  async function saveAsNew() {
+  /** Runs one async step at a time. Stays locked on success (we navigate away); unlocks on failure or `release`. */
+  async function guarded(step: () => Promise<'done' | 'release'>) {
+    if (inFlight.current) return
+    inFlight.current = true
+    setBusy(true)
     setError(null)
+    let release = true
     try {
-      const saved = await store.save(product())
-      await addScan(saved.id).catch(() => {}) // a missing history entry must not lose the save
-      navigate(`/result/${saved.id}`)
-      clear()
+      release = (await step()) === 'release'
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Something went wrong saving this product.')
+    } finally {
+      if (release) {
+        inFlight.current = false
+        setBusy(false)
+      }
     }
   }
 
-  async function onSubmit(e: FormEvent) {
+  async function persist(): Promise<'done'> {
+    const saved = await store.save(product())
+    await addScan(saved.id).catch(() => {}) // a missing history entry must not lose the save
+    navigate(`/result/${saved.id}`)
+    clear()
+    return 'done'
+  }
+
+  const saveAsNew = () => guarded(persist)
+
+  function onSubmit(e: FormEvent) {
     e.preventDefault()
-    setError(null)
-    try {
+    return guarded(async () => {
       const matches = await store.findMatches(product())
-      if (matches.length > 0) setExisting(matches[0])
-      else await saveAsNew()
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Something went wrong looking for this product.')
-    }
+      if (matches.length > 0) {
+        setExisting(matches[0])
+        return 'release'
+      }
+      return persist()
+    })
   }
 
   if (existing) {
@@ -62,10 +82,10 @@ export function Details() {
         <p>
           Is this the same as {existing.brand} {existing.name}?
         </p>
-        <button type="button" className="primary" onClick={() => navigate(`/result/${existing.id}`)}>
+        <button type="button" className="primary" disabled={busy} onClick={() => navigate(`/result/${existing.id}`)}>
           Yes, show saved result
         </button>
-        <button type="button" onClick={saveAsNew}>
+        <button type="button" disabled={busy} onClick={saveAsNew}>
           No, save as new
         </button>
         {error && <p role="alert">{error}</p>}
@@ -97,7 +117,7 @@ export function Details() {
           </label>
         </fieldset>
         {error && <p role="alert">{error}</p>}
-        <button type="submit" className="primary">
+        <button type="submit" className="primary" disabled={busy}>
           Save and see result
         </button>
       </form>

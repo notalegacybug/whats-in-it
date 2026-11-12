@@ -1,4 +1,4 @@
-import { screen } from '@testing-library/react'
+import { fireEvent, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { addScan } from '../../scans/myScans'
 import { fakeStore, record, renderScreen } from '../test-helpers'
@@ -8,10 +8,14 @@ vi.mock('../../scans/myScans', () => ({ addScan: vi.fn().mockResolvedValue(undef
 
 const user = userEvent.setup()
 
-async function fillAndSubmit() {
+async function fillForm() {
   await user.type(await screen.findByLabelText('Product name'), 'Lotion')
   await user.type(screen.getByLabelText('Brand'), 'Acme')
   await user.click(screen.getByLabelText('Cosmetic'))
+}
+
+async function fillAndSubmit() {
+  await fillForm()
   await user.click(screen.getByRole('button', { name: 'Save and see result' }))
 }
 
@@ -59,4 +63,39 @@ test('details: a failed save shows an alert and stays on the page', async () => 
   await fillAndSubmit()
   expect(await screen.findByRole('alert')).toHaveTextContent('disk full')
   expect(screen.getByLabelText('Product name')).toBeInTheDocument()
+})
+
+test('details: submitting twice in the same tick saves once', async () => {
+  const store = fakeStore()
+  renderDetails(store)
+  await fillForm()
+  const form = screen.getByRole('button', { name: 'Save and see result' }).closest('form')!
+  fireEvent.submit(form)
+  fireEvent.submit(form)
+  expect(await screen.findByTestId('where')).toHaveTextContent('/result/id-1')
+  expect(store.save).toHaveBeenCalledTimes(1)
+})
+
+test('details: double-clicking "No, save as new" saves once', async () => {
+  const store = fakeStore([record({ id: 'old' })])
+  renderDetails(store)
+  await fillAndSubmit()
+  const no = await screen.findByRole('button', { name: 'No, save as new' })
+  fireEvent.click(no)
+  fireEvent.click(no)
+  expect(await screen.findByTestId('where')).toHaveTextContent('/result/id-2')
+  expect(store.save).toHaveBeenCalledTimes(1)
+})
+
+test('details: after a rejected save the button works again', async () => {
+  const store = fakeStore()
+  store.save.mockRejectedValueOnce(new Error('disk full'))
+  renderDetails(store)
+  await fillAndSubmit()
+  await screen.findByRole('alert')
+  const button = screen.getByRole('button', { name: 'Save and see result' })
+  expect(button).toBeEnabled()
+  await user.click(button)
+  expect(await screen.findByTestId('where')).toHaveTextContent('/result/id-1')
+  expect(store.save).toHaveBeenCalledTimes(2)
 })
