@@ -19,7 +19,7 @@ import { COLUMNS as IARC_COLUMNS, parseIarc } from './adapters/iarc'
 import { COLUMNS as NTP_COLUMNS, parseNtp } from './adapters/ntp'
 import { COLUMNS as PROP65_COLUMNS, parseProp65 } from './adapters/prop65'
 import { findKeyCollisions } from './collisions'
-import { diffReferences } from './diff'
+import { diffReferences, versionBumpProblem } from './diff'
 import { checkSourceFile } from './guard'
 import { mergeReference } from './merge'
 import { withEdition } from './util'
@@ -207,7 +207,14 @@ function main(): number {
     return 1
   }
 
-  const diff = diffReferences(previousReference(), reference)
+  const previous = previousReference()
+  const diff = diffReferences(previous, reference)
+  const bumpProblem = versionBumpProblem(previous?.version ?? null, reference.version, diff)
+  if (bumpProblem) {
+    console.error(`\nBuild stopped, nothing written: ${bumpProblem}`)
+    console.error(`  (${diff.added.length} added, ${diff.removed.length} removed, ${diff.changed.length} changed)`)
+    return 1
+  }
   const listed = reference.entries.filter((e) => e.listings.length > 0)
   const perSource = included.map((id) => `${id} ${listed.filter((e) => e.listings.some((l) => l.source === id)).length}`)
 

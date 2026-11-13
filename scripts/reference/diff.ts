@@ -25,3 +25,13 @@ export function diffReferences(prev: Reference | null, next: Reference): Referen
     changed: sorted([...after].filter(([id, json]) => before.has(id) && before.get(id) !== json).map(([id]) => id)),
   }
 }
+
+/**
+ * Saved products record the reference version they were checked against, so content must never change
+ * under an old version number. Returns the reason to stop the build, or null when it may go ahead.
+ */
+export function versionBumpProblem(prevVersion: string | null, nextVersion: string, diff: ReferenceDiff): string | null {
+  const changed = diff.added.length + diff.removed.length + diff.changed.length > 0
+  if (prevVersion === null || !changed || prevVersion !== nextVersion) return null
+  return `Reference content changed but data/version.json was not bumped (still ${nextVersion}). Bump it and rebuild.`
+}
