@@ -29,8 +29,8 @@ export default defineConfig({
         globIgnores: ['tesseract/**', 'reference.json'],
         navigateFallback: 'index.html',
         runtimeCaching: [
-          { urlPattern: ({ url }) => url.pathname === '/reference.json', handler: 'StaleWhileRevalidate', options: { cacheName: 'reference' } },
-          { urlPattern: ({ url }) => url.pathname.startsWith('/tesseract/'), handler: 'CacheFirst', options: { cacheName: 'tesseract' } },
+          { urlPattern: ({ url, sameOrigin }) => sameOrigin && url.pathname === '/reference.json', handler: 'StaleWhileRevalidate', options: { cacheName: 'reference' } },
+          { urlPattern: ({ url, sameOrigin }) => sameOrigin && url.pathname.startsWith('/tesseract/'), handler: 'CacheFirst', options: { cacheName: 'tesseract-v1' } },
         ],
       },
     }),

@@ -35,3 +35,35 @@ test('my scans: empty state, and a link home', async () => {
   expect(await screen.findByText('Nothing scanned yet.')).toBeInTheDocument()
   expect(screen.getByRole('link', { name: 'Home' })).toHaveAttribute('href', '/')
 })
+
+test('my scans: a failing load shows an alert instead of staying blank', async () => {
+  vi.mocked(listScans).mockRejectedValue(new Error('idb blocked'))
+  renderScans()
+  expect(await screen.findByRole('alert')).toHaveTextContent("Couldn't load your saved scans.")
+  expect(screen.queryByText('Nothing scanned yet.')).not.toBeInTheDocument()
+})
+
+test('my scans: shows a loading status until the list arrives', async () => {
+  let release!: (r: []) => void
+  vi.mocked(listScans).mockReturnValue(new Promise((res) => { release = res }))
+  renderScans()
+  expect(await screen.findByText('Loading…')).toHaveAttribute('role', 'status')
+  release([])
+  await screen.findByText('Nothing scanned yet.')
+})
+
+test('my scans: one product failing to load skips only that row', async () => {
+  vi.mocked(listScans).mockResolvedValue([
+    { productId: 'bad', scannedAt: '2026-03-02T00:00:00Z' },
+    { productId: 'a', scannedAt: '2026-03-01T00:00:00Z' },
+  ])
+  const store = fakeStore([record({ id: 'a' })])
+  const get = store.get.getMockImplementation()!
+  store.get.mockImplementation(async (id: string) => {
+    if (id === 'bad') throw new Error('boom')
+    return get(id)
+  })
+  renderScans(store)
+  expect(await screen.findByRole('link', { name: 'Acme Lotion' })).toBeInTheDocument()
+  expect(screen.queryByRole('alert')).not.toBeInTheDocument()
+})

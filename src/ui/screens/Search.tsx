@@ -6,23 +6,30 @@ import { useProductStore } from '../StoreContext'
 export function Search() {
   const store = useProductStore()
   const [text, setText] = useState('')
-  const [results, setResults] = useState<ProductRecord[]>([])
+  const [found, setFound] = useState<{ query: string; results: ProductRecord[] } | null>(null)
+  const [failed, setFailed] = useState(false)
   const query = text.trim()
 
   useEffect(() => {
-    if (!query) {
-      setResults([])
-      return
-    }
+    setFailed(false)
+    if (!query) return
     // `live` drops a slow earlier search that resolves after a newer one.
     let live = true
-    void store.search(query).then((r) => {
-      if (live) setResults(r)
-    })
+    store.search(query).then(
+      (results) => {
+        if (live) setFound({ query, results })
+      },
+      () => {
+        if (live) setFailed(true)
+      },
+    )
     return () => {
       live = false
     }
   }, [store, query])
+
+  // Results only count if they were fetched for the query now showing; otherwise we are still waiting.
+  const results = query && found?.query === query ? found.results : null
 
   return (
     <main>
@@ -32,8 +39,9 @@ export function Search() {
         Search saved products
         <input type="search" value={text} onChange={(e) => setText(e.target.value)} />
       </label>
-      {query && results.length === 0 ? <p>No saved products match.</p> : null}
-      {results.length > 0 && query ? (
+      {failed ? <p role="alert">Couldn't search saved products.</p> : null}
+      {!failed && results && results.length === 0 ? <p>No saved products match.</p> : null}
+      {!failed && results && results.length > 0 ? (
         <ul>
           {results.map((p) => (
             <li key={p.id}>
