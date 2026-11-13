@@ -1,17 +1,35 @@
-# Ingredient Safety: where we stopped (2026-11-12)
-
-## To resume
-
-Open a session in this folder and say:
-
-> Resume the ingredient safety build. Read NEXT-STEPS.md, then run plan 1 subagent-driven.
+# Ingredient Safety: where we are (2026-11-12)
 
 ## State
 
 - **Design:** approved. `docs/superpowers/specs/2026-11-12-ingredient-safety-design.md`
-- **Plan 1 of 3 (core app on the device):** written, not started. `docs/superpowers/plans/2026-11-12-core-app.md`
-- **Code:** none. No project scaffold, no installs, no git repository yet (task 1 of the plan creates it).
-- **Plans 2 and 3:** not written. Plan 2 = shared library server, barcode shortcut, "report a problem". Plan 3 = web hosting, Android wrapper, Google Play closed test.
+- **Plan 1 of 3 (core app on the device):** built on branch `feat/core-app`, all 13 tasks plus the final-review fix wave.
+  **Not merged** into `main`. Plan: `docs/superpowers/plans/2026-11-12-core-app.md`
+- **Reference data:** version 2026.11.2, built from NTP only (plus the FDA ingredient inventory). See "Current data state"
+  in `README.md`. The app says which lists were checked on the About and Result screens.
+- **Plans 2 and 3:** not written. Plan 2 = shared library server, barcode shortcut, "report a problem". Plan 3 = web hosting,
+  Android wrapper, Google Play closed test.
+
+## What the owner needs to do
+
+1. **IARC decision.** IARC's terms need written permission to reproduce substantial portions of its list. Decide whether to
+   ask IARC for permission or keep the app non-commercial and limited. Until then IARC stays excluded in
+   `data/sources/config.json` and `iarc.csv` stays git-ignored. Details: `data/sources/README.md`, "iarc.csv".
+2. **Four downloads** the agent could not get (sites blocked automated requests, or no file was found): `prop65.csv`,
+   `eu-clp.csv`, `cosing.csv`, `e-numbers.csv`. Steps for each are in `data/sources/README.md`; the general procedure
+   (config, version bump, rebuild, sample) is in `README.md`, "Adding a missing source file".
+3. **Notes spot-check** (~15 min): read `docs/reference-review-sample.md` and report any note that is wrong, not neutral,
+   or has a wrong caveat.
+4. **Five-product phone test** (~20 min): scan five real products on a phone (`npm run build` then `npm run preview -- --host`,
+   or a deployed preview) and report mistakes in reading, splitting or verdicts.
+5. **Display rule for form-specific listings.** Some listings cover only one form or route (for example respirable silica
+   dust, or a substance listed only as part of a mixture). Today the result shows the listing with its qualifier and a caveat
+   where one was written. Decide whether such listings should keep the same "Watch for" heading or be shown differently.
+
+## After that
+
+- Merge `feat/core-app` into `main` once the owner checks above are done.
+- Write plan 2, then plan 3.
 
 ## Decided
 
@@ -21,21 +39,3 @@ Open a session in this folder and say:
 - Web app plus Android first. English labels only. Zero running cost. No accounts, no personal data.
 - Bad records: "report a problem" button, owner fixes by hand. Reference refreshed every 6 months.
 - Google Play account is personal, created after November 2023, so a closed test (about 12 testers, 14 days) is required before public release.
-
-## Still open (answer before or at resume)
-
-The plan narrows the design in three places, listed at the top of the plan. Not yet confirmed:
-
-1. Hand-checked notes only for listed ingredients that can appear on a label, not every listed substance.
-2. Ordinary ingredients show one function word (for example "preservative"); fuller notes come later.
-3. Saved products store the ingredient list only; verdicts are recalculated on display.
-
-## Where the build will stop and need the owner
-
-- Task 5 or 6: if an official list forbids redistributing its data, or a download site blocks the agent.
-- After task 7: spot-check 50 sample ingredient notes (~15 min).
-- After task 13: scan five real products on a phone and report mistakes (~20 min).
-
-## Estimate
-
-About 3 to 5 hours of agent run time for the 13 tasks, unmeasured.

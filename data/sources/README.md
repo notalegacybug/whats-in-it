@@ -62,7 +62,7 @@ reconstructed from memory. When the real files arrive, compare their headers wit
 - **Source:** NTP Report on Carcinogens, 15th edition (released 2021-12-21), "15th RoC CASRN Index in MS Excel"
   linked from https://ntp.niehs.nih.gov/go/roc (resolves to https://ntp.niehs.nih.gov/research/assessments/cancer/roc),
   file https://ntp.niehs.nih.gov/sites/default/files/ntp/roc/content/roc15_casrn_index.xlsx
-  (kept in `original/roc15_casrn_index.xlsx`). The 15th is the latest edition per the page.
+  (kept as `original/roc15_casrn.xlsx`). The 15th is the latest edition per the page.
 - **Downloaded:** 2026-11-12
 - **Conversion:** spreadsheet read with a one-off Python (standard library only) script, not a project dependency.
   Source columns `CASRN | NAME OR SYNONYM | Listing in the 15th RoC` became `Name,CAS,Listing,Year`:
@@ -74,7 +74,6 @@ reconstructed from memory. When the real files arrive, compare their headers wit
 - **Edition** (`editions.NTP` in `config.json`): `15th Report on Carcinogens (2021)`. Confirmed from the
   downloaded file itself: its document title (Excel file properties) reads "Download the CASRN index in MS
   Excel; 15th RoC 2021". Citations show this text because the listings have no year.
-- The original is kept as `original/roc15_casrn.xlsx`.
 - **Header row:** `Name,CAS,Listing,Year`
 - **Coverage:** rows are index entries (one per CAS number or synonym), so a listing such as "Estrogens,
   Steroidal" appears under each member's CAS. 47 rows have no CAS number in the source.
