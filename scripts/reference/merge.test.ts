@@ -1,5 +1,6 @@
 import type { Reference } from '../../src/reference/types'
 import { diffReferences } from './diff'
+import { parseFda } from './adapters/fda'
 import { mergeReference } from './merge'
 import type { CatalogueRecord, Listing, SourceRecord } from './types'
 
@@ -183,4 +184,31 @@ test('diffReferences ignores key order inside an entry', () => {
   const a = ref([{ id: 'cas:1-1-1', name: 'n', aliases: [], cas: [], listings: [] }])
   const b = ref([{ listings: [], cas: [], aliases: [], name: 'n', id: 'cas:1-1-1' }])
   expect(diffReferences(a, b)).toEqual({ added: [], removed: [], changed: [] })
+})
+
+test('an FDA status becomes context in functionNote, not a listing', () => {
+  const status = cat('Cyclamate', ['977016-96-8'], { functionNote: 'non-nutritive sweetener', fdaStatus: 'prohibited in food' })
+  const alone = cat('Dulcin', ['150-69-6'], { fdaStatus: 'prohibited in food' })
+  const { reference } = mergeReference({ flagged: [], catalogue: [status, alone, glycerin], ...base })
+  const get = (id: string) => reference.entries.find((e) => e.id === id)!
+  expect(get('cas:977016-96-8').functionNote).toBe('non-nutritive sweetener · US FDA status: prohibited in food')
+  expect(get('cas:977016-96-8').listings).toEqual([])
+  expect(get('cas:150-69-6').functionNote).toBe('US FDA status: prohibited in food')
+  expect(get('cas:56-81-5').functionNote).toBe('humectant')
+})
+
+test('real FDA rows (cyclamate, coumarin, a delisted FD&C colour) keep their status through the merge', () => {
+  const col = 'Used for (Technical Effect)'
+  const catalogue = parseFda([
+    { 'CAS Reg No (or other ID)': ' 977016-96-8', Substance: ' CYCLAMATE--PROHIBITED', [col]: ' NON-NUTRITIVE SWEETENER' },
+    { 'CAS Reg No (or other ID)': ' 91-64-5', Substance: ' COUMARIN--PROHIBITED', [col]: ' FLAVORING AGENT OR ADJUVANT' },
+    { 'CAS Reg No (or other ID)': ' 4680-78-8', Substance: ' FD&C GREEN NO. 1--DELISTED', [col]: '' },
+  ])
+  const { reference } = mergeReference({ flagged: [], catalogue, ...base })
+  const notes = Object.fromEntries(reference.entries.map((e) => [e.name, e.functionNote]))
+  expect(notes).toEqual({
+    Cyclamate: 'non-nutritive sweetener · US FDA status: prohibited in food',
+    Coumarin: 'flavoring agent or adjuvant · US FDA status: prohibited in food',
+    'FD&C green No. 1': 'US FDA status: delisted (no longer permitted)',
+  })
 })

@@ -101,7 +101,11 @@ function toEntry(g: Group, notes: NotesFile): RefEntry {
     .sort()
 
   const listings = uniqueListings(g.flagged.map((r) => r.listing))
-  const functionNote = g.catalogue.map((r) => r.functionNote).find(Boolean)
+  // The FDA's own status (e.g. prohibited in food) rides along as context; it is not a listing and changes no verdict.
+  const fdaStatus = g.catalogue.map((r) => r.fdaStatus).find(Boolean)
+  const functionNote =
+    [g.catalogue.map((r) => r.functionNote).find(Boolean), fdaStatus && `US FDA status: ${fdaStatus}`].filter(Boolean).join(' · ') ||
+    undefined
   const note = notes[g.id]
 
   return {
