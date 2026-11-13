@@ -1,4 +1,5 @@
-import { screen } from '@testing-library/react'
+import { screen, within } from '@testing-library/react'
+import { buildIndex } from '../../reference'
 import { DISCLAIMER, SOURCES_ABOUT } from '../../copy'
 import { renderScreen } from '../test-helpers'
 import { About } from './About'
@@ -27,6 +28,29 @@ test('about: the four sources each link out safely', async () => {
     expect(link).toHaveAttribute('target', '_blank')
     expect(link).toHaveAttribute('rel', 'noopener noreferrer')
   }
+})
+
+test('about: only the lists in this reference are "Checked against"; the rest are "Not yet included"', async () => {
+  renderScreen(<About />, {
+    route: '/about',
+    path: '/about',
+    index: buildIndex({ version: 'v-ntp', builtAt: '2026-01-01', sources: ['NTP'], entries: [] }),
+  })
+  const checked = await screen.findByRole('region', { name: 'Checked against' })
+  const notYet = screen.getByRole('region', { name: 'Not yet included' })
+  expect(within(checked).getAllByRole('link').map((a) => a.textContent)).toEqual([
+    'US National Toxicology Program, Report on Carcinogens',
+  ])
+  expect(within(notYet).getAllByRole('link').map((a) => a.textContent)).toEqual([
+    'IARC Monographs',
+    'California Proposition 65 list',
+    'EU harmonised classification (CLP Annex VI)',
+  ])
+  expect(
+    within(notYet).getByText(
+      'These lists are not in this version of the reference, so ingredients on them are not flagged yet.',
+    ),
+  ).toBeInTheDocument()
 })
 
 test('about: explains no-known-concern, has a home link, never says "safe"', async () => {

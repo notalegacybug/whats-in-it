@@ -1,8 +1,10 @@
 import { normalizeName } from '../ingredients/normalize'
-import type { RefEntry, Reference } from './types'
+import type { RefEntry, Reference, SourceId } from './types'
 
 export interface RefIndex {
   version: string
+  /** Hazard lists this reference was built from; ingredients on any other list are not flagged. */
+  sources: SourceId[]
   byKey: Map<string, RefEntry>
   keys: string[]
 }
@@ -16,5 +18,5 @@ export function buildIndex(ref: Reference): RefIndex {
       if (key && !byKey.has(key)) byKey.set(key, entry)
     }
   }
-  return { version: ref.version, byKey, keys: [...byKey.keys()] }
+  return { version: ref.version, sources: ref.sources ?? [], byKey, keys: [...byKey.keys()] }
 }

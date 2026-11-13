@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import { DISCLAIMER, VERDICT_LABEL } from '../../copy'
+import { checkedAgainst, DISCLAIMER, VERDICT_LABEL } from '../../copy'
 import type { ProductRecord } from '../../products/types'
 import { analyse, SEVERITY } from '../../reference/analyse'
 import { addScan } from '../../scans/myScans'
@@ -34,6 +34,8 @@ export function Result() {
 
   const results = useMemo(() => (record && index ? analyse(record.ingredients, index) : []), [record, index])
 
+  const checked = checkedAgainst(index?.sources ?? [])
+
   if (record === undefined) return <p role="status">Loading…</p>
   if (record === null) {
     return (
@@ -57,6 +59,7 @@ export function Result() {
             <h2>
               {VERDICT_LABEL[verdict]} ({items.length})
             </h2>
+            {verdict === 'no_known_concern' && <p className="checked-against">{checked}</p>}
             <ul>
               {items.map((r, i) => (
                 <ResultItem key={i} result={r} />
@@ -65,6 +68,7 @@ export function Result() {
           </section>
         )
       })}
+      <p className="checked-against">{checked}</p>
       <p className="disclaimer">{DISCLAIMER}</p>
       <Link to="/">Check another label</Link>
     </main>

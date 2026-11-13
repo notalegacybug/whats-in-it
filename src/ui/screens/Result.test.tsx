@@ -1,4 +1,5 @@
-import { screen } from '@testing-library/react'
+import { screen, within } from '@testing-library/react'
+import { buildIndex } from '../../reference'
 import { addScan } from '../../scans/myScans'
 import { fakeStore, record, renderScreen } from '../test-helpers'
 import { Result } from './Result'
@@ -70,4 +71,21 @@ test('result: an unknown id says so and links home', async () => {
   renderResult('nope')
   expect(await screen.findByText("We couldn't find that product.")).toBeInTheDocument()
   expect(screen.getByRole('link', { name: 'Back to start' })).toHaveAttribute('href', '/')
+})
+
+test('result: says which lists were checked, under the no-known-concern heading and by the disclaimer', async () => {
+  renderResult()
+  const clear = (await screen.findByRole('heading', { name: 'No known concern on these lists (1)' })).closest('section')!
+  expect(within(clear).getByText('Checked against: IARC, NTP')).toBeInTheDocument()
+  expect(screen.getAllByText('Checked against: IARC, NTP')).toHaveLength(2)
+})
+
+test('result: a reference with no hazard lists says so', async () => {
+  renderScreen(<Result />, {
+    route: '/result/p1',
+    path: '/result/:id',
+    store: fakeStore([rec]),
+    index: buildIndex({ version: 'v-empty', builtAt: '2026-01-01', entries: [] }),
+  })
+  expect(await screen.findByText('Checked against: no hazard lists yet')).toBeInTheDocument()
 })

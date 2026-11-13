@@ -11,6 +11,7 @@ import { StoreContext } from './StoreContext'
 export const testIndex: RefIndex = buildIndex({
   version: 'v-test',
   builtAt: '2026-01-01',
+  sources: ['IARC', 'NTP'],
   entries: [
     {
       id: 'cas:50-00-0',
@@ -82,12 +83,12 @@ function Where() {
 /** Renders `ui` (which may contain its own <Routes>) at `path` with all providers; any other route shows its pathname. */
 export function renderScreen(
   ui: ReactElement,
-  opts: { route: string; path: string; draft?: string[]; store?: ProductStore },
+  opts: { route: string; path: string; draft?: string[]; store?: ProductStore; index?: RefIndex },
 ) {
   return render(
     <MemoryRouter initialEntries={[opts.route]}>
       <StoreContext.Provider value={opts.store ?? fakeStore()}>
-        <ReferenceGate load={() => Promise.resolve(testIndex)}>
+        <ReferenceGate load={() => Promise.resolve(opts.index ?? testIndex)}>
           <ScanDraftProvider initial={opts.draft}>
             <Routes>
               <Route path={opts.path} element={ui} />

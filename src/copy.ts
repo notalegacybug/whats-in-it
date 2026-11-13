@@ -26,3 +26,13 @@ export const SOURCES_ABOUT: { id: SourceId; name: string; url: string }[] = [
   { id: 'PROP65', name: 'California Proposition 65 list', url: 'https://oehha.ca.gov/proposition-65/proposition-65-list' },
   { id: 'EU_CLP', name: 'EU harmonised classification (CLP Annex VI)', url: 'https://echa.europa.eu/information-on-chemicals/annex-vi-to-clp' },
 ];
+
+/** About screen: under the lists that are not in this build of the reference. */
+export const NOT_YET_INCLUDED =
+  'These lists are not in this version of the reference, so ingredients on them are not flagged yet.';
+
+/** "Checked against: IARC, NTP", in SOURCES_ABOUT order; says so plainly when no hazard list is included. */
+export function checkedAgainst(sources: SourceId[]): string {
+  const names = SOURCES_ABOUT.filter((s) => sources.includes(s.id)).map((s) => SOURCE_LABEL[s.id]);
+  return `Checked against: ${names.length ? names.join(', ') : 'no hazard lists yet'}`;
+}
