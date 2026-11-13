@@ -1,6 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useState } from 'react'
 import type { ReactNode } from 'react'
-import { loadReference } from '../reference/load'
+import { loadReference, refreshReference } from '../reference/load'
+import { onAppResume } from '../resume'
 import type { RefIndex } from '../reference'
 
 export interface ReferenceState {
@@ -21,9 +22,13 @@ export function useReference(): ReferenceState {
 export function ReferenceGate({
   children,
   load = () => loadReference(),
+  refresh = () => refreshReference(),
+  watchResume = onAppResume,
 }: {
   children: ReactNode
   load?: () => Promise<RefIndex>
+  refresh?: () => Promise<RefIndex | null>
+  watchResume?: (callback: () => void) => () => void
 }) {
   const [index, setIndex] = useState<RefIndex | null>(null)
   const [failed, setFailed] = useState(false)
@@ -41,6 +46,19 @@ export function ReferenceGate({
     // `load` is deliberately omitted: an inline loader must not re-trigger loading each render.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [attempt])
+
+  // Swap in a changed reference when the app comes back to the front; results re-check against it.
+  useEffect(
+    () =>
+      watchResume(() => {
+        refresh().then((fresh) => {
+          if (fresh) setIndex((current) => (current && current.version === fresh.version ? current : fresh))
+        })
+      }),
+    // Same reasoning as `load` above.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [],
+  )
 
   const retry = useCallback(() => {
     setFailed(false)

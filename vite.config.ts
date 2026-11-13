@@ -27,7 +27,8 @@ export default defineConfig({
         globIgnores: ['tesseract/**', 'reference.json'],
         navigateFallback: 'index.html',
         runtimeCaching: [
-          { urlPattern: ({ url, sameOrigin }) => sameOrigin && url.pathname === '/reference.json', handler: 'StaleWhileRevalidate', options: { cacheName: 'reference' } },
+          // Network first so a data update shows on the next open; the saved copy covers offline and slow networks.
+          { urlPattern: ({ url, sameOrigin }) => sameOrigin && url.pathname === '/reference.json', handler: 'NetworkFirst', options: { cacheName: 'reference', networkTimeoutSeconds: 5 } },
           { urlPattern: ({ url, sameOrigin }) => sameOrigin && url.pathname.startsWith('/tesseract/'), handler: 'CacheFirst', options: { cacheName: 'tesseract-v1' } },
         ],
       },

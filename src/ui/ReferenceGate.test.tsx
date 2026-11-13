@@ -61,3 +61,27 @@ test('useReference outside a gate throws a clear error', () => {
   window.removeEventListener('error', swallow)
   err.mockRestore()
 })
+
+test('on resume, a changed reference replaces the one in use; an unchanged one is kept', async () => {
+  let resume = () => {}
+  const v2 = buildIndex({ version: 'v2', builtAt: '2026-01-02', entries: [] })
+  const refresh = vi.fn().mockResolvedValueOnce(null).mockResolvedValueOnce(v2)
+  render(
+    <ReferenceGate
+      load={() => Promise.resolve(index)}
+      refresh={refresh}
+      watchResume={(cb) => {
+        resume = cb
+        return () => {}
+      }}
+    >
+      <Child />
+    </ReferenceGate>,
+  )
+  expect(await screen.findByText('Ready test')).toBeInTheDocument()
+  resume()
+  await vi.waitFor(() => expect(refresh).toHaveBeenCalledTimes(1))
+  expect(screen.getByText('Ready test')).toBeInTheDocument()
+  resume()
+  expect(await screen.findByText('Ready v2')).toBeInTheDocument()
+})
