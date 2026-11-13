@@ -17,10 +17,20 @@ const effects = (text: string): string =>
     .filter(Boolean)
     .join(', ')
 
+/**
+ * The FDA appends status codes ("SULFURIC ACID--NLFG", "--PROHIBITED") to names, and writes most names in
+ * capitals. Drop the code and show an all-capitals name as "Sulfuric acid". Matching is unaffected
+ * (normalisation lower-cases anyway); mixed-case names are left as written.
+ */
+function displayName(raw: string): string {
+  const name = raw.replace(/\s*--\s*[A-Z][A-Z ]*$/, '').trim()
+  return name === name.toUpperCase() ? name.charAt(0).toUpperCase() + name.slice(1).toLowerCase() : name
+}
+
 export function parseFda(rows: Row[]): CatalogueRecord[] {
   const out: CatalogueRecord[] = []
   for (const row of rows) {
-    const name = cell(row, COLUMNS.name)
+    const name = displayName(cell(row, COLUMNS.name))
     if (!name) continue
     out.push({
       name,

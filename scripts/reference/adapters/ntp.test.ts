@@ -53,3 +53,18 @@ test('NTP: cross-references containing brackets are removed in full', () => {
   ])
   expect(out.map((r) => r.name)).toEqual(['Bis(chloromethyl) Ether', 'a-Hexachlorocyclohexane'])
 })
+
+test('NTP: a "(see Parent)" reference becomes a "Listed as part of" qualifier, not lost', () => {
+  const out = parseNtp([
+    { Name: 'Sulfuric Acid (see Strong Inorganic Acid Mists Containing Sulfuric Acid)', CAS: '7664-93-9', Listing: KNOWN },
+    { Name: 'Quartz (see Silica)', CAS: '14808-60-7', Listing: KNOWN },
+    { Name: 'Formaldehyde', CAS: '50-00-0', Listing: KNOWN },
+  ])
+  expect(out[0].name).toBe('Sulfuric Acid')
+  expect(out[0].listing).toMatchObject({
+    level: 'strong',
+    qualifier: 'Listed as part of: Strong Inorganic Acid Mists Containing Sulfuric Acid',
+  })
+  expect(out[1].listing.qualifier).toBe('Listed as part of: Silica')
+  expect(out[2].listing.qualifier).toBeUndefined()
+})

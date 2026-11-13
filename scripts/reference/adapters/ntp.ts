@@ -1,6 +1,6 @@
 import { parseCas } from '../cas'
 import type { Listing, Row, SourceRecord } from '../types'
-import { cell, latestYear, stripSeeReference } from '../util'
+import { cell, latestYear, splitSeeReference, withSeeAlso } from '../util'
 
 export const URL = 'https://ntp.niehs.nih.gov/go/roc'
 
@@ -15,15 +15,16 @@ const LEVELS: Record<string, Listing['level']> = {
 export function parseNtp(rows: Row[]): SourceRecord[] {
   const out: SourceRecord[] = []
   for (const row of rows) {
-    const name = stripSeeReference(cell(row, COLUMNS.name))
+    const { name, seeAlso } = splitSeeReference(cell(row, COLUMNS.name))
     const classification = cell(row, COLUMNS.listing)
     const level = LEVELS[classification.toLowerCase()]
     if (!name || !level) continue
 
+    const qualifier = withSeeAlso('', seeAlso)
     out.push({
       name,
       cas: parseCas(cell(row, COLUMNS.cas)),
-      listing: { source: 'NTP', classification, level, year: latestYear(cell(row, COLUMNS.year)), url: URL },
+      listing: { source: 'NTP', classification, level, year: latestYear(cell(row, COLUMNS.year)), url: URL, ...(qualifier && { qualifier }) },
     })
   }
   return out

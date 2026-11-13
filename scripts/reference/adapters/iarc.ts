@@ -1,6 +1,6 @@
 import { parseCas } from '../cas'
 import type { Listing, Row, SourceRecord } from '../types'
-import { cell, latestYear, stripSeeReference } from '../util'
+import { cell, latestYear, splitSeeReference, withSeeAlso } from '../util'
 
 export const URL = 'https://monographs.iarc.who.int/list-of-classifications'
 
@@ -19,12 +19,12 @@ const LEVELS: Record<string, Listing['level']> = { '1': 'strong', '2A': 'possibl
 export function parseIarc(rows: Row[]): SourceRecord[] {
   const out: SourceRecord[] = []
   for (const row of rows) {
-    const name = stripSeeReference(cell(row, COLUMNS.name))
+    const { name, seeAlso } = splitSeeReference(cell(row, COLUMNS.name))
     const group = cell(row, COLUMNS.group).toUpperCase()
     const level = LEVELS[group]
     if (!name || !level) continue
 
-    const qualifier = cell(row, COLUMNS.info)
+    const qualifier = withSeeAlso(cell(row, COLUMNS.info), seeAlso)
     out.push({
       name,
       cas: parseCas(cell(row, COLUMNS.cas)),

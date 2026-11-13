@@ -80,3 +80,12 @@ test('IARC: "(see also ...)" cross-references are removed from the name', () => 
   ])
   expect(out.map((r) => r.name)).toEqual(['Aniline', 'Automotive gasoline'])
 })
+
+test('IARC: a "(see ...)" reference becomes a qualifier, joined with an existing one by "; "', () => {
+  const out = parseIarc([
+    row('62-53-3', 'Aniline (see also Aniline hydrochloride)', '2A', '2021 online'),
+    { ...row('14807-96-6', 'Talc-based body powder (see Talc)', '2B', '2010'), 'Additional information': 'perineal use' },
+  ])
+  expect(out[0].listing.qualifier).toBe('Listed as part of: Aniline hydrochloride')
+  expect(out[1].listing.qualifier).toBe('perineal use; Listed as part of: Talc')
+})

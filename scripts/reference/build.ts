@@ -18,6 +18,7 @@ import { COLUMNS as FDA_COLUMNS, parseFda } from './adapters/fda'
 import { COLUMNS as IARC_COLUMNS, parseIarc } from './adapters/iarc'
 import { COLUMNS as NTP_COLUMNS, parseNtp } from './adapters/ntp'
 import { COLUMNS as PROP65_COLUMNS, parseProp65 } from './adapters/prop65'
+import { findKeyCollisions } from './collisions'
 import { diffReferences } from './diff'
 import { checkSourceFile } from './guard'
 import { mergeReference } from './merge'
@@ -110,13 +111,16 @@ function load<T>(s: Source<T>, excluded: boolean, config: Config): T[] | null {
 }
 
 function readJson<T>(file: string): T {
-  return JSON.parse(readFileSync(file, 'utf8')) as T
+  try {
+    return JSON.parse(readFileSync(file, 'utf8')) as T
+  } catch (error) {
+    throw new Error(`${file}: cannot read as JSON (${error instanceof Error ? error.message : String(error)})`)
+  }
 }
 
 function loadConfig(): Config {
   const config = readJson<Partial<Config>>(path('data', 'sources', 'config.json'))
-  const unknown = (config.exclude ?? []).filter((id) => !HAZARD_IDS.includes(id))
-  if (!Array.isArray(config.exclude) || unknown.length) {
+  if (!Array.isArray(config.exclude) || config.exclude.some((id) => !HAZARD_IDS.includes(id))) {
     throw new Error(`data/sources/config.json: "exclude" must be a list of ${HAZARD_IDS.join(', ')}; got ${JSON.stringify(config.exclude)}`)
   }
   const year = config.euClpAnnexYear ?? null
@@ -174,6 +178,17 @@ function main(): number {
     builtAt: new Date().toISOString(),
   })
   const reference: Reference = { version: merged.version, builtAt: merged.builtAt, sources: included, entries: merged.entries }
+
+  const collisions = findKeyCollisions(reference)
+  if (collisions.length) {
+    const shown = collisions.slice(0, 20).map((c) => `  - "${c.key}": ${c.ids.join(', ')}`)
+    const more = collisions.length > 20 ? `\n  ... and ${collisions.length - 20} more` : ''
+    console.error(
+      `\nBuild stopped, nothing written: ${collisions.length} name/alias/CAS key(s) belong to more than one entry, ` +
+        `so the app would let the first one hide the rest:\n${shown.join('\n')}${more}`,
+    )
+    return 1
+  }
 
   const diff = diffReferences(previousReference(), reference)
   const listed = reference.entries.filter((e) => e.listings.length > 0)
