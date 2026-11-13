@@ -31,9 +31,10 @@ test('paste, check, save, find again', async ({ page }) => {
   await expect(page.getByText('Is this the same as Acme Test Lotion?')).toBeVisible()
 })
 
-test('image scan stays on the device', async ({ page }) => {
+test('image scan stays on the device', async ({ page, context }, testInfo) => {
   const urls: string[] = []
-  page.on('request', (r) => urls.push(r.url()))
+  // Context level: also sees requests from workers and any other page.
+  context.on('request', (r) => urls.push(r.url()))
 
   await page.goto('/')
   await page.getByRole('link', { name: 'Choose an image' }).click()
@@ -43,7 +44,7 @@ test('image scan stays on the device', async ({ page }) => {
 
   const real = urls.filter((u) => !u.startsWith('data:') && !u.startsWith('blob:'))
   const paths = [...new Set(real.map((u) => new URL(u).pathname))].sort()
-  console.log('Distinct request paths:\n' + paths.join('\n'))
+  await testInfo.attach('request-paths', { body: paths.join('\n'), contentType: 'text/plain' })
   expect(paths.some((p) => p.startsWith('/tesseract/'))).toBe(true)
   expect(real.filter((u) => new URL(u).origin !== ORIGIN)).toEqual([])
 })
@@ -68,12 +69,26 @@ test.describe('offline', () => {
     await expect(page.locator('input[value="Formaldehyde"]')).toBeVisible({ timeout: 80_000 })
 
     await context.setOffline(true)
+    // Reference is asked for by the app on load, so a fresh navigation shows who answered it.
+    const refResponse = page.waitForResponse((r) => new URL(r.url()).pathname === '/reference.json')
     await page.goto('/')
     await expect(page.getByRole('heading', { name: 'Ingredient Safety' })).toBeVisible()
-    const served = await page.evaluate(async () => {
-      const ok = async (u: string) => (await fetch(u)).ok
-      return { reference: await ok('/reference.json'), worker: await ok('/tesseract/worker.min.js') }
+    expect((await refResponse).fromServiceWorker()).toBe(true)
+    expect(await page.evaluate(() => navigator.serviceWorker.controller !== null)).toBe(true)
+
+    const cached = await page.evaluate(async () => {
+      const keys = async (name: string) =>
+        (await (await caches.open(name)).keys()).map((r) => new URL(r.url).pathname)
+      return { tesseract: await keys('tesseract-v1'), reference: await keys('reference') }
     })
-    expect(served).toEqual({ reference: true, worker: true })
+    expect(cached.reference).toContain('/reference.json')
+    expect(cached.tesseract).toContain('/tesseract/eng.traineddata.gz')
+    expect(cached.tesseract).toContain('/tesseract/worker.min.js')
+    expect(cached.tesseract.some((p) => /^\/tesseract\/tesseract-core.*\.wasm\.js$/.test(p))).toBe(true)
+
+    // Strongest proof: a full OCR scan with the network off.
+    await page.getByRole('link', { name: 'Choose an image' }).click()
+    await page.getByLabel('Choose an image of the label').setInputFiles('e2e/fixtures/label.png')
+    await expect(page.locator('input[value="Formaldehyde"]')).toBeVisible({ timeout: 80_000 })
   })
 })
