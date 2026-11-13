@@ -243,3 +243,40 @@ test('listings that differ only in edition are both kept', () => {
   const b = flag('X', ['50-00-0'], listing('NTP', { edition: '15th' }))
   expect(mergeReference({ flagged: [a, b], catalogue: [], ...base }).reference.entries[0].listings).toHaveLength(2)
 })
+
+test('a CAS number held by two entries stays only where it is the main number', () => {
+  // Real CosIng shape: Ceramide NP lists a generic CAS that is another ceramide's own number.
+  const ceramideNp = cat('Ceramide NP', ['34354-88-6', '100403-19-8'])
+  const ceramideGeneric = cat('Ceramide 3', ['100403-19-8'])
+  const { reference } = mergeReference({ flagged: [], catalogue: [ceramideNp, ceramideGeneric], ...base })
+  const byId = Object.fromEntries(reference.entries.map((e) => [e.id, e.cas]))
+  expect(byId['cas:34354-88-6']).toEqual(['34354-88-6'])
+  expect(byId['cas:100403-19-8']).toEqual(['100403-19-8'])
+})
+
+test('a secondary CAS number shared by two entries and nobody\'s main number is dropped from both', () => {
+  const a = cat('Iron Oxide A', ['1309-37-1', '12227-89-3'])
+  const b = cat('Iron Oxide B', ['1332-25-8', '12227-89-3'])
+  const { reference } = mergeReference({ flagged: [], catalogue: [a, b], ...base })
+  for (const e of reference.entries) expect(e.cas).not.toContain('12227-89-3')
+})
+
+test('entries with the same main name merge, so a label name never misses a listing', () => {
+  // Real shape: NTP lists lead acetate under 15347-57-6, CosIng under 301-04-2.
+  const ntp = flag('Lead Acetate', ['15347-57-6'], listing('NTP', { level: 'possible' }))
+  const cosing = cat('LEAD ACETATE', ['301-04-2'], { functionNote: 'hair dyeing' })
+  const { reference } = mergeReference({ flagged: [ntp], catalogue: [cosing], ...base })
+  expect(reference.entries).toHaveLength(1)
+  const e = reference.entries[0]
+  expect(e.id).toBe('cas:15347-57-6')
+  expect(e.listings).toHaveLength(1)
+  expect(e.cas.sort()).toEqual(['15347-57-6', '301-04-2'])
+})
+
+test('two unlisted entries with the same main name become one', () => {
+  const fda = cat('Calcium chloride', ['10043-52-4'], { functionNote: 'firming agent' })
+  const cosing = cat('CALCIUM CHLORIDE', ['10035-04-8'], { functionNote: 'bulking' })
+  const { reference } = mergeReference({ flagged: [], catalogue: [fda, cosing], ...base })
+  expect(reference.entries).toHaveLength(1)
+  expect(reference.entries[0].id).toBe('cas:10035-04-8')
+})

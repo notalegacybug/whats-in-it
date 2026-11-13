@@ -12,14 +12,66 @@
     "note": "An industrial chemical used to make other chemicals, such as ion-exchange resins.",
     "caveat": "The listing covers technical-grade chloromethyl methyl ether, grouped with the related chemical bis(chloromethyl) ether."
   },
+  "cas:117-81-7": {
+    "note": "A plasticiser, also called DEHP, used to make PVC plastic soft and flexible, for example in tubing, flooring and packaging."
+  },
+  "cas:1314-20-1": {
+    "note": "An oxide of thorium, a radioactive metal. It was used in gas lamp mantles, special glass and an old medical imaging agent.",
+    "caveat": "Listed under ionizing radiation: the concern is the radiation given off by thorium."
+  },
+  "cas:14464-46-1": {
+    "note": "A crystalline form of silica (silicon dioxide) that forms at high temperatures. It occurs in some volcanic rocks and in heat-treated diatomaceous earth.",
+    "caveat": "Listed for breathing in fine crystalline silica dust, mainly in workplaces. The listing does not describe silica in other forms."
+  },
+  "cas:14808-60-7": {
+    "note": "A crystalline form of silica (silicon dioxide) and the main mineral in most sand. It is used to make glass and ceramics.",
+    "caveat": "Listed for breathing in fine crystalline silica dust, mainly in workplaces. The listing does not describe silica in other forms."
+  },
+  "cas:15347-57-6": {
+    "note": "A salt of the metal lead. It has been used in some hair dyes that darken grey hair gradually, and in dyeing and printing fabrics.",
+    "caveat": "Listed as part of lead and lead compounds as a group."
+  },
+  "cas:15468-32-3": {
+    "note": "A crystalline form of silica (silicon dioxide) that forms at high temperatures. It occurs in some volcanic rocks.",
+    "caveat": "Listed for breathing in fine crystalline silica dust, mainly in workplaces. The listing does not describe silica in other forms."
+  },
+  "cas:2475-45-8": {
+    "note": "A blue synthetic dye that has been used in hair dyes and to colour fabrics and plastics."
+  },
   "cas:25013-16-5": {
     "note": "Butylated hydroxyanisole (BHA) is a synthetic antioxidant added to fats, oils, foods and cosmetics to slow them from going rancid."
+  },
+  "cas:298-81-7": {
+    "note": "A compound found in some plants, used as a medicine together with ultraviolet A light to treat skin conditions such as psoriasis.",
+    "caveat": "Listed for its use as a medicine taken together with ultraviolet A light treatment."
   },
   "cas:302-01-2": {
     "note": "A reactive industrial chemical used as rocket fuel, to remove oxygen from boiler water, and to make foaming agents, farm chemicals and medicines."
   },
+  "cas:3296-90-0": {
+    "note": "A chemical containing bromine, used as a flame retardant in plastics such as unsaturated polyester resins.",
+    "caveat": "Listed for the technical-grade product, a less purified commercial form."
+  },
   "cas:50-00-0": {
     "note": "A simple chemical, a gas at room temperature, used to make resins for wood products and as a preservative. It also forms in the body and occurs in many foods."
+  },
+  "cas:50-28-2": {
+    "note": "The main female sex hormone, made in the body and also made for medicines such as hormone therapy.",
+    "caveat": "Listed as part of steroidal estrogens, mainly for their use as medicines."
+  },
+  "cas:542-75-6": {
+    "note": "A liquid soil fumigant used on farms before planting to control nematodes, tiny worms that damage crop roots.",
+    "caveat": "Listed for the technical-grade product, a less purified commercial form."
+  },
+  "cas:57-63-6": {
+    "note": "A synthetic form of estrogen, a female sex hormone, used mainly in birth control pills.",
+    "caveat": "Listed as part of steroidal estrogens, mainly for their use as medicines."
+  },
+  "cas:57-83-0": {
+    "note": "A female sex hormone made in the body, also made for medicines used in pregnancy support, hormone therapy and birth control."
+  },
+  "cas:62-44-2": {
+    "note": "A pain and fever medicine, used in the past and since withdrawn in many countries. It has also been used as a stabiliser in some products."
   },
   "cas:62-56-6": {
     "note": "An organic compound containing sulfur, used in photographic processing, textile finishing, metal cleaners and making resins."
@@ -33,6 +85,13 @@
   "cas:7440-02-0": {
     "note": "A silvery metal used in stainless steel and other alloys, coins, plating and batteries. It is also used as a catalyst to harden vegetable oils."
   },
+  "cas:7446-34-6": {
+    "note": "A compound of selenium and sulfur, used mainly in anti-dandruff shampoos and in medicated treatments for scalp and skin.",
+    "caveat": "The listing is based on studies of selenium sulfide taken in by mouth, not shampoo use."
+  },
+  "cas:75-01-4": {
+    "note": "A gas used mainly to make PVC plastic. Small leftover amounts can remain in PVC products."
+  },
   "cas:75-07-0": {
     "note": "A simple organic chemical found in ripe fruit, coffee and bread, which also forms in the body when alcohol is broken down. It is used as a flavoring."
   },
@@ -41,6 +100,9 @@
   },
   "cas:75-21-8": {
     "note": "A gas used to sterilize medical equipment, to fumigate spices in some countries, and to make other chemicals such as antifreeze and detergents."
+  },
+  "cas:75-52-5": {
+    "note": "An industrial liquid used as a solvent, in making other chemicals, and as a fuel in racing engines and model engines."
   },
   "cas:75-56-9": {
     "note": "A reactive liquid used mainly to make polyurethane plastics and propylene glycol, and as a fumigant for some nuts and spices."
@@ -52,37 +114,19 @@
     "note": "A strong mineral acid used widely in industry, including fertilizer making and car batteries. It is also used in food processing to adjust acidity.",
     "caveat": "Listed for breathing in strong acid mists, mainly in workplaces. The listing does not describe sulfuric acid used to adjust acidity in food."
   },
+  "cas:77-09-8": {
+    "note": "A chemical used as an acid-base indicator in laboratories and formerly as a laxative medicine."
+  },
   "cas:79-01-6": {
     "note": "A chlorinated solvent used mainly to remove grease from metal parts, and to make refrigerant chemicals."
+  },
+  "cas:8007-45-2": {
+    "note": "A thick dark liquid made from coal. It has been used in medicated shampoos and skin treatments for dandruff and psoriasis, and in road and roof tar."
   },
   "cas:93-15-2": {
     "note": "Also called methyleugenol, a compound found in basil, tarragon, nutmeg and other herbs and spices, and in some essential oils."
   },
   "cas:94-59-7": {
     "note": "A compound found in sassafras oil and in nutmeg and some other spices. It was once used to flavor root beer."
-  },
-  "cas:14808-60-7": {
-    "note": "A crystalline form of silica (silicon dioxide) and the main mineral in most sand. It is used to make glass and ceramics.",
-    "caveat": "Listed for breathing in fine crystalline silica dust, mainly in workplaces. The listing does not describe silica in other forms."
-  },
-  "cas:14464-46-1": {
-    "note": "A crystalline form of silica (silicon dioxide) that forms at high temperatures. It occurs in some volcanic rocks and in heat-treated diatomaceous earth.",
-    "caveat": "Listed for breathing in fine crystalline silica dust, mainly in workplaces. The listing does not describe silica in other forms."
-  },
-  "cas:15468-32-3": {
-    "note": "A crystalline form of silica (silicon dioxide) that forms at high temperatures. It occurs in some volcanic rocks.",
-    "caveat": "Listed for breathing in fine crystalline silica dust, mainly in workplaces. The listing does not describe silica in other forms."
-  },
-  "cas:298-81-7": {
-    "note": "A compound found in some plants, used as a medicine together with ultraviolet A light to treat skin conditions such as psoriasis.",
-    "caveat": "Listed for its use as a medicine taken together with ultraviolet A light treatment."
-  },
-  "cas:542-75-6": {
-    "note": "A liquid soil fumigant used on farms before planting to control nematodes, tiny worms that damage crop roots.",
-    "caveat": "Listed for the technical-grade product, a less purified commercial form."
-  },
-  "cas:3296-90-0": {
-    "note": "A chemical containing bromine, used as a flame retardant in plastics such as unsaturated polyester resins.",
-    "caveat": "Listed for the technical-grade product, a less purified commercial form."
   }
 }

@@ -11,7 +11,7 @@ an adapter in `scripts/reference/adapters/`. Downloaded originals live in `origi
 | `prop65.csv` | **MISSING**, download blocked | - |
 | `eu-clp.csv` | **MISSING**, download blocked | - |
 | `fda-saf.csv` | obtained (ingredient inventory) | 3970 |
-| `cosing.csv` | **MISSING**, no downloadable file found (ingredient inventory) | - |
+| `cosing.csv` | obtained via the CosIng search API (ingredient inventory) | 33658 |
 | `e-numbers.csv` | **MISSING**, not built (ingredient inventory) | - |
 
 ## Build settings: `config.json`
@@ -138,26 +138,25 @@ reconstructed from memory. When the real files arrive, compare their headers wit
   from non-FDA entities (FEMA, JECFA) and that this "does not indicate an FDA approval or evaluation"; only
   substance names, CAS numbers and technical effects are used here.
 
-## cosing.csv - MISSING
+## cosing.csv
 
 - **Source:** EU CosIng, cosmetic ingredients inventory - https://ec.europa.eu/growth/tools-databases/cosing/
-  (also described at https://single-market-economy.ec.europa.eu/sectors/cosmetics/cosmetic-ingredient-database_en).
-- **What happened:** the CosIng site is a search application that loads its data from a back end; the pages
-  fetched (the app, its scripts, the cosmetics database page, the ingredient glossary page) link to no
-  downloadable inventory file, and the EU open-data portal search found no CosIng dataset. The back end was
-  not scraped. Nothing was reconstructed from memory.
-- **What a person needs to do:** find the inventory download for CosIng (the site has offered the
-  "Ingredients and Fragrance inventory" as a CSV; check the CosIng "Ingredients" search page for an export or
-  download button), save it as UTF-8 CSV to `data/sources/cosing.csv`, delete any title rows above the
-  header, and record here the download date, edition, row count and the site's reuse terms (the Commission's
-  legal notice, https://commission.europa.eu/legal-notice_en, is not yet checked).
-
-**Assumed columns and cell formats, unverified** (the adapter, `scripts/reference/adapters/cosing.ts`, was written without seeing the real file):
-- Headers `INCI name`, `CAS No`, `Function`, `Restriction`. If the real names differ, change `COLUMNS` in the adapter and the synthetic fixture in its test.
-- `CAS No` holds one or more CAS numbers separated by `/`, `;`, `,` or spaces.
-- `Function` holds comma-separated functions in capitals (kept as lower-case text).
-- `Restriction` starts with `II/` for substances banned in cosmetics (Annex II); any other text, or blank, is "not banned".
-- One substance may appear in several rows under different INCI names (for example `TITANIUM DIOXIDE` and `CI 77891`); rows sharing a CAS number merge, and the other names become aliases.
+- **How it was obtained (2026-11-13):** CosIng offers no bulk download or export (only a per-ingredient PDF).
+  `node scripts/fetch-cosing.mjs` calls the same public search API the CosIng website uses, with the API key
+  from the site's own public config, and writes `cosing.csv`. It refuses to write unless the row count equals
+  the API's total. Re-run it at each 6-month refresh. The API is unofficial for this use and may change.
+- **API quirks the script handles:** at most 10,000 rows per query and 200 per page; paging order is not
+  stable; range filters do not partition reliably; one substanceId can hold two ingredients. The script
+  queries exact substanceId batches of 100 (each fits one page) and keys rows by the record reference.
+- **Rows:** 33,658 ingredients (30,398 marked Active, 3,260 with no status).
+- **Reuse terms:** Commission content is CC BY 4.0 (https://commission.europa.eu/legal-notice_en): credit the
+  source and indicate changes.
+- **Columns:** `INCI name`, `CAS No` (one or more, separated by `/`, sometimes with notes like `(generic)`),
+  `Function` (comma-separated, capitals), `Restriction` (`II/<n>` = Annex II, banned in EU cosmetics; other
+  annexes or free text otherwise), `Status`.
+- **Merging:** rows sharing a first CAS number merge. A secondary CAS number held by two entries is kept only
+  where it is the main number. Entries with the same main name merge, so a label name never resolves to an
+  unlisted twin of a listed substance (for example lead acetate under two CAS numbers).
 
 ## e-numbers.csv - MISSING
 

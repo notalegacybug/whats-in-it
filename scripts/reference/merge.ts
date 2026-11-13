@@ -64,8 +64,10 @@ export function mergeReference(a: MergeInput): { reference: Reference; missingNo
     group(homes ? [...homes][0] : nameId(normalised)).catalogue.push(r)
   }
 
+  mergeSameMainName(groups)
   const entries = [...groups.values()].map((g) => toEntry(g, a.notes))
   cleanAliases(entries)
+  cleanCas(entries)
   entries.sort((x, y) => (x.id < y.id ? -1 : x.id > y.id ? 1 : 0))
 
   const missingNotes = [...groups.values()]
@@ -76,11 +78,35 @@ export function mergeReference(a: MergeInput): { reference: Reference; missingNo
   return { reference: { version: a.version, builtAt: a.builtAt, entries }, missingNotes }
 }
 
+// The catalogue's name is the one people see on labels; otherwise the shortest flagged name, ties alphabetical.
+const mainName = (g: Group) =>
+  g.catalogue[0]?.name ??
+  g.flagged.map((r) => r.name).sort((x, y) => x.length - y.length || (x < y ? -1 : x > y ? 1 : 0))[0]
+
+// A label only gives a name, so entries sharing a main name (e.g. two CAS forms of lead acetate) become one;
+// a listed group absorbs the others so the name never resolves to an unlisted twin.
+function mergeSameMainName(groups: Map<string, Group>): void {
+  const byName = new Map<string, Group[]>()
+  for (const g of groups.values()) {
+    const n = normalizeName(mainName(g))
+    if (!byName.has(n)) byName.set(n, [])
+    byName.get(n)!.push(g)
+  }
+  for (const same of byName.values()) {
+    if (same.length < 2) continue
+    same.sort((x, y) => Number(y.flagged.length > 0) - Number(x.flagged.length > 0) || (x.id < y.id ? -1 : 1))
+    const [target, ...rest] = same
+    for (const g of rest) {
+      target.flagged.push(...g.flagged)
+      target.catalogue.push(...g.catalogue)
+      groups.delete(g.id)
+    }
+  }
+}
+
 function toEntry(g: Group, notes: NotesFile): RefEntry {
   const flaggedNames = g.flagged.map((r) => r.name)
-  // The catalogue's name is the one people see on labels; otherwise the shortest flagged name, ties alphabetical.
-  const name =
-    g.catalogue[0]?.name ?? [...flaggedNames].sort((x, y) => x.length - y.length || (x < y ? -1 : x > y ? 1 : 0))[0]
+  const name = mainName(g)
   const own = normalizeName(name)
 
   const aliases = [...new Set([...flaggedNames, ...g.catalogue.flatMap((r) => [r.name, ...r.aliases])].map(normalizeName))]
@@ -141,4 +167,11 @@ function cleanAliases(entries: RefEntry[]): void {
       return !isOthersMainName && holders.get(alias) === 1
     })
   }
+}
+
+// Like aliases: a CAS number on two entries is kept only where it is the main number, else dropped.
+function cleanCas(entries: RefEntry[]): void {
+  const holders = new Map<string, number>()
+  for (const e of entries) for (const c of e.cas) holders.set(c, (holders.get(c) ?? 0) + 1)
+  for (const e of entries) e.cas = e.cas.filter((c) => holders.get(c) === 1 || e.id === casId(c))
 }

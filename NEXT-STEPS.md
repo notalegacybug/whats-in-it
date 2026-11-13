@@ -15,13 +15,13 @@
 1. **IARC decision.** IARC's terms need written permission to reproduce substantial portions of its list. Decide whether to
    ask IARC for permission or keep the app non-commercial and limited. Until then IARC stays excluded in
    `data/sources/config.json` and `iarc.csv` stays git-ignored. Details: `data/sources/README.md`, "iarc.csv".
-2. **Four downloads** the agent could not get (sites blocked automated requests, or no file was found): `prop65.csv`,
-   `eu-clp.csv`, `cosing.csv`, `e-numbers.csv`. Steps for each are in `data/sources/README.md`; the general procedure
+2. **Three downloads** the agent could not get (sites blocked automated requests, or no file was found): `prop65.csv`,
+   `eu-clp.csv`, `e-numbers.csv`. (`cosing.csv` was collected on 2026-11-13 with `scripts/fetch-cosing.mjs`.) Steps for each are in `data/sources/README.md`; the general procedure
    (config, version bump, rebuild, sample) is in `README.md`, "Adding a missing source file".
 3. **Notes spot-check** (~15 min): read `docs/reference-review-sample.md` and report any note that is wrong, not neutral,
    or has a wrong caveat.
 4. **Five-product phone test** (~20 min): scan five real products on a phone (`npm run build` then `npm run preview -- --host`,
-   or a deployed preview) and report mistakes in reading, splitting or verdicts.
+   or https://whats-in-it.pages.dev) and report mistakes in reading, splitting or verdicts.
 5. **Display rule for form-specific listings.** Some listings cover only one form or route (for example respirable silica
    dust, or a substance listed only as part of a mixture). Today the result shows the listing with its qualifier and a caveat
    where one was written. Decide whether such listings should keep the same "Watch for" heading or be shown differently.

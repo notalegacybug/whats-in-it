@@ -2,7 +2,7 @@ import { parseCas } from '../cas'
 import type { CatalogueRecord, Row } from '../types'
 import { cell } from '../util'
 
-// UNVERIFIED headers: cosing.csv could not be downloaded (see data/sources/README.md).
+// Headers as written by scripts/fetch-cosing.mjs.
 export const COLUMNS = {
   name: 'INCI name',
   cas: 'CAS No',
