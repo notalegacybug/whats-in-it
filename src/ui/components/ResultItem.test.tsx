@@ -32,3 +32,23 @@ test('result item: with neither, the part is left out', () => {
   show(watched([listing({})]))
   expect(screen.getByRole('link', { name: 'NTP · Known to be a human carcinogen' })).toBeInTheDocument()
 })
+
+test('result item: when some parts were recognised, it names only the parts it could not check', () => {
+  const glycerin: RefEntry = { id: 'name:glycerin', name: 'Glycerin', aliases: [], cas: [], listings: [] }
+  show({
+    input: 'Glycerin (Xyzzium, Plugh)',
+    verdict: 'not_recognised',
+    matches: [
+      { key: 'glycerin', verdict: 'no_known_concern', entry: glycerin },
+      { key: 'xyzzium', verdict: 'not_recognised', entry: null },
+      { key: 'plugh', verdict: 'not_recognised', entry: null },
+    ],
+  })
+  expect(screen.getByText("We couldn't check: xyzzium, plugh")).toBeInTheDocument()
+  expect(screen.queryByText("We couldn't check this one.")).not.toBeInTheDocument()
+})
+
+test('result item: when nothing was recognised, it says so plainly', () => {
+  show({ input: 'Xyzzium', verdict: 'not_recognised', matches: [{ key: 'xyzzium', verdict: 'not_recognised', entry: null }] })
+  expect(screen.getByText("We couldn't check this one.")).toBeInTheDocument()
+})

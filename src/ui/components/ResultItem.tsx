@@ -37,11 +37,16 @@ function WatchMatch({ input, match }: { input: string; match: Match }) {
 export function ResultItem({ result }: { result: IngredientResult }) {
   const watching = result.matches.filter((m) => m.verdict === 'watch_strong' || m.verdict === 'watch_possible')
   const first = result.matches[0]?.entry
+  // When some parts were recognised, name only the ones that were not, so the person knows what to look at.
+  const someRecognised = result.matches.some((m) => m.entry !== null)
+  const unchecked = result.matches.filter((m) => m.verdict === 'not_recognised').map((m) => m.key)
 
   return (
     <li className="item">
       <strong>{result.input}</strong>
-      {result.verdict === 'not_recognised' && <p>We couldn't check this one.</p>}
+      {result.verdict === 'not_recognised' && (
+        <p>{someRecognised && unchecked.length ? `We couldn't check: ${unchecked.join(', ')}` : "We couldn't check this one."}</p>
+      )}
       {result.verdict === 'no_known_concern' && (first?.note ?? first?.functionNote) && (
         <p>{first?.note ?? first?.functionNote}</p>
       )}
