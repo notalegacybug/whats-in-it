@@ -9,6 +9,8 @@ export interface Listing {
   year: number | null
   url: string
   qualifier?: string
+  /** Which edition of the list, from data/sources/config.json; shown when there is no year. */
+  edition?: string
 }
 
 export interface RefEntry {

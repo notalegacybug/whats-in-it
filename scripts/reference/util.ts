@@ -1,4 +1,4 @@
-import type { Row } from './types'
+import type { Row, SourceRecord } from './types'
 
 /** A cell's trimmed text; '' when the column is missing. */
 export const cell = (row: Row, column: string): string => (row[column] ?? '').trim()
@@ -63,4 +63,9 @@ export function splitSeeReference(text: string): { name: string; seeAlso: string
 /** Adds "Listed as part of: <parent>" to a listing qualifier (joined with "; " after any existing one). */
 export function withSeeAlso(qualifier: string, seeAlso: string | null): string {
   return seeAlso ? [qualifier, `Listed as part of: ${seeAlso}`].filter(Boolean).join('; ') : qualifier
+}
+
+/** Copies of the records with `edition` set on each listing; the records as given when there is no edition. */
+export function withEdition(records: SourceRecord[], edition: string | undefined): SourceRecord[] {
+  return edition ? records.map((r) => ({ ...r, listing: { ...r.listing, edition } })) : records
 }

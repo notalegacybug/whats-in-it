@@ -1,4 +1,4 @@
-import { splitRouteQualifier, splitSeeReference } from './util'
+import { splitRouteQualifier, splitSeeReference, withEdition } from './util'
 
 test('splitSeeReference: returns the name without the cross-reference and the parent text', () => {
   expect(splitSeeReference('Sulfuric Acid (see Strong Inorganic Acid Mists Containing Sulfuric Acid)')).toEqual({
@@ -21,4 +21,11 @@ test('splitRouteQualifier: plural and variant exposure words count as route word
   for (const word of ['mists', 'dusts', 'aerosols', 'vapours', 'vapors', 'particulate', 'fibrous']) {
     expect(splitRouteQualifier(`Thing (${word})`)).toEqual({ name: 'Thing', qualifier: word })
   }
+})
+
+test('withEdition sets the edition on every listing; no edition leaves records unchanged', () => {
+  const rec = { name: 'A', cas: [], listing: { source: 'NTP' as const, classification: 'c', level: 'strong' as const, year: null, url: 'u' } }
+  expect(withEdition([rec], '15th Report on Carcinogens (2021)')[0].listing.edition).toBe('15th Report on Carcinogens (2021)')
+  expect(withEdition([rec], undefined)).toEqual([rec])
+  expect(rec.listing).not.toHaveProperty('edition')
 })

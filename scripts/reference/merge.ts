@@ -127,13 +127,13 @@ function uniqueListings(listings: Listing[]): Listing[] {
   const seen = new Set<string>()
   const out: Listing[] = []
   for (const l of listings) {
-    const key = JSON.stringify([l.source, l.classification, l.level, l.year, l.url, l.qualifier ?? null])
+    const key = JSON.stringify([l.source, l.classification, l.level, l.year, l.url, l.qualifier ?? null, l.edition ?? null])
     if (!seen.has(key)) {
       seen.add(key)
       out.push(l)
     }
   }
-  const sortKey = (l: Listing) => `${l.source}|${l.classification}|${l.qualifier ?? ''}`
+  const sortKey = (l: Listing) => `${l.source}|${l.classification}|${l.qualifier ?? ''}|${l.edition ?? ''}`
   return out.sort((x, y) => (sortKey(x) < sortKey(y) ? -1 : sortKey(x) > sortKey(y) ? 1 : 0))
 }
 

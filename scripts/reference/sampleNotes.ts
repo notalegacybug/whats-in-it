@@ -32,7 +32,7 @@ const byName = (x: RefEntry, y: RefEntry) => x.name.localeCompare(y.name, 'en') 
 const PART_OF = 'Listed as part of:'
 
 function listingLines(l: Listing): string[] {
-  const parts = [l.source, l.classification, l.year === null ? 'year not given' : String(l.year)].join(' · ')
+  const parts = [l.source, l.classification, l.year === null ? (l.edition ?? 'year not given') : String(l.year)].join(' · ')
   if (!l.qualifier) return [`  - ${parts}`]
   // A "Listed as part of:" qualifier carries the source's full listing name, which says what form or route is covered.
   const detail = l.qualifier.startsWith(PART_OF)

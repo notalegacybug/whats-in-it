@@ -17,7 +17,7 @@ an adapter in `scripts/reference/adapters/`. Downloaded originals live in `origi
 ## Build settings: `config.json`
 
 ```json
-{ "exclude": ["IARC"], "euClpAnnexYear": null }
+{ "exclude": ["IARC"], "euClpAnnexYear": null, "editions": { "NTP": "15th Report on Carcinogens (2021)" } }
 ```
 
 - `exclude`: hazard sources the build must not read even if their file exists. **IARC is excluded by default**
@@ -26,6 +26,9 @@ an adapter in `scripts/reference/adapters/`. Downloaded originals live in `origi
   is settled (and the `iarc.csv` line in `.gitignore` is dealt with).
 - `euClpAnnexYear`: the year of the Annex VI edition in `eu-clp.csv`. Must be a number once that file is
   present; the build refuses to run if it is `null`.
+- `editions`: optional edition text per hazard list (`IARC`, `NTP`, `PROP65`, `EU_CLP`). It is stored on every
+  listing from that list and shown in the citation when the listing has no year of its own. Write only what
+  the downloaded file or its page states; leave the year out if you cannot read it there.
 
 A file that is missing and not excluded stops the build, unless `--allow-missing-sources` is passed
 (it is then skipped with a warning). Every file that is read is checked: the build fails if a header the
@@ -68,6 +71,10 @@ reconstructed from memory. When the real files arrive, compare their headers wit
   gives them, including trailing `(see ...)` cross-references (the adapter removes those).
 - **Year is empty for every row.** The spreadsheet gives no per-substance listing year, and the edition year
   (2021) is not a listing year, so none was invented.
+- **Edition** (`editions.NTP` in `config.json`): `15th Report on Carcinogens (2021)`. Confirmed from the
+  downloaded file itself: its document title (Excel file properties) reads "Download the CASRN index in MS
+  Excel; 15th RoC 2021". Citations show this text because the listings have no year.
+- The original is kept as `original/roc15_casrn.xlsx`.
 - **Header row:** `Name,CAS,Listing,Year`
 - **Coverage:** rows are index entries (one per CAS number or synonym), so a listing such as "Estrogens,
   Steroidal" appears under each member's CAS. 47 rows have no CAS number in the source.

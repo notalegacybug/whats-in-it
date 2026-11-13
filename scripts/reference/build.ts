@@ -22,6 +22,7 @@ import { findKeyCollisions } from './collisions'
 import { diffReferences } from './diff'
 import { checkSourceFile } from './guard'
 import { mergeReference } from './merge'
+import { withEdition } from './util'
 import { checkNotes } from './notesCheck'
 import type { CatalogueRecord, NotesFile, Row, SourceRecord } from './types'
 
@@ -35,6 +36,8 @@ const allowMissingSources = args.has('--allow-missing-sources')
 interface Config {
   exclude: SourceId[]
   euClpAnnexYear: number | null
+  /** Edition text per hazard list (e.g. "15th Report on Carcinogens (2021)"), shown when a listing has no year. */
+  editions: Partial<Record<SourceId, string>>
 }
 
 interface Source<T> {
@@ -126,7 +129,14 @@ function loadConfig(): Config {
   }
   const year = config.euClpAnnexYear ?? null
   if (year !== null && !Number.isInteger(year)) throw new Error('data/sources/config.json: "euClpAnnexYear" must be a whole number or null')
-  return { exclude: config.exclude, euClpAnnexYear: year }
+  const editions = config.editions ?? {}
+  const badEdition = Object.entries(editions).find(
+    ([id, text]) => !HAZARD_IDS.includes(id as SourceId) || typeof text !== 'string' || !text.trim(),
+  )
+  if (typeof editions !== 'object' || Array.isArray(editions) || badEdition) {
+    throw new Error(`data/sources/config.json: "editions" must map ${HAZARD_IDS.join(', ')} to non-empty text; got ${JSON.stringify(config.editions)}`)
+  }
+  return { exclude: config.exclude, euClpAnnexYear: year, editions }
 }
 
 function loadCaslessAllow(): Set<string> {
@@ -152,7 +162,7 @@ function main(): number {
   for (const s of hazardSources) {
     const records = load(s, config.exclude.includes(s.id), config)
     if (records) {
-      flagged.push(...records)
+      flagged.push(...withEdition(records, config.editions[s.id]))
       included.push(s.id)
     }
   }

@@ -1,1 +1,1 @@
-{ "exclude": ["IARC"], "euClpAnnexYear": null }
+{ "exclude": ["IARC"], "euClpAnnexYear": null, "editions": { "NTP": "15th Report on Carcinogens (2021)" } }

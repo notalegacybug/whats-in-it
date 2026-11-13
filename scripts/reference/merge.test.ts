@@ -1,6 +1,8 @@
 import type { Reference } from '../../src/reference/types'
 import { diffReferences } from './diff'
 import { parseFda } from './adapters/fda'
+import { parseNtp } from './adapters/ntp'
+import { withEdition } from './util'
 import { mergeReference } from './merge'
 import type { CatalogueRecord, Listing, SourceRecord } from './types'
 
@@ -213,4 +215,31 @@ test('real FDA rows (cyclamate, coumarin, a delisted FD&C colour) keep their sta
     Coumarin: 'flavoring agent or adjuvant · Regulatory note: US FDA: prohibited in food',
     'FD&C green No. 1': 'Regulatory note: US FDA: delisted (no longer permitted)',
   })
+})
+
+test('an NTP edition from config rides on each listing through the merge', () => {
+  const flagged = withEdition(
+    parseNtp([
+      { Name: 'Formaldehyde', CAS: '50-00-0', Listing: 'Known to be a human carcinogen', Year: '' },
+      { Name: 'Formalin', CAS: '50-00-0', Listing: 'Known to be a human carcinogen', Year: '' },
+    ]),
+    '15th Report on Carcinogens (2021)',
+  )
+  const { reference } = mergeReference({ flagged, catalogue: [], ...base })
+  expect(reference.entries[0].listings).toEqual([
+    {
+      source: 'NTP',
+      classification: 'Known to be a human carcinogen',
+      level: 'strong',
+      year: null,
+      url: 'https://ntp.niehs.nih.gov/go/roc',
+      edition: '15th Report on Carcinogens (2021)',
+    },
+  ])
+})
+
+test('listings that differ only in edition are both kept', () => {
+  const a = flag('X', ['50-00-0'], listing('NTP', { edition: '14th' }))
+  const b = flag('X', ['50-00-0'], listing('NTP', { edition: '15th' }))
+  expect(mergeReference({ flagged: [a, b], catalogue: [], ...base }).reference.entries[0].listings).toHaveLength(2)
 })

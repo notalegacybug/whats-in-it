@@ -2,8 +2,9 @@ import { SOURCE_LABEL } from '../../copy'
 import type { IngredientResult, Listing, Match } from '../../reference/types'
 
 function ListingLine({ listing }: { listing: Listing }) {
-  const text = [SOURCE_LABEL[listing.source], listing.classification, listing.year]
-    .filter((part) => part !== null)
+  // Every citation names its source and, where the list gives one, its year; otherwise the edition.
+  const text = [SOURCE_LABEL[listing.source], listing.classification, listing.year ?? listing.edition]
+    .filter((part) => part !== null && part !== undefined)
     .join(' · ')
   return (
     <li>
