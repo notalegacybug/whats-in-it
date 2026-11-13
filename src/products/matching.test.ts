@@ -1,4 +1,4 @@
-import { ingredientSimilarity, isLikelySame } from './matching'
+import { ingredientSimilarity, isLikelySame, sameIngredients } from './matching'
 import type { NewProduct } from './types'
 
 const base: NewProduct = {
@@ -47,5 +47,15 @@ describe('isLikelySame', () => {
   })
   it('falls back to brand and name when barcodes differ', () => {
     expect(isLikelySame({ ...base, barcode: '1' }, { ...base, barcode: '2' })).toBe(true)
+  })
+})
+
+describe('sameIngredients', () => {
+  it('compares normalised sets: case, spacing, order and repeats do not matter', () => {
+    expect(sameIngredients(['Aqua', 'Glycerin '], ['glycerin', 'AQUA', 'aqua'])).toBe(true)
+  })
+  it('is false when either list has an ingredient the other lacks', () => {
+    expect(sameIngredients(['aqua', 'glycerin'], ['aqua'])).toBe(false)
+    expect(sameIngredients(['aqua'], ['aqua', 'parfum'])).toBe(false)
   })
 })

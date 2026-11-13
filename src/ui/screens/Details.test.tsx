@@ -28,7 +28,7 @@ test('details: an empty draft redirects home', async () => {
 })
 
 test('details: a likely-same product prompts before saving; "Yes" opens the saved record and saves nothing', async () => {
-  const store = fakeStore([record({ id: 'old' })])
+  const store = fakeStore([record({ id: 'old', ingredients: ['water'] })])
   renderDetails(store)
   await fillAndSubmit()
   expect(await screen.findByText('Is this the same as Acme Lotion?')).toBeInTheDocument()
@@ -38,7 +38,7 @@ test('details: a likely-same product prompts before saving; "Yes" opens the save
 })
 
 test('details: "No, save as new" saves and opens the new result', async () => {
-  const store = fakeStore([record({ id: 'old' })])
+  const store = fakeStore([record({ id: 'old', ingredients: ['water'] })])
   renderDetails(store)
   await fillAndSubmit()
   await user.click(await screen.findByRole('button', { name: 'No, save as new' }))
@@ -77,7 +77,7 @@ test('details: submitting twice in the same tick saves once', async () => {
 })
 
 test('details: double-clicking "No, save as new" saves once', async () => {
-  const store = fakeStore([record({ id: 'old' })])
+  const store = fakeStore([record({ id: 'old', ingredients: ['water'] })])
   renderDetails(store)
   await fillAndSubmit()
   const no = await screen.findByRole('button', { name: 'No, save as new' })
@@ -98,4 +98,56 @@ test('details: after a rejected save the button works again', async () => {
   await user.click(button)
   expect(await screen.findByTestId('where')).toHaveTextContent('/result/id-1')
   expect(store.save).toHaveBeenCalledTimes(2)
+})
+
+test('details: a same-name product with a different list offers to save the newer version', async () => {
+  const store = fakeStore([record({ id: 'old', ingredients: ['Water', 'Formaldehyde'] })])
+  renderDetails(store)
+  await fillAndSubmit()
+  expect(await screen.findByText('A saved version of Acme Lotion has different ingredients.')).toBeInTheDocument()
+  expect(screen.queryByText('Is this the same as Acme Lotion?')).not.toBeInTheDocument()
+  await user.click(screen.getByRole('button', { name: 'Save this as the newer version' }))
+  expect(store.save).toHaveBeenCalledWith(expect.objectContaining({ name: 'Lotion', brand: 'Acme', ingredients: ['Water'] }))
+  expect(await screen.findByTestId('where')).toHaveTextContent('/result/id-2')
+  expect(addScan).toHaveBeenCalledWith('id-2')
+})
+
+test('details: "Show the saved version" opens the old record and saves nothing', async () => {
+  const store = fakeStore([record({ id: 'old', ingredients: ['Water', 'Formaldehyde'] })])
+  renderDetails(store)
+  await fillAndSubmit()
+  await user.click(await screen.findByRole('button', { name: 'Show the saved version' }))
+  expect(screen.getByTestId('where')).toHaveTextContent('/result/old')
+  expect(store.save).not.toHaveBeenCalled()
+})
+
+test('details: double-clicking "Save this as the newer version" saves once', async () => {
+  const store = fakeStore([record({ id: 'old', ingredients: ['Formaldehyde'] })])
+  renderDetails(store)
+  await fillAndSubmit()
+  const newer = await screen.findByRole('button', { name: 'Save this as the newer version' })
+  fireEvent.click(newer)
+  fireEvent.click(newer)
+  expect(await screen.findByTestId('where')).toHaveTextContent('/result/id-2')
+  expect(store.save).toHaveBeenCalledTimes(1)
+})
+
+test.each([
+  ['the same list', ['water'], 'Is this the same as Acme Lotion?'],
+  ['a different list', ['Formaldehyde'], 'A saved version of Acme Lotion has different ingredients.'],
+])('details: with %s, "Change details" returns to the filled-in form without saving', async (_label, saved, prompt) => {
+  const store = fakeStore([record({ id: 'old', ingredients: saved })])
+  renderDetails(store)
+  await fillAndSubmit()
+  await screen.findByText(prompt)
+  await user.click(screen.getByRole('button', { name: 'Change details' }))
+  expect(screen.queryByText(prompt)).not.toBeInTheDocument()
+  expect(screen.getByLabelText('Product name')).toHaveValue('Lotion')
+  expect(screen.getByLabelText('Brand')).toHaveValue('Acme')
+  expect(screen.getByLabelText('Cosmetic')).toBeChecked()
+  await user.clear(screen.getByLabelText('Product name'))
+  await user.type(screen.getByLabelText('Product name'), 'Lotion Plus')
+  await user.click(screen.getByRole('button', { name: 'Save and see result' }))
+  expect(await screen.findByTestId('where')).toHaveTextContent('/result/id-2')
+  expect(store.save).toHaveBeenCalledWith(expect.objectContaining({ name: 'Lotion Plus' }))
 })

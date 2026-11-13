@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react'
 import type { FormEvent } from 'react'
 import { Navigate, useNavigate } from 'react-router-dom'
+import { sameIngredients } from '../../products/matching'
 import type { NewProduct, ProductRecord, ProductType } from '../../products/types'
 import { addScan } from '../../scans/myScans'
 import { useReference } from '../ReferenceGate'
@@ -76,17 +77,39 @@ export function Details() {
   }
 
   if (existing) {
+    // Spec section 8: a different list for the same product is stored as a newer version, not discarded.
+    const same = sameIngredients(ingredients, existing.ingredients)
+    const showSaved = () => navigate(`/result/${existing.id}`)
     return (
       <main>
         <h1>Already saved?</h1>
-        <p>
-          Is this the same as {existing.brand} {existing.name}?
-        </p>
-        <button type="button" className="primary" disabled={busy} onClick={() => navigate(`/result/${existing.id}`)}>
-          Yes, show saved result
-        </button>
-        <button type="button" disabled={busy} onClick={saveAsNew}>
-          No, save as new
+        {same ? (
+          <>
+            <p>
+              Is this the same as {existing.brand} {existing.name}?
+            </p>
+            <button type="button" className="primary" disabled={busy} onClick={showSaved}>
+              Yes, show saved result
+            </button>
+            <button type="button" disabled={busy} onClick={saveAsNew}>
+              No, save as new
+            </button>
+          </>
+        ) : (
+          <>
+            <p>
+              A saved version of {existing.brand} {existing.name} has different ingredients.
+            </p>
+            <button type="button" className="primary" disabled={busy} onClick={saveAsNew}>
+              Save this as the newer version
+            </button>
+            <button type="button" disabled={busy} onClick={showSaved}>
+              Show the saved version
+            </button>
+          </>
+        )}
+        <button type="button" disabled={busy} onClick={() => setExisting(null)}>
+          Change details
         </button>
         {error && <p role="alert">{error}</p>}
       </main>

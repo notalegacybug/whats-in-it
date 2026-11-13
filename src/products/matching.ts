@@ -13,6 +13,15 @@ export function ingredientSimilarity(a: string[], b: string[]): number {
   return union === 0 ? 0 : shared / union
 }
 
+const nameSet = (list: string[]) => new Set(list.map(normalizeName).filter(Boolean))
+
+/** True when both lists hold the same ingredients, compared as sets of normalised names. */
+export function sameIngredients(a: string[], b: string[]): boolean {
+  const setA = nameSet(a)
+  const setB = nameSet(b)
+  return setA.size === setB.size && [...setA].every((x) => setB.has(x))
+}
+
 export function isLikelySame(a: NewProduct, b: NewProduct): boolean {
   if (a.barcode && b.barcode && a.barcode === b.barcode) return true
   if (normalizeName(a.brand) !== normalizeName(b.brand)) return false
