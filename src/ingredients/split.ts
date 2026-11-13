@@ -1,7 +1,13 @@
 import { normalizeName } from './normalize'
 
 const START = /ingredients?\s*[:-]/i
-const STOP = /may contain|contains:|allergy advice|directions|warning|caution|distributed by|manufactured by|storage/i
+/** Where the ingredient list ends. Whole words only, so "Warningberry Extract" does not cut the list. */
+const STOP = /\b(?:may contain|contains:|allergy advice|directions|warning|caution|distributed by|manufactured by|storage)(?![a-z])/i
+/**
+ * "May contain (+/-)" on a cosmetic label introduces colourants that are part of the list, unlike a food's
+ * "May contain: nuts". The marker (and a full stop before it) becomes a separator so the colourants are kept.
+ */
+const MAY_CONTAIN_PLUS_MINUS = /\.?\s*\bmay contain\s*:?\s*(?:\(\+\/-\)|\[\+\/-\]|\+\/-)\s*:?/gi
 const OPEN = '(['
 const CLOSE = ')]'
 
@@ -34,6 +40,7 @@ export function extractIngredients(text: string): string[] {
   let body = text
   const start = START.exec(body)
   if (start) body = body.slice(start.index + start[0].length)
+  body = body.replace(MAY_CONTAIN_PLUS_MINUS, ',')
   const stop = STOP.exec(body)
   if (stop) body = body.slice(0, stop.index)
 

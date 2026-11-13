@@ -60,3 +60,21 @@ test('matchGroups keeps a polymer name whole instead of splitting it on "/"', ()
   // Only the whole word counts.
   expect(matchGroups('Polymerase/Water').groups).toEqual([['polymerase', 'water']])
 })
+
+test('"May contain (+/-)" introduces cosmetic colourants: the marker is dropped and they are kept', () => {
+  expect(extractIngredients('Ingredients: Aqua, Glycerin. May contain (+/-): CI 77491, CI 77492.'))
+    .toEqual(['Aqua', 'Glycerin', 'CI 77491', 'CI 77492'])
+  expect(extractIngredients('Ingredients: Aqua, Glycerin, may contain: [+/-] CI 77491'))
+    .toEqual(['Aqua', 'Glycerin', 'CI 77491'])
+  expect(extractIngredients('Ingredients: Aqua. MAY CONTAIN +/- CI 77491, CI 77492'))
+    .toEqual(['Aqua', 'CI 77491', 'CI 77492'])
+})
+test('plain "May contain" (a food allergen statement) still ends the list', () => {
+  expect(extractIngredients('Ingredients: Water, Salt. May contain: nuts')).toEqual(['Water', 'Salt'])
+})
+test('stop phrases match whole words only', () => {
+  expect(extractIngredients('Ingredients: Water, Warningberry Extract')).toEqual(['Water', 'Warningberry Extract'])
+  expect(extractIngredients('Ingredients: Water, Cautionary Leaf, Restorage Oil'))
+    .toEqual(['Water', 'Cautionary Leaf', 'Restorage Oil'])
+  expect(extractIngredients('Ingredients: Water, Salt. Warning: keep away from eyes')).toEqual(['Water', 'Salt'])
+})
