@@ -1,7 +1,6 @@
 import { parseENumbers } from './eNumbers'
 
-// FIXTURE, NOT COPIED FROM THE REAL FILE: e-numbers.csv could not be built from an official source
-// (see data/sources/README.md). Three invented-format rows to exercise the adapter only.
+// FIXTURE, NOT REAL DATA: invented-format rows to exercise the adapter only.
 const fixture: Record<string, string>[] = [
   { E: 'E 171', Name: 'Titanium dioxide' },
   { E: 'e330', Name: ' Citric acid ' },

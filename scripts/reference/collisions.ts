@@ -1,11 +1,7 @@
 import { normalizeName } from '../../src/ingredients/normalize'
 import type { Reference } from '../../src/reference/types'
 
-/**
- * Keys that more than one entry answers to. Keys are built exactly as `buildIndex` in
- * src/reference/index.ts builds them (normalised name, normalised aliases, CAS numbers); there the first
- * entry silently wins a contested key, so a listed entry could be shadowed by an unlisted one.
- */
+// Keys built as in buildIndex, where the first entry silently wins a contested key.
 export function findKeyCollisions(ref: Reference): { key: string; ids: string[] }[] {
   const owners = new Map<string, Set<string>>()
   for (const entry of ref.entries) {

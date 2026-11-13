@@ -7,8 +7,7 @@ const row = (chemical: string, toxicity: string, cas: string, date: string): Rec
   'Date Listed': date,
 })
 
-// FIXTURE, NOT COPIED FROM THE REAL FILE: OEHHA's site blocked automated download (see data/sources/README.md).
-// Rows follow the documented column layout (Chemical, Type of Toxicity, CAS No., Date Listed).
+// FIXTURE, NOT REAL DATA: OEHHA blocked download; rows follow the documented column layout.
 const fixture: Record<string, string>[] = [
   row('Titanium dioxide (airborne, unbound particles of respirable size)', 'cancer', '13463-67-7', 'September 2, 2011'),
   row('Formaldehyde (gas)', 'cancer', '50-00-0', 'January 1, 1988'),

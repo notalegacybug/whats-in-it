@@ -1,10 +1,4 @@
-/**
- * Builds public/reference.json from the files in data/.
- *
- *   npm run reference:build [-- --allow-missing-notes] [-- --allow-missing-sources]
- *
- * All file reading and writing lives here; merge.ts and diff.ts stay pure.
- */
+// Builds public/reference.json. All file I/O lives here; merge.ts and diff.ts stay pure.
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -36,12 +30,11 @@ const allowMissingSources = args.has('--allow-missing-sources')
 interface Config {
   exclude: SourceId[]
   euClpAnnexYear: number | null
-  /** Edition text per hazard list (e.g. "15th Report on Carcinogens (2021)"), shown when a listing has no year. */
+  // Shown when a listing has no year.
   editions: Partial<Record<SourceId, string>>
 }
 
 interface Source<T> {
-  /** What the summary calls it: a SourceId for hazard lists, the file's name for catalogue files. */
   label: string
   file: string
   columns: Readonly<Record<string, string>>
@@ -82,7 +75,7 @@ function readCsv(file: string): { headers: string[]; rows: Row[] } {
   return { headers: parsed.meta.fields ?? [], rows: parsed.data }
 }
 
-/** Reads one source file, or says why not. Failures go to `problems`; the build stops after all are collected. */
+// Failures go to `problems`; the build stops only after all are collected.
 function load<T>(s: Source<T>, excluded: boolean, config: Config): T[] | null {
   const file = path('data', 'sources', s.file)
   const name = s.label.padEnd(10)

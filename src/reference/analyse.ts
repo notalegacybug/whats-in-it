@@ -5,7 +5,6 @@ import type { IngredientResult, Match, RefEntry, Verdict } from './types'
 /** Most to least concerning; also the display order. */
 export const SEVERITY: Verdict[] = ['watch_strong', 'watch_possible', 'not_recognised', 'no_known_concern']
 
-/** One or two words, then a colon, then the ingredient: "Colour: Titanium Dioxide". */
 const FUNCTION_PREFIX = /^\s*[a-z][\w&'-]*(?:\s+[a-z][\w&'-]*)?\s*:\s*(.+)$/i
 
 function mostSevere(verdicts: Verdict[]): Verdict {
@@ -25,18 +24,14 @@ function hit(key: string, index: RefIndex): Match | null {
 export function analyseIngredient(input: string, index: RefIndex): IngredientResult {
   const { whole, groups } = matchGroups(input)
 
-  // If the whole item is itself a known key (name, alias or CAS), that is the single match.
   const wholeHit = whole ? hit(whole, index) : null
   if (wholeHit) return { input, verdict: wholeHit.verdict, matches: [wholeHit] }
 
-  // Food labels often name the function first ("Preservative: Formaldehyde"). Check what follows instead,
-  // by the same rules, but keep the label text as the input.
+  // Food labels often name the function first ("Preservative: Formaldehyde"); check what follows.
   const prefixed = FUNCTION_PREFIX.exec(input)
   if (prefixed) return { ...analyseIngredient(prefixed[1], index), input }
 
-  // Each bracketed part must be recognised on its own. Alternatives ("Aqua/Water/Eau") are names of one
-  // substance: they resolve only when every name that hits points to the same entry. Names of different
-  // entries ("Water/Formaldehyde") are not a known ingredient, so the part is not recognised.
+  // Alternatives resolve only if every hit is the same entry ("Water/Formaldehyde" is unrecognised).
   const matches: Match[] = groups.map((alternatives) => {
     const hits = alternatives.map((k) => hit(k, index)).filter((m): m is Match => m !== null)
     const sameEntry = hits.length > 0 && hits.every((m) => m.entry === hits[0].entry)

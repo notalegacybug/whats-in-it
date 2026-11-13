@@ -3,7 +3,6 @@ import type { NewProduct } from './types'
 
 const SIMILARITY_THRESHOLD = 0.8
 
-/** Jaccard similarity of two ingredient lists, compared on normalised names. */
 export function ingredientSimilarity(a: string[], b: string[]): number {
   const setA = new Set(a.map(normalizeName))
   const setB = new Set(b.map(normalizeName))
@@ -15,7 +14,6 @@ export function ingredientSimilarity(a: string[], b: string[]): number {
 
 const nameSet = (list: string[]) => new Set(list.map(normalizeName).filter(Boolean))
 
-/** True when both lists hold the same ingredients, compared as sets of normalised names. */
 export function sameIngredients(a: string[], b: string[]): boolean {
   const setA = nameSet(a)
   const setB = nameSet(b)

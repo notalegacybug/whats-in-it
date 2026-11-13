@@ -6,9 +6,7 @@ const row = (name: string, cas: string, hazard: string): Record<string, string> 
   'Hazard Class and Category Code(s)': hazard,
 })
 
-// FIXTURE, NOT COPIED FROM THE REAL FILE: ECHA's site blocked automated download (see data/sources/README.md).
-// Rows follow the documented column layout
-// (International Chemical Identification, CAS No, Hazard Class and Category Code(s)).
+// FIXTURE, NOT REAL DATA: ECHA blocked download; rows follow the documented column layout.
 const fixture: Record<string, string>[] = [
   row('benzene', '71-43-2', 'Flam. Liq. 2\nCarc. 1A\nMuta. 1B'),
   row('formaldehyde', '50-00-0', 'Carc. 1B'),

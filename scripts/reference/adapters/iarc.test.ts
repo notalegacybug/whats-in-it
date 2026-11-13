@@ -14,8 +14,7 @@ const row = (
   'Additional information': info,
 })
 
-// Rows copied from data/sources/iarc.csv (IARC list of classifications, Volumes 1-142). That file is
-// git-ignored (reuse terms pending), so this provenance cannot be checked on a clean checkout.
+// Rows copied from data/sources/iarc.csv, which is git-ignored (reuse terms pending).
 const fixture: Record<string, string>[] = [
   row('50-00-0', 'Formaldehyde', '1', '2012'),
   row('13463-67-7', 'Titanium dioxide', '2B', '2010'),

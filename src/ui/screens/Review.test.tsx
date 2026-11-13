@@ -5,7 +5,6 @@ import { suggest } from '../../reference/suggest'
 import { renderScreen } from '../test-helpers'
 import { Review } from './Review'
 
-// Pass-through spy: real suggestions, but calls can be counted.
 vi.mock('../../reference/suggest', async (importOriginal) => {
   const real = await importOriginal<typeof import('../../reference/suggest')>()
   return { suggest: vi.fn(real.suggest) }

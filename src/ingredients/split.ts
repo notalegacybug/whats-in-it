@@ -1,20 +1,14 @@
 import { normalizeName } from './normalize'
 
 const START = /ingredients?\s*[:-]/i
-/** Where the ingredient list ends. Whole words only, so "Warningberry Extract" does not cut the list. */
+// Whole words only, so "Warningberry Extract" does not cut the list.
 const STOP = /\b(?:may contain|contains:|allergy advice|directions|warning|caution|distributed by|manufactured by|storage)(?![a-z])/i
-/**
- * "May contain (+/-)" on a cosmetic label introduces colourants that are part of the list, unlike a food's
- * "May contain: nuts". The marker (and a full stop before it) becomes a separator so the colourants are kept.
- */
+// Cosmetic "May contain (+/-)" introduces colourants that belong to the list, so it is not a stop.
 const MAY_CONTAIN_PLUS_MINUS = /\.?\s*\bmay contain\s*:?\s*(?:\(\+\/-\)|\[\+\/-\]|\+\/-)\s*:?/gi
 const OPEN = '(['
 const CLOSE = ')]'
 
-/**
- * Split on the given separators, but only outside brackets. A comma with a
- * digit directly on both sides (1,4-Dioxane) is part of a chemical name.
- */
+// A comma between digits (1,4-Dioxane) is part of a chemical name, not a separator.
 function splitTopLevel(text: string, separators: string): string[] {
   const parts: string[] = []
   let depth = 0
@@ -35,7 +29,6 @@ function splitTopLevel(text: string, separators: string): string[] {
   return parts
 }
 
-/** Pull the ingredient list out of label text as display strings. */
 export function extractIngredients(text: string): string[] {
   let body = text
   const start = START.exec(body)
@@ -59,7 +52,6 @@ export function extractIngredients(text: string): string[] {
   return items
 }
 
-/** Separate text outside brackets from the contents of each top-level bracket pair. */
 function splitBrackets(text: string): { outside: string; inner: string[] } {
   let outside = ''
   const inner: string[] = []
@@ -83,23 +75,14 @@ function splitBrackets(text: string): { outside: string; inner: string[] } {
   return { outside, inner }
 }
 
-/** Component texts of an item: its outside text, then (recursively) each bracketed part. */
 function componentTexts(text: string): string[] {
   const { outside, inner } = splitBrackets(text)
   return [outside, ...inner.flatMap((s) => splitTopLevel(s, ',').flatMap(componentTexts))]
 }
 
-/**
- * In a polymer name the `/` joins monomers of one substance ("Styrene/Acrylates Copolymer"); it does
- * not offer alternative names. Splitting it would match a monomer and give a false "Watch for".
- */
+// A polymer's `/` joins monomers of one substance; splitting it would give a false "Watch for".
 const POLYMER = /\b(?:co|cross)?polymer\b/i
 
-/**
- * Break one ingredient into components: the text outside brackets, then each
- * comma-separated part inside them, recursing into nested brackets. Each
- * component lists its `/` alternatives; a polymer name is one alternative, kept whole.
- */
 export function matchGroups(ingredient: string): { whole: string; groups: string[][] } {
   const seen = new Set<string>()
   const groups: string[][] = []

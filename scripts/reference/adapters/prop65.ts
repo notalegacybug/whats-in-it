@@ -4,7 +4,6 @@ import { cell, latestYear, splitRouteQualifier } from '../util'
 
 export const URL = 'https://oehha.ca.gov/proposition-65/proposition-65-list'
 
-/** Headers read from data/sources/prop65.csv. */
 export const COLUMNS = {
   name: 'Chemical',
   toxicity: 'Type of Toxicity',

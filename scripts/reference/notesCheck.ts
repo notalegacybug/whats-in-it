@@ -2,11 +2,7 @@ import type { NotesFile } from './types'
 
 export const MAX_WORDS = 30
 
-/**
- * Matched as whole words, any case. The first group makes a health claim the listings themselves must carry;
- * the second reassures or minimises ("small amounts", "natural"), which next to a listing reads as "nothing to worry about".
- * Notes stay descriptive: what the substance is and where it comes from.
- */
+// Notes stay descriptive: no health claims, and nothing reassuring ("natural", "small amounts").
 export const BANNED_TERMS = [
   'safe',
   'unsafe',
@@ -33,11 +29,7 @@ const bannedPatterns = BANNED_TERMS.map((term) => ({
   re: new RegExp(`\\b${term.split(' ').join('\\s+')}\\b`, 'i'),
 }))
 
-/**
- * Checks hand-written notes before they ship: each note is non-empty, each note and caveat is at most 30 words and free of
- * banned terms, and every key is a real entry id (catches typos that would silently drop a note).
- * Returns human-readable problems; empty means fine.
- */
+// Unknown keys are reported: a typo would otherwise silently drop a note.
 export function checkNotes(notes: NotesFile, entryIds: ReadonlySet<string>): string[] {
   const problems: string[] = []
   for (const [id, n] of Object.entries(notes)) {

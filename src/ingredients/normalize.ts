@@ -1,4 +1,3 @@
-/** Canonical form used for all ingredient comparisons. */
 export function normalizeName(raw: string): string {
   return raw
     .normalize('NFKD')

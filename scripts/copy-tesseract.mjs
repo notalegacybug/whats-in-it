@@ -1,5 +1,4 @@
-// Copies the Tesseract worker, core and English data into public/tesseract/ so the app serves them
-// from its own origin (no CDN). Idempotent. Run via `npm run tesseract:copy` or npm postinstall.
+// Self-hosts Tesseract in public/tesseract/ (no CDN). Idempotent; runs on postinstall.
 import { copyFileSync, existsSync, mkdirSync, statSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -8,8 +7,7 @@ const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const nm = join(root, 'node_modules');
 const out = join(root, 'public', 'tesseract');
 
-// With the default LSTM-only engine, tesseract.js loads one of these three core builds
-// (relaxed-SIMD, SIMD, or plain) depending on the device; the wasm is embedded in the .js.
+// tesseract.js picks one of these core builds per device; the wasm is embedded in the .js.
 const core = ['tesseract-core-relaxedsimd-lstm.wasm.js', 'tesseract-core-simd-lstm.wasm.js', 'tesseract-core-lstm.wasm.js'];
 
 const files = [

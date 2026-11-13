@@ -7,8 +7,7 @@ export default defineConfig({
   reporter: 'list',
   use: {
     baseURL: 'http://localhost:4173',
-    // The production build registers a service worker. Block it by default so tests hit the
-    // network, not a cache; the offline test opts back in with test.use.
+    // Block the service worker so tests hit the network; the offline test opts back in.
     serviceWorkers: 'block',
   },
   projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'] } }],

@@ -12,8 +12,7 @@ export function Review() {
   const { index } = useReference()
   const navigate = useNavigate()
   const [pasted, setPasted] = useState('')
-  // suggest() scans every reference key, so each text is scanned once: a keystroke in one row must not
-  // rescan the others. A cache write during render is safe here because suggest() is pure.
+  // Cache per text so a keystroke in one row does not rescan the others; safe as suggest() is pure.
   const suggestions = useMemo(() => new Map<string, string | null>(), [index])
   const suggestionFor = (text: string): string | null => {
     if (!index) return null
@@ -24,7 +23,6 @@ export function Review() {
   const edit = (i: number, value: string) => setIngredients(ingredients.map((v, j) => (j === i ? value : v)))
 
   function check() {
-    // Blank rows (from "Add ingredient") carry nothing to check.
     setIngredients(ingredients.map((v) => v.trim()).filter(Boolean))
     navigate('/details')
   }

@@ -4,7 +4,6 @@ import { cell, latestYear, splitSeeReference, withSeeAlso } from '../util'
 
 export const URL = 'https://monographs.iarc.who.int/list-of-classifications'
 
-/** Headers read from data/sources/iarc.csv. */
 export const COLUMNS = {
   cas: 'CAS No.',
   name: 'Agent',

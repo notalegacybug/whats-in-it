@@ -11,14 +11,13 @@ export interface ReferenceState {
 
 const ReferenceContext = createContext<ReferenceState | null>(null)
 
-/** Read the loaded reference. Only valid under <ReferenceGate>, which loads it once. */
+// Only valid under <ReferenceGate>.
 export function useReference(): ReferenceState {
   const state = useContext(ReferenceContext)
   if (!state) throw new Error('useReference must be used inside <ReferenceGate>')
   return state
 }
 
-/** Renders children only once the reference is loaded, so no result is ever shown without one. */
 export function ReferenceGate({
   children,
   load = () => loadReference(),

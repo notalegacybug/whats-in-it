@@ -1,11 +1,4 @@
-/**
- * Writes docs/reference-review-sample.md from public/reference.json so a person can spot-check the notes.
- *
- *   npm run reference:sample
- *
- * Section 1: every entry with a note or caveat, sorted by name.
- * Section 2: listed entries with no note, picked with a fixed seed so the file only changes when the data does.
- */
+// Writes docs/reference-review-sample.md so a person can spot-check notes (npm run reference:sample).
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -15,7 +8,7 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..', '..')
 const SEED = 20261112
 const UNNOTED_COUNT = 30
 
-/** mulberry32: a tiny seeded PRNG, so the "random" pick is the same on every run and machine. */
+// mulberry32: seeded, so the "random" sample is the same on every run and machine.
 function seededRandom(seed: number): () => number {
   let a = seed >>> 0
   return () => {
@@ -34,7 +27,7 @@ const PART_OF = 'Listed as part of:'
 function listingLines(l: Listing): string[] {
   const parts = [l.source, l.classification, l.year === null ? (l.edition ?? 'year not given') : String(l.year)].join(' · ')
   if (!l.qualifier) return [`  - ${parts}`]
-  // A "Listed as part of:" qualifier carries the source's full listing name, which says what form or route is covered.
+  // The "Listed as part of:" qualifier says what form or route the listing covers.
   const detail = l.qualifier.startsWith(PART_OF)
     ? `full listing name: ${l.qualifier.slice(PART_OF.length).trim()}`
     : `qualifier: ${l.qualifier}`
@@ -57,7 +50,6 @@ function main(): void {
   const reference = JSON.parse(readFileSync(join(ROOT, 'public', 'reference.json'), 'utf8')) as Reference
   const noted = reference.entries.filter((e) => e.note || e.caveat).sort(byName)
 
-  // Shuffle a stable (id-sorted) copy with the seeded PRNG, then take the first N.
   const unnoted = reference.entries.filter((e) => e.listings.length > 0 && !e.note && !e.caveat).sort((x, y) => (x.id < y.id ? -1 : 1))
   const random = seededRandom(SEED)
   for (let i = unnoted.length - 1; i > 0; i--) {

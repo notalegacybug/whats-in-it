@@ -15,11 +15,10 @@ export interface ProductRecord extends NewProduct {
   createdAt: string
 }
 
-/** Storage boundary: the on-device implementation is swappable for a server-backed one. */
+// Storage boundary: swappable for a server-backed implementation.
 export interface ProductStore {
   findMatches(p: NewProduct): Promise<ProductRecord[]>
   save(p: NewProduct): Promise<ProductRecord>
   get(id: string): Promise<ProductRecord | null>
-  /** Name or brand contains text, case-insensitive, newest first. */
   search(text: string): Promise<ProductRecord[]>
 }

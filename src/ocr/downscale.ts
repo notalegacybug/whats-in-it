@@ -1,4 +1,3 @@
-/** Pure size calculation: shrink so the longest side is at most `max`, keep aspect ratio, never upscale. */
 export function fitWithin(width: number, height: number, max: number): { width: number; height: number } {
   const longest = Math.max(width, height);
   if (longest <= max) return { width, height };
@@ -9,11 +8,7 @@ export function fitWithin(width: number, height: number, max: number): { width: 
   };
 }
 
-/**
- * Decodes the image and re-encodes it so its longest side is at most `max` px.
- * Large phone photos (12 MP+) are slow and memory-hungry for OCR with no accuracy gain.
- * Browser-only (createImageBitmap + canvas); unit tests mock this function.
- */
+// 12 MP+ photos are slow and memory-hungry for OCR with no accuracy gain. Browser-only.
 export async function downscaleImage(file: Blob, max: number): Promise<Blob> {
   const bitmap = await createImageBitmap(file);
   try {

@@ -9,7 +9,7 @@ export interface RefIndex {
   keys: string[]
 }
 
-/** Index entries by normalised name, aliases and CAS numbers. First entry wins a contested key. */
+// First entry wins a contested key.
 export function buildIndex(ref: Reference): RefIndex {
   const byKey = new Map<string, RefEntry>()
   for (const entry of ref.entries) {

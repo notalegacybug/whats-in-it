@@ -1,7 +1,6 @@
 import { KEEP_UPPER, parseFda, readableName } from './fda'
 
-// Rows shaped like data/sources/fda-saf.csv (FDA "Substances Added to Food", downloaded 2026-11-12):
-// cells carry a leading space, effects are separated by "<br />" and listed in capitals.
+// Shaped like fda-saf.csv: leading spaces, "<br />"-separated effects in capitals.
 const fixture: Record<string, string>[] = [
   {
     'CAS Reg No (or other ID)': ' 56-81-5',

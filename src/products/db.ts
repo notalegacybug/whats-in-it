@@ -11,10 +11,7 @@ interface IngredientSafetyDB extends DBSchema {
   scans: { key: string; value: ScanRow }
 }
 
-/**
- * Opens the shared database. Deliberately not cached: each caller opens and closes its
- * own connection, so a swapped-out `indexedDB` (as in tests) is always respected.
- */
+// Not cached on purpose, so a swapped-out `indexedDB` (as in tests) is always respected.
 export async function withDb<T>(fn: (db: IDBPDatabase<IngredientSafetyDB>) => Promise<T>): Promise<T> {
   const db = await openDB<IngredientSafetyDB>('ingredient-safety', 1, {
     upgrade(database) {

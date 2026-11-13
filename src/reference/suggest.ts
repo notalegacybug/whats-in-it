@@ -6,11 +6,7 @@ const MIN_LENGTH = 5
 const MAX_DISTANCE = 2
 const MAX_RATIO = 0.2
 
-/**
- * "Did you mean" for a misread ingredient name. Returns the display name of the entry owning the
- * nearest key, or null. Suggestion only: it never changes a verdict.
- * Ties on distance go to a key whose entry is listed, then alphabetical key order.
- */
+// Suggestion only, never changes a verdict. Ties go to a listed entry, then alphabetical key.
 export function suggest(input: string, index: RefIndex): string | null {
   const text = normalizeName(input)
   if (text.length < MIN_LENGTH || index.byKey.has(text)) return null

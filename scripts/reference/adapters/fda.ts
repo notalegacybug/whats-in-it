@@ -2,14 +2,13 @@ import { parseCas } from '../cas'
 import type { CatalogueRecord, Row } from '../types'
 import { cell } from '../util'
 
-/** Headers read from data/sources/fda-saf.csv (the FDA file, with its title lines above the header removed). */
+// Headers of fda-saf.csv once the title lines above the header are removed.
 export const COLUMNS = {
   cas: 'CAS Reg No (or other ID)',
   name: 'Substance',
   effect: 'Used for (Technical Effect)',
 } as const
 
-/** The FDA separates technical effects with ",<br />" and writes them in capitals. */
 const effects = (text: string): string =>
   text
     .split(/<br\s*\/?>/i)
@@ -17,18 +16,12 @@ const effects = (text: string): string =>
     .filter(Boolean)
     .join(', ')
 
-/** Words kept in capitals when an all-capitals FDA name is made readable (matched whole-word, any case). */
 export const KEEP_UPPER = ['EDTA', 'PEG', 'PPG', 'BHA', 'BHT', 'DNA', 'RNA', 'USP', 'NF', 'HCL', 'TBHQ', 'MSG', 'CI', 'NO.']
 
 const ROMAN = 'xii|xi|x|ix|viii|vii|vi|v|iv|iii|ii|i'
 const NOT_ALNUM_BEFORE = '(?<![a-z0-9])'
 
-/**
- * Turns an ALL-CAPITALS FDA name into a readable one: "SULFURIC ACID" -> "Sulfuric acid". Lower-cases, then
- * restores capitals for the few things that need them (FD&C, listed acronyms, Roman numerals, vitamin
- * letters, L-/DL-/N,N- prefixes, the first word in brackets, "L." authority). Display only: matching
- * normalises names to lower case anyway. Perfect chemical capitalisation is not the goal.
- */
+// Display only (matching lower-cases names anyway); perfect chemical capitalisation is not the goal.
 export function readableName(upper: string): string {
   let s = upper.toLowerCase()
   s = s.replace(/[a-z]*&[a-z]*/g, (m) => m.toUpperCase())
@@ -45,11 +38,7 @@ export function readableName(upper: string): string {
   return s.charAt(0).toUpperCase() + s.slice(1)
 }
 
-/**
- * What the `--CODE` name suffixes mean, naming who made the decision. NLFG is not an FDA status: on every
- * NLFG row the file's `FEMA status` column reads "No longer FEMA GRAS (GRAS Pub. N, year)", and FEMA is the
- * flavour industry's association. An unknown code is shown as written, attributed to the FDA's file.
- */
+// NLFG is a FEMA (flavour industry) status, not the FDA's; unknown codes are attributed to the file.
 const STATUS_TEXT: Record<string, string> = {
   NLFG: 'Flavour industry (FEMA): no longer listed as GRAS',
   PROHIBITED: 'US FDA: prohibited in food',
@@ -57,11 +46,7 @@ const STATUS_TEXT: Record<string, string> = {
   DELISTED: 'US FDA: delisted (no longer permitted)',
 }
 
-/**
- * The FDA appends a status code ("CYCLAMATE--PROHIBITED", "--NLFG") to names. It is not part of the
- * substance's name, so it is split off (otherwise "cyclamate" on a label would not match), but it is the
- * only place the file records the status, so it is kept: the merge shows it in the entry's functionNote.
- */
+// The status suffix is split off so names match, but kept: it is the file's only status record.
 function splitStatus(raw: string): { name: string; status?: string } {
   const m = /^(.*?)\s*--\s*([A-Z][A-Z ]*)$/.exec(raw.trim())
   if (!m) return { name: raw.trim() }

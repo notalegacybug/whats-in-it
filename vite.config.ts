@@ -2,7 +2,6 @@ import react from '@vitejs/plugin-react'
 import { defineConfig } from 'vitest/config'
 import { VitePWA } from 'vite-plugin-pwa'
 
-// https://vite.dev/config/
 export default defineConfig({
   plugins: [
     react(),
@@ -23,8 +22,7 @@ export default defineConfig({
         ],
       },
       workbox: {
-        // App shell only. The 15 MB OCR files and the reference are cached at runtime instead,
-        // so a first visit does not download them all and the reference can update independently.
+        // App shell only; the 15 MB OCR files and the reference are cached at runtime instead.
         globPatterns: ['**/*.{js,css,html,svg,png,webmanifest}'],
         globIgnores: ['tesseract/**', 'reference.json'],
         navigateFallback: 'index.html',
@@ -39,7 +37,6 @@ export default defineConfig({
     environment: 'jsdom',
     globals: true,
     setupFiles: ['./src/test-setup.ts'],
-    // e2e/ is Playwright's territory; keep Vitest out of it.
     include: ['src/**/*.test.{ts,tsx}', 'scripts/**/*.test.ts'],
   },
 })

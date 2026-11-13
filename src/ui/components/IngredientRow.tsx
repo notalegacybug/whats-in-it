@@ -6,7 +6,6 @@ interface Props {
   onRemove(): void
 }
 
-/** One editable ingredient with its remove button and, when the text looks misread, a correction. */
 export function IngredientRow({ position, value, suggestion, onChange, onRemove }: Props) {
   return (
     <li className="row">

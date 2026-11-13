@@ -23,9 +23,7 @@ function png(size) {
   const bg = [0x1a, 0x1a, 0x1a], fg = [255, 255, 255]
   const u = size / 16 // letters are blocks on a 16-unit grid, centred in the safe zone
   const rects = [
-    // "I": bar top, stem, bar bottom
     [3, 4, 3, 1], [4, 4, 1, 8], [3, 11, 3, 1],
-    // "S": three bars plus two connecting stems
     [8, 4, 5, 1], [8, 4, 1, 4], [8, 7, 5, 1], [12, 7, 1, 5], [8, 11, 5, 1],
   ]
   const raw = Buffer.alloc((size * 3 + 1) * size)

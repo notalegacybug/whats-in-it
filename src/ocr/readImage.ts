@@ -2,11 +2,9 @@ import { createWorker } from 'tesseract.js';
 import { downscaleImage } from './downscale';
 
 const MAX_SIDE_PX = 2000;
-// Served from public/tesseract/ (copied by scripts/copy-tesseract.mjs). Same origin only: no CDN,
-// so label photos never leave the device and the app works offline.
+// Same origin only (no CDN): label photos never leave the device and OCR works offline.
 const BASE = '/tesseract';
 
-/** Reads text from an image entirely in the browser. Rejects with an Error; the caller shows the message. */
 export async function readImage(file: Blob, onProgress?: (fraction: number) => void): Promise<string> {
   const image = await downscaleImage(file, MAX_SIDE_PX);
   const worker = await createWorker('eng', 1, {

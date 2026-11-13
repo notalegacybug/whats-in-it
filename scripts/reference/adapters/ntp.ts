@@ -4,7 +4,7 @@ import { cell, latestYear, splitSeeReference, withSeeAlso } from '../util'
 
 export const URL = 'https://ntp.niehs.nih.gov/go/roc'
 
-/** Headers read from data/sources/ntp.csv (a file we write ourselves; the NTP publishes no CSV). */
+// ntp.csv is written by us; the NTP publishes no CSV.
 export const COLUMNS = { name: 'Name', cas: 'CAS', listing: 'Listing', year: 'Year' } as const
 
 const LEVELS: Record<string, Listing['level']> = {

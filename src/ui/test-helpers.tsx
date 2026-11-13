@@ -45,7 +45,6 @@ export const testIndex: RefIndex = buildIndex({
   ],
 })
 
-/** In-memory ProductStore; vi.fn so tests can assert calls. */
 export function fakeStore(seed: ProductRecord[] = []) {
   const rows = [...seed]
   const store = {
@@ -80,7 +79,6 @@ function Where() {
   return <p data-testid="where">{pathname}</p>
 }
 
-/** Renders `ui` (which may contain its own <Routes>) at `path` with all providers; any other route shows its pathname. */
 export function renderScreen(
   ui: ReactElement,
   opts: { route: string; path: string; draft?: string[]; store?: ProductStore; index?: RefIndex },

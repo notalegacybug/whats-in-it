@@ -1,7 +1,6 @@
 import { parseCosing } from './cosing'
 
-// FIXTURE, NOT COPIED FROM THE REAL FILE: cosing.csv could not be downloaded (see data/sources/README.md).
-// Column names and cell formats are assumptions; replace this fixture with real rows when the file arrives.
+// FIXTURE, NOT REAL DATA: cosing.csv could not be downloaded; column names are assumptions.
 const fixture: Record<string, string>[] = [
   { 'INCI name': 'TITANIUM DIOXIDE', 'CAS No': '13463-67-7', Function: 'COLORANT, OPACIFYING', Restriction: 'V/143' },
   { 'INCI name': 'CI 77891', 'CAS No': '13463-67-7 / 1317-70-0', Function: 'COLORANT', Restriction: '' },

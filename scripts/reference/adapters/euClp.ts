@@ -4,7 +4,6 @@ import { cell, splitRouteQualifier } from '../util'
 
 export const URL = 'https://echa.europa.eu/information-on-chemicals/annex-vi-to-clp'
 
-/** Headers read from data/sources/eu-clp.csv. */
 export const COLUMNS = {
   name: 'International Chemical Identification',
   cas: 'CAS No',
@@ -18,7 +17,7 @@ const CATEGORIES: { code: string; level: Listing['level'] }[] = [
   { code: '2', level: 'possible' },
 ]
 
-/** One cell holds several hazard codes ("Flam. Liq. 2\nCarc. 1B"); split on newlines, `;`, and commas outside brackets. */
+// One cell holds several codes; split on newlines, `;`, and commas outside brackets.
 const splitCodes = (text: string) => text.split(/[\n;]|,(?![^(]*\))/).map((s) => s.trim())
 
 function carcinogenicity(hazardCell: string): { classification: string; level: Listing['level']; route?: string } | null {

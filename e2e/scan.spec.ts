@@ -26,7 +26,6 @@ test('paste, check, save, find again', async ({ page }) => {
   await page.getByRole('link', { name: 'My scans' }).click()
   await expect(page.getByRole('link', { name: 'Acme Test Lotion' })).toBeVisible()
 
-  // Same product again: the Details screen offers the saved one.
   await pasteAndSave(page)
   await expect(page.getByText('Is this the same as Acme Test Lotion?')).toBeVisible()
 })
@@ -63,7 +62,6 @@ test.describe('offline', () => {
     await expect(page.getByRole('heading', { name: 'Ingredient Safety' })).toBeVisible()
     await page.waitForFunction(() => !!navigator.serviceWorker.controller)
 
-    // One online scan fills the OCR cache (the worker caches /tesseract/ at runtime).
     await page.getByRole('link', { name: 'Choose an image' }).click()
     await page.getByLabel('Choose an image of the label').setInputFiles('e2e/fixtures/label.png')
     await expect(page.locator('input[value="Formaldehyde"]')).toBeVisible({ timeout: 80_000 })
@@ -86,7 +84,6 @@ test.describe('offline', () => {
     expect(cached.tesseract).toContain('/tesseract/worker.min.js')
     expect(cached.tesseract.some((p) => /^\/tesseract\/tesseract-core.*\.wasm\.js$/.test(p))).toBe(true)
 
-    // Strongest proof: a full OCR scan with the network off.
     await page.getByRole('link', { name: 'Choose an image' }).click()
     await page.getByLabel('Choose an image of the label').setInputFiles('e2e/fixtures/label.png')
     await expect(page.locator('input[value="Formaldehyde"]')).toBeVisible({ timeout: 80_000 })

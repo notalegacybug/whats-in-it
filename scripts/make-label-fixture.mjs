@@ -1,5 +1,4 @@
-// Renders e2e/fixtures/label.png with Playwright's Chromium (no canvas dependency, no downloads).
-// Run: node scripts/make-label-fixture.mjs
+// Renders e2e/fixtures/label.png with Playwright's Chromium (no canvas dependency).
 import { chromium } from '@playwright/test'
 import { mkdirSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'

@@ -35,7 +35,7 @@ export function Details() {
     referenceVersion: index!.version,
   })
 
-  /** Runs one async step at a time. Stays locked on success (we navigate away); unlocks on failure or `release`. */
+  // Stays locked on success (we navigate away); unlocks on failure or `release`.
   async function guarded(step: () => Promise<'done' | 'release'>) {
     if (inFlight.current) return
     inFlight.current = true

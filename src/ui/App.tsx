@@ -16,7 +16,7 @@ import { Result } from './screens/Result'
 import { Review } from './screens/Review'
 import { Search } from './screens/Search'
 
-/** Providers and routes only. The router itself lives in main.tsx so tests can supply a MemoryRouter. */
+// The router lives in main.tsx so tests can supply a MemoryRouter.
 export function App({
   store,
   loadReference,

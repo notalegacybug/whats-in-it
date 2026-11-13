@@ -2,7 +2,6 @@ import { SOURCE_LABEL } from '../../copy'
 import type { IngredientResult, Listing, Match } from '../../reference/types'
 
 function ListingLine({ listing }: { listing: Listing }) {
-  // Every citation names its source and, where the list gives one, its year; otherwise the edition.
   const text = [SOURCE_LABEL[listing.source], listing.classification, listing.year ?? listing.edition]
     .filter((part) => part !== null && part !== undefined)
     .join(' · ')
@@ -33,7 +32,6 @@ function WatchMatch({ input, match }: { input: string; match: Match }) {
   )
 }
 
-/** One analysed ingredient: its label text, then whatever the reference says about it. */
 export function ResultItem({ result }: { result: IngredientResult }) {
   const watching = result.matches.filter((m) => m.verdict === 'watch_strong' || m.verdict === 'watch_possible')
   const first = result.matches[0]?.entry

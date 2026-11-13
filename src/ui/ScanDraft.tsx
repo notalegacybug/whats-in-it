@@ -9,10 +9,7 @@ export interface ScanDraft {
 
 const ScanDraftContext = createContext<ScanDraft | null>(null)
 
-/**
- * The ingredient list being worked on between Capture, Review and Details. Held in memory only:
- * nothing is persisted until the person saves a product.
- */
+// Held in memory only: nothing is persisted until the person saves a product.
 export function ScanDraftProvider({ children, initial = [] }: { children: ReactNode; initial?: string[] }) {
   const [ingredients, setIngredients] = useState<string[]>(initial)
   const clear = useCallback(() => setIngredients([]), [])

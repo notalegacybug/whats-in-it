@@ -2,7 +2,6 @@ import { normalizeName } from '../../../src/ingredients/normalize'
 import type { CatalogueRecord, Row } from '../types'
 import { cell } from '../util'
 
-/** Headers read from data/sources/e-numbers.csv (a file written from an official EU list: columns `E,Name`). */
 export const COLUMNS = { e: 'E', name: 'Name' } as const
 
 export function parseENumbers(rows: Row[]): CatalogueRecord[] {

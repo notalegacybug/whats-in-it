@@ -15,7 +15,7 @@ async function fetchIndex(fetchFn: typeof fetch): Promise<RefIndex> {
   return buildIndex(data as Reference)
 }
 
-/** Fetch /reference.json once. A failed attempt is forgotten so the next call retries. */
+// A failed attempt is forgotten so the next call retries.
 export function loadReference(fetchFn: typeof fetch = fetch): Promise<RefIndex> {
   if (!memo) {
     const attempt = fetchIndex(fetchFn)
@@ -27,7 +27,6 @@ export function loadReference(fetchFn: typeof fetch = fetch): Promise<RefIndex> 
   return memo
 }
 
-/** Test-only: forget any memoised load. */
 export function resetReferenceForTests(): void {
   memo = null
 }

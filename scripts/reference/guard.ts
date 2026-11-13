@@ -1,8 +1,4 @@
-/**
- * Refuses a source file that would silently produce nothing: a header the adapter reads is absent
- * (the publisher renamed a column) or the adapter found 0 records. Either way the output would
- * look fine but lose every listing from that source, so the build stops instead.
- */
+// A renamed column or 0 records would silently drop a source's listings, so the build stops.
 export function checkSourceFile(
   label: string,
   file: string,

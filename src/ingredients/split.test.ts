@@ -57,7 +57,6 @@ test('matchGroups keeps a polymer name whole instead of splitting it on "/"', ()
     .toEqual([['acrylates/c10-30 alkyl acrylate crosspolymer']])
   expect(matchGroups('Binder (Styrene/Acrylates Polymer, Aqua/Water)').groups)
     .toEqual([['binder'], ['styrene/acrylates polymer'], ['aqua', 'water']])
-  // Only the whole word counts.
   expect(matchGroups('Polymerase/Water').groups).toEqual([['polymerase', 'water']])
 })
 
