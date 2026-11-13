@@ -5,8 +5,6 @@ import type { IngredientResult, Match, RefEntry, Verdict } from './types'
 /** Most to least concerning; also the display order. */
 export const SEVERITY: Verdict[] = ['watch_strong', 'watch_possible', 'not_recognised', 'no_known_concern']
 
-const rank = (v: Verdict) => SEVERITY.indexOf(v)
-
 function mostSevere(verdicts: Verdict[]): Verdict {
   return SEVERITY.find((v) => verdicts.includes(v)) ?? 'not_recognised'
 }
@@ -28,11 +26,13 @@ export function analyseIngredient(input: string, index: RefIndex): IngredientRes
   const wholeHit = whole ? hit(whole, index) : null
   if (wholeHit) return { input, verdict: wholeHit.verdict, matches: [wholeHit] }
 
-  // Alternatives ("A/B") need one hit; each bracketed part must be recognised on its own.
+  // Each bracketed part must be recognised on its own. Alternatives ("Aqua/Water/Eau") are names of one
+  // substance: they resolve only when every name that hits points to the same entry. Names of different
+  // entries ("Water/Formaldehyde") are not a known ingredient, so the part is not recognised.
   const matches: Match[] = groups.map((alternatives) => {
     const hits = alternatives.map((k) => hit(k, index)).filter((m): m is Match => m !== null)
-    if (hits.length === 0) return { key: alternatives[0], verdict: 'not_recognised', entry: null }
-    return hits.reduce((best, m) => (rank(m.verdict) < rank(best.verdict) ? m : best))
+    const sameEntry = hits.length > 0 && hits.every((m) => m.entry === hits[0].entry)
+    return sameEntry ? hits[0] : { key: alternatives[0], verdict: 'not_recognised', entry: null }
   })
 
   return { input, verdict: mostSevere(matches.map((m) => m.verdict)), matches }

@@ -16,6 +16,7 @@ const ref: Reference = {
     entry({
       id: 'cas:50-00-0',
       name: 'Formaldehyde',
+      aliases: ['formalin'],
       cas: ['50-00-0'],
       listings: [{ source: 'IARC', classification: '1', level: 'strong', year: 2012, url: 'u' }],
     }),
@@ -27,6 +28,19 @@ const ref: Reference = {
       listings: [{ source: 'IARC', classification: '2B', level: 'possible', year: 2010, url: 'u' }],
     }),
     entry({ id: 'name:water', name: 'Water', aliases: ['aqua', 'eau'] }),
+    entry({
+      id: 'cas:100-42-5',
+      name: 'Styrene',
+      cas: ['100-42-5'],
+      listings: [{ source: 'NTP', classification: 'RAHC', level: 'possible', year: null, url: 'u' }],
+    }),
+    entry({
+      id: 'cas:75-01-4',
+      name: 'Vinyl chloride',
+      cas: ['75-01-4'],
+      listings: [{ source: 'NTP', classification: 'Known', level: 'strong', year: null, url: 'u' }],
+    }),
+    entry({ id: 'cas:108-05-4', name: 'Vinyl acetate' }),
     entry({ id: 'name:glycerin', name: 'Glycerin' }),
     entry({
       id: 'cas:1-1-1',
@@ -78,8 +92,24 @@ test('unrecognised match carries the first alternative as key', () => {
   const m = analyseIngredient('Xyzzium/Plugh', idx).matches[0]
   expect(m).toEqual({ key: 'xyzzium', verdict: 'not_recognised', entry: null })
 })
-test('a slash alternative that hits is enough, most severe wins', () =>
-  expect(analyseIngredient('Water/Formaldehyde', idx).verdict).toBe('watch_strong'))
+test('slash alternatives naming different substances are not recognised, never the worst or best of them', () => {
+  const r = analyseIngredient('Water/Formaldehyde', idx)
+  expect(r.verdict).toBe('not_recognised')
+  expect(r.matches).toEqual([{ key: 'water', verdict: 'not_recognised', entry: null }])
+})
+test('a copolymer is not split on "/": it is one substance, matched only as a whole', () => {
+  expect(analyseIngredient('Styrene/Acrylates Copolymer', idx).verdict).toBe('not_recognised')
+  expect(analyseIngredient('Vinyl Chloride/Vinyl Acetate Copolymer', idx).verdict).toBe('not_recognised')
+  expect(analyseIngredient('Acrylates/C10-30 Alkyl Acrylate Crosspolymer', idx).verdict).toBe('not_recognised')
+  expect(analyseIngredient('Thickener (Styrene/Acrylates Polymer)', idx).verdict).toBe('not_recognised')
+})
+test('slash alternatives where only one is known resolve to it', () =>
+  expect(analyseIngredient('Aqua/Water/Eau', idx).verdict).toBe('no_known_concern'))
+test('slash alternatives that are all names of one entry resolve to that entry', () => {
+  const r = analyseIngredient('Formalin/Formaldehyde', idx)
+  expect(r.verdict).toBe('watch_strong')
+  expect(r.matches.map((m) => m.entry?.id)).toEqual(['cas:50-00-0'])
+})
 test('analyse keeps input order', () =>
   expect(analyse(['Water', 'Formaldehyde', 'Xyzzium'], idx).map((r) => r.verdict)).toEqual([
     'no_known_concern',

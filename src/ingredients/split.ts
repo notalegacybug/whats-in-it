@@ -83,15 +83,21 @@ function componentTexts(text: string): string[] {
 }
 
 /**
+ * In a polymer name the `/` joins monomers of one substance ("Styrene/Acrylates Copolymer"); it does
+ * not offer alternative names. Splitting it would match a monomer and give a false "Watch for".
+ */
+const POLYMER = /\b(?:co|cross)?polymer\b/i
+
+/**
  * Break one ingredient into components: the text outside brackets, then each
  * comma-separated part inside them, recursing into nested brackets. Each
- * component lists its `/` alternatives.
+ * component lists its `/` alternatives; a polymer name is one alternative, kept whole.
  */
 export function matchGroups(ingredient: string): { whole: string; groups: string[][] } {
   const seen = new Set<string>()
   const groups: string[][] = []
   for (const text of componentTexts(ingredient)) {
-    const names = text.split('/').map(normalizeName).filter(Boolean)
+    const names = (POLYMER.test(text) ? [text] : text.split('/')).map(normalizeName).filter(Boolean)
     const key = names.join('/')
     if (!key || seen.has(key)) continue
     seen.add(key)

@@ -50,3 +50,13 @@ test('nested brackets are decomposed recursively', () => {
   expect(matchGroups('Wheat flour (wheat flour (calcium carbonate), iron)').groups)
     .toEqual([['wheat flour'], ['calcium carbonate'], ['iron']])
 })
+
+test('matchGroups keeps a polymer name whole instead of splitting it on "/"', () => {
+  expect(matchGroups('Styrene/Acrylates Copolymer').groups).toEqual([['styrene/acrylates copolymer']])
+  expect(matchGroups('Acrylates/C10-30 Alkyl Acrylate CROSSPOLYMER').groups)
+    .toEqual([['acrylates/c10-30 alkyl acrylate crosspolymer']])
+  expect(matchGroups('Binder (Styrene/Acrylates Polymer, Aqua/Water)').groups)
+    .toEqual([['binder'], ['styrene/acrylates polymer'], ['aqua', 'water']])
+  // Only the whole word counts.
+  expect(matchGroups('Polymerase/Water').groups).toEqual([['polymerase', 'water']])
+})
