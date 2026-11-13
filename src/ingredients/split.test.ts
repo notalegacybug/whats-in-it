@@ -23,9 +23,9 @@ test('empty input', () => expect(extractIngredients('')).toEqual([]))
 
 test('matchGroups', () => {
   expect(matchGroups('Aqua/Water/Eau'))
-    .toEqual({ whole: 'aqua/water/eau', groups: [['aqua', 'water', 'eau']] })
+    .toEqual({ whole: 'aqua/water/eau', groups: [['aqua', 'water', 'eau']], kinds: ['main'] })
   expect(matchGroups('colour (E171)'))
-    .toEqual({ whole: 'colour (e171)', groups: [['colour'], ['e171']] })
+    .toEqual({ whole: 'colour (e171)', groups: [['colour'], ['e171']], kinds: ['main', 'synonym'] })
   expect(matchGroups('Wheat flour (wheat flour, calcium carbonate)').groups)
     .toEqual([['wheat flour'], ['calcium carbonate']])
   expect(matchGroups('Glycerin').groups).toEqual([['glycerin']])
@@ -76,4 +76,14 @@ test('stop phrases match whole words only', () => {
   expect(extractIngredients('Ingredients: Water, Cautionary Leaf, Restorage Oil'))
     .toEqual(['Water', 'Cautionary Leaf', 'Restorage Oil'])
   expect(extractIngredients('Ingredients: Water, Salt. Warning: keep away from eyes')).toEqual(['Water', 'Salt'])
+})
+
+test('marketing claim lines before an unheaded list are dropped', () => {
+  const label =
+    '-Hyaluronic Acid: Retains moisture.\n-Ceramides: Hydrate and smooth.\n\nC12-15 Alkyl Benzoate, Synthetic Wax, Mica.'
+  expect(extractIngredients(label)).toEqual(['C12-15 Alkyl Benzoate', 'Synthetic Wax', 'Mica'])
+})
+
+test('a one-line list with a function prefix is not treated as a claim line', () => {
+  expect(extractIngredients('Preservative: Formaldehyde, Water')).toEqual(['Preservative: Formaldehyde', 'Water'])
 })

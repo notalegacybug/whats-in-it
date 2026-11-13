@@ -74,8 +74,8 @@ test('unknown name is not recognised, never clear', () =>
   expect(analyseIngredient('Forma1dehyde', idx).verdict).toBe('not_recognised'))
 test('a flagged part beats a clear part', () =>
   expect(analyseIngredient('Glycerin (Formaldehyde)', idx).verdict).toBe('watch_strong'))
-test('an unrecognised part beats a clear part', () =>
-  expect(analyseIngredient('Glycerin (Xyzzium)', idx).verdict).toBe('not_recognised'))
+test('an unrecognised part of a bracketed list beats a clear part', () =>
+  expect(analyseIngredient('Glycerin (Aqua, Xyzzium)', idx).verdict).toBe('not_recognised'))
 test('strongest listing sets the level', () =>
   expect(analyseIngredient('Mixed thing', idx).verdict).toBe('watch_strong'))
 test('lookup by CAS number', () => expect(analyseIngredient('50-00-0', idx).verdict).toBe('watch_strong'))
@@ -136,4 +136,41 @@ test('a "Function: name" prefix is looked past; the label text is kept as the in
 test('a prefixed name that is not known stays not recognised; a long prefix is not treated as a function', () => {
   expect(analyseIngredient('Preservative: Xyzzium', idx).verdict).toBe('not_recognised')
   expect(analyseIngredient('Some other long thing: Formaldehyde', idx).verdict).toBe('not_recognised')
+})
+
+describe('a single bracketed term is another name for the same thing', () => {
+  const synRef = buildIndex({
+    version: 'test',
+    builtAt: '2026-01-01',
+    entries: [
+      entry({ id: 'cas:8001-79-4', name: 'Ricinus communis seed oil' }),
+      entry({ id: 'cas:1309-37-1', name: 'CI 77491' }),
+      entry({ id: 'name:fragrance', name: 'Fragrance' }),
+      entry({ id: 'cas:78-70-6', name: 'Linalool' }),
+      entry({
+        id: 'cas:13463-67-7',
+        name: 'Titanium dioxide',
+        cas: ['13463-67-7'],
+        listings: [{ source: 'IARC', classification: '2B', level: 'possible', year: 2010, url: 'u' }],
+      }),
+    ],
+  })
+  const v = (s: string) => analyseIngredient(s, synRef).verdict
+  test('an unmatched common name next to a matched INCI name is ignored', () => {
+    expect(v('Ricinus Communis (Castor) Seed Oil')).toBe('no_known_concern')
+  })
+  test('a matched CI number is enough when the main name is not a key', () => {
+    expect(v('Iron Oxides (CI 77491)')).toBe('no_known_concern')
+  })
+  test('a listing on either name still wins', () => {
+    expect(v('Titanium Dioxide (Pigment White)')).toBe('watch_possible')
+    expect(v('Pigment White (Titanium Dioxide)')).toBe('watch_possible')
+  })
+  test('nothing matched stays unrecognised', () => {
+    expect(v('Xyzzium (Castor)')).toBe('not_recognised')
+  })
+  test('a bracketed list is still sub-ingredients, each checked', () => {
+    expect(v('Fragrance (Linalool, Xyzzium)')).toBe('not_recognised')
+    expect(v('Fragrance (Linalool, Titanium Dioxide)')).toBe('watch_possible')
+  })
 })

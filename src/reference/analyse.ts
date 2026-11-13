@@ -22,7 +22,7 @@ function hit(key: string, index: RefIndex): Match | null {
 }
 
 export function analyseIngredient(input: string, index: RefIndex): IngredientResult {
-  const { whole, groups } = matchGroups(input)
+  const { whole, groups, kinds } = matchGroups(input)
 
   const wholeHit = whole ? hit(whole, index) : null
   if (wholeHit) return { input, verdict: wholeHit.verdict, matches: [wholeHit] }
@@ -38,7 +38,12 @@ export function analyseIngredient(input: string, index: RefIndex): IngredientRes
     return sameEntry ? hits[0] : { key: alternatives[0], verdict: 'not_recognised', entry: null }
   })
 
-  return { input, verdict: mostSevere(matches.map((m) => m.verdict)), matches }
+  // The main name and a single bracketed synonym name one thing: if either matched, the other needn't.
+  const named = (i: number) => kinds[i] !== 'part'
+  const nameMatched = matches.some((m, i) => named(i) && m.entry)
+  const kept = matches.filter((m, i) => !(nameMatched && named(i) && !m.entry))
+
+  return { input, verdict: mostSevere(kept.map((m) => m.verdict)), matches: kept }
 }
 
 export function analyse(ingredients: string[], index: RefIndex): IngredientResult[] {

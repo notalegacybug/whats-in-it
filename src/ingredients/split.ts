@@ -5,6 +5,8 @@ const START = /ingredients?\s*[:-]/i
 const STOP = /\b(?:may contain|contains:|allergy advice|directions|warning|caution|distributed by|manufactured by|storage)(?![a-z])/i
 // Cosmetic "May contain (+/-)" introduces colourants that belong to the list, so it is not a stop.
 const MAY_CONTAIN_PLUS_MINUS = /\.?\s*\bmay contain\s*:?\s*(?:\(\+\/-\)|\[\+\/-\]|\+\/-)\s*:?/gi
+// Bulleted "Name: claim." lines (marketing) before an unheaded list; a list line has commas, these do not.
+const CLAIM_LINE = /^\s*[-•*–]\s*[^,\n:]+:[^,\n]*$/gm
 const OPEN = '(['
 const CLOSE = ')]'
 
@@ -33,6 +35,7 @@ export function extractIngredients(text: string): string[] {
   let body = text
   const start = START.exec(body)
   if (start) body = body.slice(start.index + start[0].length)
+  else body = body.replace(CLAIM_LINE, '')
   body = body.replace(MAY_CONTAIN_PLUS_MINUS, ',')
   const stop = STOP.exec(body)
   if (stop) body = body.slice(0, stop.index)
@@ -75,23 +78,35 @@ function splitBrackets(text: string): { outside: string; inner: string[] } {
   return { outside, inner }
 }
 
-function componentTexts(text: string): string[] {
+type Kind = 'main' | 'synonym' | 'part'
+
+// A single bracketed term is usually another name ("(Castor)", "(CI 77891)"); a bracketed list is sub-ingredients.
+function componentTexts(text: string, top = true): { text: string; kind: Kind }[] {
   const { outside, inner } = splitBrackets(text)
-  return [outside, ...inner.flatMap((s) => splitTopLevel(s, ',').flatMap(componentTexts))]
+  return [
+    { text: outside, kind: top ? 'main' : 'part' },
+    ...inner.flatMap((s) => {
+      const parts = splitTopLevel(s, ',')
+      if (top && parts.length === 1 && !splitBrackets(s).inner.length) return [{ text: s, kind: 'synonym' as Kind }]
+      return parts.flatMap((p) => componentTexts(p, false))
+    }),
+  ]
 }
 
 // A polymer's `/` joins monomers of one substance; splitting it would give a false "Watch for".
 const POLYMER = /\b(?:co|cross)?polymer\b/i
 
-export function matchGroups(ingredient: string): { whole: string; groups: string[][] } {
+export function matchGroups(ingredient: string): { whole: string; groups: string[][]; kinds: Kind[] } {
   const seen = new Set<string>()
   const groups: string[][] = []
-  for (const text of componentTexts(ingredient)) {
+  const kinds: Kind[] = []
+  for (const { text, kind } of componentTexts(ingredient)) {
     const names = (POLYMER.test(text) ? [text] : text.split('/')).map(normalizeName).filter(Boolean)
     const key = names.join('/')
     if (!key || seen.has(key)) continue
     seen.add(key)
     groups.push(names)
+    kinds.push(kind)
   }
-  return { whole: normalizeName(ingredient), groups }
+  return { whole: normalizeName(ingredient), groups, kinds }
 }
