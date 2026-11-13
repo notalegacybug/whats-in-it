@@ -10,6 +10,7 @@
     "test": "vitest run",
     "e2e": "playwright test",
     "reference:build": "tsx scripts/reference/build.ts",
+    "reference:sample": "tsx scripts/reference/sampleNotes.ts",
     "tesseract:copy": "node scripts/copy-tesseract.mjs",
     "postinstall": "node scripts/copy-tesseract.mjs"
   },

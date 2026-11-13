@@ -22,6 +22,7 @@ import { findKeyCollisions } from './collisions'
 import { diffReferences } from './diff'
 import { checkSourceFile } from './guard'
 import { mergeReference } from './merge'
+import { checkNotes } from './notesCheck'
 import type { CatalogueRecord, NotesFile, Row, SourceRecord } from './types'
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..', '..')
@@ -187,6 +188,12 @@ function main(): number {
       `\nBuild stopped, nothing written: ${collisions.length} name/alias/CAS key(s) belong to more than one entry, ` +
         `so the app would let the first one hide the rest:\n${shown.join('\n')}${more}`,
     )
+    return 1
+  }
+
+  const noteProblems = checkNotes(notes, new Set(reference.entries.map((e) => e.id)))
+  if (noteProblems.length) {
+    console.error(`\nBuild stopped, nothing written: data/notes/notes.json breaks the note rules:\n${noteProblems.map((p) => `  - ${p}`).join('\n')}`)
     return 1
   }
 

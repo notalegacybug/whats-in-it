@@ -1,1 +1,76 @@
-{}
+{
+  "cas:100-42-5": {
+    "note": "A colorless liquid chemical used mainly to make plastics and rubber, such as polystyrene. Small amounts occur naturally in some foods, such as cinnamon."
+  },
+  "cas:10124-43-3": {
+    "note": "A salt of the metal cobalt. It is used in pigments, electroplating and batteries, and as a source of cobalt in animal feed."
+  },
+  "cas:107-06-2": {
+    "note": "An industrial liquid, also called 1,2-dichloroethane, used mainly to make vinyl chloride for PVC plastic."
+  },
+  "cas:107-30-2": {
+    "note": "An industrial chemical used to make other chemicals, such as ion-exchange resins.",
+    "caveat": "The listing covers technical-grade chloromethyl methyl ether, grouped with the related chemical bis(chloromethyl) ether."
+  },
+  "cas:25013-16-5": {
+    "note": "Butylated hydroxyanisole (BHA) is a synthetic antioxidant added to fats, oils, foods and cosmetics to slow them from going rancid."
+  },
+  "cas:302-01-2": {
+    "note": "A reactive industrial chemical used as rocket fuel, to remove oxygen from boiler water, and to make foaming agents, farm chemicals and medicines."
+  },
+  "cas:50-00-0": {
+    "note": "A simple chemical, a gas at room temperature, used to make resins for wood products and as a preservative. Small amounts form naturally in the body and many foods."
+  },
+  "cas:62-56-6": {
+    "note": "An organic compound containing sulfur, used in photographic processing, textile finishing, metal cleaners and making resins."
+  },
+  "cas:67-66-3": {
+    "note": "A dense, sweet-smelling liquid used mainly to make refrigerant chemicals. Small amounts also form when chlorine is used to treat water."
+  },
+  "cas:71-43-2": {
+    "note": "A colorless liquid made mainly from crude oil, used to make plastics, resins, nylon and other chemicals. It is also present in gasoline and tobacco smoke."
+  },
+  "cas:7440-02-0": {
+    "note": "A silvery metal used in stainless steel and other alloys, coins, plating and batteries. It is also used as a catalyst to harden vegetable oils."
+  },
+  "cas:75-07-0": {
+    "note": "A simple organic chemical that occurs naturally in ripe fruit, coffee and bread, and forms in the body when alcohol is broken down. It is used as a flavoring."
+  },
+  "cas:75-09-2": {
+    "note": "A solvent, also called dichloromethane, used in paint strippers and degreasers, and to remove caffeine from coffee and extract flavors from spices."
+  },
+  "cas:75-21-8": {
+    "note": "A gas used to sterilize medical equipment, to fumigate spices in some countries, and to make other chemicals such as antifreeze and detergents."
+  },
+  "cas:75-56-9": {
+    "note": "A reactive liquid used mainly to make polyurethane plastics and propylene glycol, and as a fumigant for some nuts and spices."
+  },
+  "cas:7646-79-9": {
+    "note": "A salt of the metal cobalt, also called cobalt chloride. It is used in humidity indicators that turn from blue to pink when damp, and to make other cobalt compounds."
+  },
+  "cas:7664-93-9": {
+    "note": "A strong mineral acid used widely in industry, including fertilizer making and car batteries. Small amounts are used in food processing to adjust acidity.",
+    "caveat": "Listed for breathing in strong acid mists, mainly in workplaces. The listing does not describe sulfuric acid used to adjust acidity in food."
+  },
+  "cas:79-01-6": {
+    "note": "A chlorinated solvent used mainly to remove grease from metal parts, and to make refrigerant chemicals."
+  },
+  "cas:93-15-2": {
+    "note": "Also called methyleugenol, a natural compound found in basil, tarragon, nutmeg and other herbs and spices, and in some essential oils."
+  },
+  "cas:94-59-7": {
+    "note": "A natural compound found in sassafras oil and, in small amounts, in nutmeg and some other spices. It was once used to flavor root beer."
+  },
+  "cas:14808-60-7": {
+    "note": "A crystalline form of silica (silicon dioxide) and the main mineral in most sand. It is used to make glass and ceramics.",
+    "caveat": "Listed for breathing in fine crystalline silica dust, mainly in workplaces. The listing does not describe silica in other forms."
+  },
+  "cas:14464-46-1": {
+    "note": "A crystalline form of silica (silicon dioxide) that forms at high temperatures. It occurs in some volcanic rocks and in heat-treated diatomaceous earth.",
+    "caveat": "Listed for breathing in fine crystalline silica dust, mainly in workplaces. The listing does not describe silica in other forms."
+  },
+  "cas:15468-32-3": {
+    "note": "A crystalline form of silica (silicon dioxide) that forms at high temperatures. It occurs in some volcanic rocks.",
+    "caveat": "Listed for breathing in fine crystalline silica dust, mainly in workplaces. The listing does not describe silica in other forms."
+  }
+}
