@@ -24,7 +24,27 @@ test('exactly 30 words passes, 31 words fails, for note and caveat', () => {
   ])
 })
 
-test.each(['safe', 'Unsafe', 'DANGEROUS', 'toxic', 'harmful', 'causes cancer', 'causes  Cancer', 'carcinogen', 'Carcinogenic'])(
+test.each([
+  'safe',
+  'Unsafe',
+  'DANGEROUS',
+  'toxic',
+  'harmful',
+  'causes cancer',
+  'causes  Cancer',
+  'carcinogen',
+  'Carcinogenic',
+  'carcinogens',
+  'toxicity',
+  'cancer-causing',
+  'small amounts',
+  'Small  amounts',
+  'natural',
+  'Naturally',
+  'trace amounts',
+  'harmless',
+  'approved',
+])(
   'the banned term "%s" fails',
   (term) => {
     const out = checkNotes({ 'cas:50-00-0': { note: `It is ${term}.` } }, ids)
@@ -48,5 +68,12 @@ test('banned terms only count as whole words', () => {
 test('a key that is not an entry id fails', () => {
   expect(checkNotes({ 'cas:50-00-1': { note: 'A gas.' } }, ids)).toEqual([
     'cas:50-00-1: no entry has this id (check for a typo)',
+  ])
+})
+
+test('an empty or whitespace-only note fails', () => {
+  expect(checkNotes({ 'cas:50-00-0': { note: '' }, 'cas:7664-93-9': { note: ' \n\t ', caveat: 'Listed for mists.' } }, ids)).toEqual([
+    'cas:50-00-0: note is empty',
+    'cas:7664-93-9: note is empty',
   ])
 })

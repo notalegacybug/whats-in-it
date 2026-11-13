@@ -29,15 +29,27 @@ function seededRandom(seed: number): () => number {
 
 const byName = (x: RefEntry, y: RefEntry) => x.name.localeCompare(y.name, 'en') || (x.id < y.id ? -1 : 1)
 
-function listingLine(l: Listing): string {
+const PART_OF = 'Listed as part of:'
+
+function listingLines(l: Listing): string[] {
   const parts = [l.source, l.classification, l.year === null ? 'year not given' : String(l.year)].join(' · ')
-  return `  - ${parts}${l.qualifier ? `. ${l.qualifier}` : ''}`
+  if (!l.qualifier) return [`  - ${parts}`]
+  // A "Listed as part of:" qualifier carries the source's full listing name, which says what form or route is covered.
+  const detail = l.qualifier.startsWith(PART_OF)
+    ? `full listing name: ${l.qualifier.slice(PART_OF.length).trim()}`
+    : `qualifier: ${l.qualifier}`
+  return [`  - ${parts}`, `    - ${detail}`]
 }
 
 function block(e: RefEntry): string {
-  const lines = [`### ${e.name}`, '', `- **id:** \`${e.id}\``, '- **listings:**', ...e.listings.map(listingLine)]
+  const lines = [`### ${e.name}`, '', `- **id:** \`${e.id}\``, '- **listings:**', ...e.listings.flatMap(listingLines)]
   if (e.listings.length === 0) lines.push('  - (none)')
-  lines.push(`- **note:** ${e.note ?? '(none)'}`, `- **caveat:** ${e.caveat ?? '(none)'}`, '')
+  lines.push(
+    `- **function / FDA status (as the screen shows it):** ${e.functionNote ?? '(none)'}`,
+    `- **note:** ${e.note ?? '(none)'}`,
+    `- **caveat:** ${e.caveat ?? '(none)'}`,
+    '',
+  )
   return lines.join('\n')
 }
 
@@ -67,6 +79,8 @@ function main(): void {
     '',
     ...noted.map(block),
     `## Listed entries without a note (${picked.length} of ${unnoted.length}, seed ${SEED})`,
+    '',
+    'Please flag any entry here whose full listing name limits it to a form, grade, use or route (for example "technical grade" or "mists"), so it can get a caveat.',
     '',
     ...picked.map(block),
   ]
