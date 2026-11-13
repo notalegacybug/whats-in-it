@@ -62,3 +62,21 @@ test('review: typing in one row does not rescan the unchanged rows for suggestio
   expect(texts).not.toContain('Forma1dehyde')
   expect(screen.getByRole('button', { name: 'Did you mean Formaldehyde?' })).toBeInTheDocument()
 })
+
+test('review: a pasted description becomes the names it mentions, with a partial-check notice', async () => {
+  renderReview([])
+  await user.click(await screen.findByLabelText('Paste a list'))
+  await user.paste('Our cream is enriched with Formaldehyde and Glycerin to help your skin, while we keep it light and fresh for you.')
+  await user.click(screen.getByRole('button', { name: 'Use this list' }))
+  expect(screen.getByLabelText('Ingredient 1')).toHaveValue('Formaldehyde')
+  expect(screen.getByLabelText('Ingredient 2')).toHaveValue('Glycerin')
+  expect(screen.getByRole('note')).toHaveTextContent(/looks like a product description/)
+})
+
+test('review: a description with no known names explains what to look for', async () => {
+  renderReview([])
+  await user.click(await screen.findByLabelText('Paste a list'))
+  await user.paste('Our lovely cream helps your skin glow, while we keep it light and fresh for you every day.')
+  await user.click(screen.getByRole('button', { name: 'Use this list' }))
+  expect(screen.getByRole('note')).toHaveTextContent(/no ingredient names we know/)
+})

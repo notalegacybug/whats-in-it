@@ -156,3 +156,10 @@ progress {
 .tag.watch_strong { border-color: #b00020; color: #b00020; }
 .tag.watch_possible { border-color: #b26a00; color: #8a5200; }
 .tag.no_known_concern { border-color: #2e7d32; color: #2e7d32; }
+
+.notice {
+  padding: 0.75rem;
+  border-radius: 0.4rem;
+  border: 1px solid #b26a00;
+  background: #fff6e5;
+}

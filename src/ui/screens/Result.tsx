@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import { checkedAgainst, DISCLAIMER, resultSummary, VERDICT_LABEL } from '../../copy'
+import { checkedAgainst, DISCLAIMER, PARTIAL_CHECK, resultSummary, VERDICT_LABEL } from '../../copy'
 import type { ProductRecord } from '../../products/types'
 import { analyse, SEVERITY } from '../../reference/analyse'
 import { addScan } from '../../scans/myScans'
@@ -59,6 +59,11 @@ export function Result() {
       <h1>
         {record.brand} {record.name}
       </h1>
+      {record.fromDescription && (
+        <p role="note" className="notice">
+          {PARTIAL_CHECK}
+        </p>
+      )}
       {results.length > 0 && (
         <p className="summary" data-testid="result-summary">
           {summary}

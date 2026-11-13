@@ -8,6 +8,8 @@ export interface NewProduct {
   ingredients: string[]
   /** Which reference the user saw when saving. Verdicts themselves are never stored. */
   referenceVersion: string
+  /** True when the names were picked out of a product description, so the check is partial. */
+  fromDescription?: boolean
 }
 
 export interface ProductRecord extends NewProduct {

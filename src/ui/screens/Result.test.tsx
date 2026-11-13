@@ -136,3 +136,15 @@ test('result: every ingredient carries its own verdict tag', async () => {
     'Not on cancer lists checked',
   ])
 })
+
+test('result: a product read from a description is labelled as a partial check', async () => {
+  renderScreen(<Result />, {
+    route: '/result/p1',
+    path: '/result/:id',
+    store: fakeStore([record({ ingredients: ['Glycerin'], fromDescription: true })]),
+  })
+  await screen.findByRole('heading', { level: 1 })
+  expect(screen.getByRole('note')).toHaveTextContent(
+    'Partial check: only the ingredients named in a product description were checked. The full ingredient list may contain others.',
+  )
+})

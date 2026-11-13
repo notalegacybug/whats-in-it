@@ -17,6 +17,16 @@ export const VERDICT_TAG: Record<Verdict, string> = {
 
 export const USED_AS = 'Used as: ';
 
+export const PARTIAL_CHECK =
+  'Partial check: only the ingredients named in a product description were checked. The full ingredient list may contain others.';
+
+export function descriptionNotice(found: number): string {
+  const where = "Look for the full 'Ingredients' list: on a shopping site it is usually under product details, or in a photo of the pack.";
+  return found
+    ? `This looks like a product description, not an ingredient list. We picked out the ${found} ingredient name${found === 1 ? '' : 's'} it mentions; descriptions rarely name them all. ${where}`
+    : `This looks like a product description, not an ingredient list, and it has no ingredient names we know. ${where}`;
+}
+
 export const DISCLAIMER =
   'Not medical advice. Results show whether an ingredient appears on published cancer hazard lists. A listing describes a hazard, not the risk from this product.';
 

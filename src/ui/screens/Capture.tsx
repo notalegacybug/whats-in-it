@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react'
 import type { ChangeEvent } from 'react'
 import { Navigate, useNavigate, useSearchParams } from 'react-router-dom'
-import { extractIngredients } from '../../ingredients/split'
+import { readIngredients } from '../../reference/readIngredients'
 import { readImage } from '../../ocr/readImage'
+import { useReference } from '../ReferenceGate'
 import { useScanDraft } from '../ScanDraft'
 
 export function Capture() {
@@ -10,6 +11,7 @@ export function Capture() {
   const mode = params.get('mode')
   const navigate = useNavigate()
   const { setIngredients, clear } = useScanDraft()
+  const { index } = useReference()
   const [progress, setProgress] = useState<number | null>(null)
 
   useEffect(() => {
@@ -27,10 +29,11 @@ export function Capture() {
     if (!file) return
     setProgress(0)
     try {
-      setIngredients(extractIngredients(await readImage(file, setProgress)))
+      const read = readIngredients(await readImage(file, setProgress), index!)
+      setIngredients(read.ingredients, read.fromDescription)
     } catch {
       // An unreadable image is not a dead end: Review explains it and lets the person type the list.
-      setIngredients([])
+      setIngredients([], false)
     }
     navigate('/review')
   }
