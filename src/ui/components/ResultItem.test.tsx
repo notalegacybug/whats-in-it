@@ -52,3 +52,9 @@ test('result item: when nothing was recognised, it says so plainly', () => {
   show({ input: 'Xyzzium', verdict: 'not_recognised', matches: [{ key: 'xyzzium', verdict: 'not_recognised', entry: null }] })
   expect(screen.getByText("We couldn't check this one.")).toBeInTheDocument()
 })
+
+test('result item: a function description reads as a use, not a rating', () => {
+  const glycerin: RefEntry = { id: 'name:glycerin', name: 'Glycerin', aliases: [], cas: [], listings: [], functionNote: 'humectant, solvent' }
+  show({ input: 'Glycerin', verdict: 'no_known_concern', matches: [{ key: 'glycerin', verdict: 'no_known_concern', entry: glycerin }] })
+  expect(screen.getByText('Used as: humectant, solvent')).toBeInTheDocument()
+})

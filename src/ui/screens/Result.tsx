@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import { checkedAgainst, DISCLAIMER, VERDICT_LABEL } from '../../copy'
+import { checkedAgainst, DISCLAIMER, resultSummary, VERDICT_LABEL } from '../../copy'
 import type { ProductRecord } from '../../products/types'
 import { analyse, SEVERITY } from '../../reference/analyse'
 import { addScan } from '../../scans/myScans'
@@ -35,6 +35,14 @@ export function Result() {
   const results = useMemo(() => (record && index ? analyse(record.ingredients, index) : []), [record, index])
 
   const checked = checkedAgainst(index?.sources ?? [])
+  const summary = resultSummary(
+    {
+      flagged: results.filter((r) => r.verdict === 'watch_strong' || r.verdict === 'watch_possible').length,
+      unchecked: results.filter((r) => r.verdict === 'not_recognised').length,
+      total: results.length,
+    },
+    index?.sources ?? [],
+  )
 
   if (record === undefined) return <p role="status">Loading…</p>
   if (record === null) {
@@ -51,6 +59,11 @@ export function Result() {
       <h1>
         {record.brand} {record.name}
       </h1>
+      {results.length > 0 && (
+        <p className="summary" data-testid="result-summary">
+          {summary}
+        </p>
+      )}
       {SEVERITY.map((verdict) => {
         const items = results.filter((r) => r.verdict === verdict)
         if (items.length === 0) return null

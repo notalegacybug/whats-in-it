@@ -1,4 +1,5 @@
 import { screen, within } from '@testing-library/react'
+import { resultSummary } from '../../copy'
 import { buildIndex } from '../../reference'
 import { addScan } from '../../scans/myScans'
 import { fakeStore, record, renderScreen } from '../test-helpers'
@@ -51,7 +52,7 @@ test('result: a listing without a year omits the year', async () => {
 
 test('result: clear and unrecognised items show their text', async () => {
   renderResult()
-  expect(await screen.findByText('humectant')).toBeInTheDocument()
+  expect(await screen.findByText('Used as: humectant')).toBeInTheDocument()
   expect(screen.getAllByText("We couldn't check this one.")).toHaveLength(2)
 })
 
@@ -88,4 +89,50 @@ test('result: a reference with no hazard lists says so', async () => {
     index: buildIndex({ version: 'v-empty', builtAt: '2026-01-01', entries: [] }),
   })
   expect(await screen.findByText('Checked against: no hazard lists yet')).toBeInTheDocument()
+})
+
+test('result: a summary under the title counts the flagged ingredients and points to them', async () => {
+  renderResult()
+  await screen.findByRole('heading', { level: 1 })
+  expect(screen.getByTestId('result-summary')).toHaveTextContent(
+    '2 of 5 ingredients are on a cancer list. They are shown first, under "Watch for". We couldn\'t check 2.',
+  )
+})
+
+test('result: with nothing flagged, the summary names the lists checked', async () => {
+  renderScreen(<Result />, {
+    route: '/result/p1',
+    path: '/result/:id',
+    store: fakeStore([record({ ingredients: ['Glycerin', 'Zorbex'] })]),
+  })
+  await screen.findByRole('heading', { level: 1 })
+  expect(screen.getByTestId('result-summary').textContent).toMatch(
+    /^The 1 ingredient we could check is not on the cancer lists checked \(.+\)\. We couldn't check 1\.$/,
+  )
+})
+
+test('result summary wording', () => {
+  expect(resultSummary({ flagged: 0, unchecked: 0, total: 33 }, ['NTP'])).toBe(
+    'None of the 33 ingredients are on the cancer lists checked (NTP).',
+  )
+  expect(resultSummary({ flagged: 1, unchecked: 0, total: 33 }, ['NTP'])).toBe(
+    '1 of 33 ingredients is on a cancer list. It is shown first, under "Watch for".',
+  )
+  expect(resultSummary({ flagged: 0, unchecked: 0, total: 3 }, [])).toBe(
+    'No cancer lists are loaded yet, so nothing can be flagged.',
+  )
+  for (const s of [resultSummary({ flagged: 0, unchecked: 0, total: 3 }, ['NTP'])]) expect(s).not.toMatch(/\bsafe\b/i)
+})
+
+test('result: every ingredient carries its own verdict tag', async () => {
+  renderResult()
+  await screen.findByRole('heading', { level: 1 })
+  const tags = screen.getAllByTestId('verdict-tag').map((t) => t.textContent)
+  expect(tags).toEqual([
+    'Watch for: strong evidence',
+    'Watch for: possible',
+    "Couldn't check",
+    "Couldn't check",
+    'Not on cancer lists checked',
+  ])
 })

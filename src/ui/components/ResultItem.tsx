@@ -1,4 +1,4 @@
-import { SOURCE_LABEL } from '../../copy'
+import { SOURCE_LABEL, USED_AS, VERDICT_TAG } from '../../copy'
 import type { IngredientResult, Listing, Match } from '../../reference/types'
 
 function ListingLine({ listing }: { listing: Listing }) {
@@ -41,12 +41,19 @@ export function ResultItem({ result }: { result: IngredientResult }) {
 
   return (
     <li className="item">
-      <strong>{result.input}</strong>
+      <strong>{result.input}</strong>{' '}
+      <span className={`tag ${result.verdict}`} data-testid="verdict-tag">
+        {VERDICT_TAG[result.verdict]}
+      </span>
       {result.verdict === 'not_recognised' && (
         <p>{someRecognised && unchecked.length ? `We couldn't check: ${unchecked.join(', ')}` : "We couldn't check this one."}</p>
       )}
-      {result.verdict === 'no_known_concern' && (first?.note ?? first?.functionNote) && (
-        <p>{first?.note ?? first?.functionNote}</p>
+      {result.verdict === 'no_known_concern' && first?.note && <p>{first.note}</p>}
+      {result.verdict === 'no_known_concern' && !first?.note && first?.functionNote && (
+        <p>
+          {USED_AS}
+          {first.functionNote}
+        </p>
       )}
       {watching.map((m) => (
         <WatchMatch key={m.key} input={result.input} match={m} />
