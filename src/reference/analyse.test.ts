@@ -42,6 +42,7 @@ const ref: Reference = {
     }),
     entry({ id: 'cas:108-05-4', name: 'Vinyl acetate' }),
     entry({ id: 'name:glycerin', name: 'Glycerin' }),
+    entry({ id: 'name:soy lecithin', name: 'Soy lecithin' }),
     entry({
       id: 'cas:1-1-1',
       name: 'Mixed thing',
@@ -118,3 +119,21 @@ test('analyse keeps input order', () =>
   ]))
 test('SEVERITY is the display order', () =>
   expect(SEVERITY).toEqual(['watch_strong', 'watch_possible', 'not_recognised', 'no_known_concern']))
+
+test('a "Function: name" prefix is looked past; the label text is kept as the input', () => {
+  const cases: [string, string, string][] = [
+    ['Preservative: Formaldehyde', 'watch_strong', 'cas:50-00-0'],
+    ['Colour: Titanium Dioxide', 'watch_possible', 'cas:13463-67-7'],
+    ['Emulsifier: Soy Lecithin', 'no_known_concern', 'name:soy lecithin'],
+    ['Acidity Regulator:Glycerin', 'no_known_concern', 'name:glycerin'],
+  ]
+  for (const [input, verdict, id] of cases) {
+    const r = analyseIngredient(input, idx)
+    expect(r).toMatchObject({ input, verdict })
+    expect(r.matches[0].entry?.id).toBe(id)
+  }
+})
+test('a prefixed name that is not known stays not recognised; a long prefix is not treated as a function', () => {
+  expect(analyseIngredient('Preservative: Xyzzium', idx).verdict).toBe('not_recognised')
+  expect(analyseIngredient('Some other long thing: Formaldehyde', idx).verdict).toBe('not_recognised')
+})

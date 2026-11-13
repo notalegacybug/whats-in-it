@@ -5,6 +5,9 @@ import type { IngredientResult, Match, RefEntry, Verdict } from './types'
 /** Most to least concerning; also the display order. */
 export const SEVERITY: Verdict[] = ['watch_strong', 'watch_possible', 'not_recognised', 'no_known_concern']
 
+/** One or two words, then a colon, then the ingredient: "Colour: Titanium Dioxide". */
+const FUNCTION_PREFIX = /^\s*[a-z][\w&'-]*(?:\s+[a-z][\w&'-]*)?\s*:\s*(.+)$/i
+
 function mostSevere(verdicts: Verdict[]): Verdict {
   return SEVERITY.find((v) => verdicts.includes(v)) ?? 'not_recognised'
 }
@@ -25,6 +28,11 @@ export function analyseIngredient(input: string, index: RefIndex): IngredientRes
   // If the whole item is itself a known key (name, alias or CAS), that is the single match.
   const wholeHit = whole ? hit(whole, index) : null
   if (wholeHit) return { input, verdict: wholeHit.verdict, matches: [wholeHit] }
+
+  // Food labels often name the function first ("Preservative: Formaldehyde"). Check what follows instead,
+  // by the same rules, but keep the label text as the input.
+  const prefixed = FUNCTION_PREFIX.exec(input)
+  if (prefixed) return { ...analyseIngredient(prefixed[1], index), input }
 
   // Each bracketed part must be recognised on its own. Alternatives ("Aqua/Water/Eau") are names of one
   // substance: they resolve only when every name that hits points to the same entry. Names of different
