@@ -45,7 +45,7 @@ function block(e: RefEntry): string {
   const lines = [`### ${e.name}`, '', `- **id:** \`${e.id}\``, '- **listings:**', ...e.listings.flatMap(listingLines)]
   if (e.listings.length === 0) lines.push('  - (none)')
   lines.push(
-    `- **function / FDA status (as the screen shows it):** ${e.functionNote ?? '(none)'}`,
+    `- **function / regulatory note (as the screen shows it):** ${e.functionNote ?? '(none)'}`,
     `- **note:** ${e.note ?? '(none)'}`,
     `- **caveat:** ${e.caveat ?? '(none)'}`,
     '',

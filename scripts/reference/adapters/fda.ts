@@ -45,24 +45,28 @@ export function readableName(upper: string): string {
   return s.charAt(0).toUpperCase() + s.slice(1)
 }
 
-/** What the FDA's `--CODE` name suffixes mean. An unknown code is shown as written. */
+/**
+ * What the `--CODE` name suffixes mean, naming who made the decision. NLFG is not an FDA status: on every
+ * NLFG row the file's `FEMA status` column reads "No longer FEMA GRAS (GRAS Pub. N, year)", and FEMA is the
+ * flavour industry's association. An unknown code is shown as written, attributed to the FDA's file.
+ */
 const STATUS_TEXT: Record<string, string> = {
-  NLFG: 'not listed for general food use',
-  PROHIBITED: 'prohibited in food',
-  'PROHIBITED WITH EXCEPTIONS': 'prohibited in food, with exceptions',
-  DELISTED: 'delisted (no longer permitted)',
+  NLFG: 'Flavour industry (FEMA): no longer listed as GRAS',
+  PROHIBITED: 'US FDA: prohibited in food',
+  'PROHIBITED WITH EXCEPTIONS': 'US FDA: prohibited in food, with exceptions',
+  DELISTED: 'US FDA: delisted (no longer permitted)',
 }
 
 /**
  * The FDA appends a status code ("CYCLAMATE--PROHIBITED", "--NLFG") to names. It is not part of the
  * substance's name, so it is split off (otherwise "cyclamate" on a label would not match), but it is the
- * only place the FDA records the status, so it is kept: the merge shows it in the entry's functionNote.
+ * only place the file records the status, so it is kept: the merge shows it in the entry's functionNote.
  */
 function splitStatus(raw: string): { name: string; status?: string } {
   const m = /^(.*?)\s*--\s*([A-Z][A-Z ]*)$/.exec(raw.trim())
   if (!m) return { name: raw.trim() }
   const code = m[2].trim()
-  return { name: m[1].trim(), status: STATUS_TEXT[code] ?? code }
+  return { name: m[1].trim(), status: STATUS_TEXT[code] ?? `US FDA: ${code}` }
 }
 
 export function parseFda(rows: Row[]): CatalogueRecord[] {
@@ -78,7 +82,7 @@ export function parseFda(rows: Row[]): CatalogueRecord[] {
       cas: parseCas(cell(row, COLUMNS.cas)),
       functionNote: effects(cell(row, COLUMNS.effect)),
       euCosmeticsBanned: false,
-      ...(split.status && { fdaStatus: split.status }),
+      ...(split.status && { regulatoryNote: split.status }),
     })
   }
   return out

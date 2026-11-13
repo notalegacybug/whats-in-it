@@ -45,7 +45,7 @@ test('FDA: an all-capitals name becomes sentence case; a mixed-case name is left
   expect(out.map((r) => r.name)).toEqual(['Sulfuric acid', 'Vitamin B12 (cyanocobalamin)', '2-ethylhexanol'])
 })
 
-test('FDA: the status code is kept as spelled-out text in fdaStatus, never dropped', () => {
+test('FDA: the status code is kept as spelled-out text in regulatoryNote, naming who set it, never dropped', () => {
   const out = parseFda([
     { 'CAS Reg No (or other ID)': ' 977016-96-8', Substance: ' CYCLAMATE--PROHIBITED', 'Used for (Technical Effect)': ' NON-NUTRITIVE SWEETENER' },
     { 'CAS Reg No (or other ID)': ' 91-64-5', Substance: ' COUMARIN--PROHIBITED', 'Used for (Technical Effect)': ' FLAVORING AGENT OR ADJUVANT' },
@@ -55,13 +55,14 @@ test('FDA: the status code is kept as spelled-out text in fdaStatus, never dropp
     { Substance: 'Z--ODDCODE' },
     { Substance: 'Plain' },
   ])
-  expect(out.map((r) => r.fdaStatus)).toEqual([
-    'prohibited in food',
-    'prohibited in food',
-    'delisted (no longer permitted)',
-    'prohibited in food, with exceptions',
-    'not listed for general food use',
-    'ODDCODE',
+  expect(out.map((r) => r.regulatoryNote)).toEqual([
+    'US FDA: prohibited in food',
+    'US FDA: prohibited in food',
+    'US FDA: delisted (no longer permitted)',
+    'US FDA: prohibited in food, with exceptions',
+    // NLFG comes from the file's FEMA status column ("No longer FEMA GRAS"): an industry body, not the FDA.
+    'Flavour industry (FEMA): no longer listed as GRAS',
+    'US FDA: ODDCODE',
     undefined,
   ])
   expect(out[2].name).toBe('FD&C green No. 1')

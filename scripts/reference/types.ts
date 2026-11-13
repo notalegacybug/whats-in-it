@@ -24,8 +24,8 @@ export interface CatalogueRecord {
   functionNote: string
   /** True only when CosIng's restriction cell says the substance is banned in EU cosmetics (Annex II). */
   euCosmeticsBanned: boolean
-  /** US FDA status text from the FDA inventory (e.g. "prohibited in food"); context only, never a hazard listing. */
-  fdaStatus?: string
+  /** Status from the FDA inventory naming who set it (e.g. "US FDA: prohibited in food"); context only, never a hazard listing. */
+  regulatoryNote?: string
 }
 
 /** Hand-written notes, keyed by entry id. */

@@ -186,14 +186,14 @@ test('diffReferences ignores key order inside an entry', () => {
   expect(diffReferences(a, b)).toEqual({ added: [], removed: [], changed: [] })
 })
 
-test('an FDA status becomes context in functionNote, not a listing', () => {
-  const status = cat('Cyclamate', ['977016-96-8'], { functionNote: 'non-nutritive sweetener', fdaStatus: 'prohibited in food' })
-  const alone = cat('Dulcin', ['150-69-6'], { fdaStatus: 'prohibited in food' })
+test('a regulatory note becomes context in functionNote, not a listing', () => {
+  const status = cat('Cyclamate', ['977016-96-8'], { functionNote: 'non-nutritive sweetener', regulatoryNote: 'US FDA: prohibited in food' })
+  const alone = cat('Dulcin', ['150-69-6'], { regulatoryNote: 'US FDA: prohibited in food' })
   const { reference } = mergeReference({ flagged: [], catalogue: [status, alone, glycerin], ...base })
   const get = (id: string) => reference.entries.find((e) => e.id === id)!
-  expect(get('cas:977016-96-8').functionNote).toBe('non-nutritive sweetener · US FDA status: prohibited in food')
+  expect(get('cas:977016-96-8').functionNote).toBe('non-nutritive sweetener · Regulatory note: US FDA: prohibited in food')
   expect(get('cas:977016-96-8').listings).toEqual([])
-  expect(get('cas:150-69-6').functionNote).toBe('US FDA status: prohibited in food')
+  expect(get('cas:150-69-6').functionNote).toBe('Regulatory note: US FDA: prohibited in food')
   expect(get('cas:56-81-5').functionNote).toBe('humectant')
 })
 
@@ -204,11 +204,13 @@ test('real FDA rows (cyclamate, coumarin, a delisted FD&C colour) keep their sta
     { 'CAS Reg No (or other ID)': ' 91-64-5', Substance: ' COUMARIN--PROHIBITED', [col]: ' FLAVORING AGENT OR ADJUVANT' },
     { 'CAS Reg No (or other ID)': ' 4680-78-8', Substance: ' FD&C GREEN NO. 1--DELISTED', [col]: '' },
   ])
+  catalogue.push(...parseFda([{ 'CAS Reg No (or other ID)': ' 100-42-5', Substance: ' STYRENE--NLFG', [col]: ' FLAVORING AGENT OR ADJUVANT' }]))
   const { reference } = mergeReference({ flagged: [], catalogue, ...base })
   const notes = Object.fromEntries(reference.entries.map((e) => [e.name, e.functionNote]))
   expect(notes).toEqual({
-    Cyclamate: 'non-nutritive sweetener · US FDA status: prohibited in food',
-    Coumarin: 'flavoring agent or adjuvant · US FDA status: prohibited in food',
-    'FD&C green No. 1': 'US FDA status: delisted (no longer permitted)',
+    Styrene: 'flavoring agent or adjuvant · Regulatory note: Flavour industry (FEMA): no longer listed as GRAS',
+    Cyclamate: 'non-nutritive sweetener · Regulatory note: US FDA: prohibited in food',
+    Coumarin: 'flavoring agent or adjuvant · Regulatory note: US FDA: prohibited in food',
+    'FD&C green No. 1': 'Regulatory note: US FDA: delisted (no longer permitted)',
   })
 })
