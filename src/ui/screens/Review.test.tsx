@@ -1,8 +1,15 @@
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { OCR_EMPTY_MESSAGE } from '../../copy'
+import { suggest } from '../../reference/suggest'
 import { renderScreen } from '../test-helpers'
 import { Review } from './Review'
+
+// Pass-through spy: real suggestions, but calls can be counted.
+vi.mock('../../reference/suggest', async (importOriginal) => {
+  const real = await importOriginal<typeof import('../../reference/suggest')>()
+  return { suggest: vi.fn(real.suggest) }
+})
 
 const user = userEvent.setup()
 const renderReview = (draft: string[]) => renderScreen(<Review />, { route: '/review', path: '/review', draft })
@@ -43,4 +50,16 @@ test('review: Add ingredient appends an empty row; Check ingredients goes to det
   expect(screen.getByLabelText('Ingredient 2')).toHaveValue('')
   await user.click(screen.getByRole('button', { name: 'Check ingredients' }))
   expect(screen.getByTestId('where')).toHaveTextContent('/details')
+})
+
+test('review: typing in one row does not rescan the unchanged rows for suggestions', async () => {
+  renderReview(['Water', 'Glycerin', 'Forma1dehyde'])
+  const first = await screen.findByLabelText('Ingredient 1')
+  vi.mocked(suggest).mockClear()
+  await user.type(first, 'x')
+  const texts = vi.mocked(suggest).mock.calls.map(([text]) => text)
+  expect(texts).toContain('Waterx')
+  expect(texts).not.toContain('Glycerin')
+  expect(texts).not.toContain('Forma1dehyde')
+  expect(screen.getByRole('button', { name: 'Did you mean Formaldehyde?' })).toBeInTheDocument()
 })

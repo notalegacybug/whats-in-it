@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { OCR_EMPTY_MESSAGE } from '../../copy'
 import { extractIngredients } from '../../ingredients/split'
@@ -12,6 +12,14 @@ export function Review() {
   const { index } = useReference()
   const navigate = useNavigate()
   const [pasted, setPasted] = useState('')
+  // suggest() scans every reference key, so each text is scanned once: a keystroke in one row must not
+  // rescan the others. A cache write during render is safe here because suggest() is pure.
+  const suggestions = useMemo(() => new Map<string, string | null>(), [index])
+  const suggestionFor = (text: string): string | null => {
+    if (!index) return null
+    if (!suggestions.has(text)) suggestions.set(text, suggest(text, index))
+    return suggestions.get(text) ?? null
+  }
 
   const edit = (i: number, value: string) => setIngredients(ingredients.map((v, j) => (j === i ? value : v)))
 
@@ -31,7 +39,7 @@ export function Review() {
             key={i}
             position={i + 1}
             value={text}
-            suggestion={index ? suggest(text, index) : null}
+            suggestion={suggestionFor(text)}
             onChange={(v) => edit(i, v)}
             onRemove={() => setIngredients(ingredients.filter((_, j) => j !== i))}
           />
