@@ -1,6 +1,7 @@
 import { normalizeName } from '../ingredients/normalize'
 import { extractIngredients } from '../ingredients/split'
 import type { RefIndex } from './index'
+import { fullNameEnding } from './suggest'
 
 const MAX_WORDS_IN_NAME = 6
 // Short single words ("cream", "water", "honey") are CosIng names but also everyday words in prose.
@@ -32,10 +33,11 @@ export function findIngredientNames(text: string, index: RefIndex): string[] {
     for (let n = Math.min(MAX_WORDS_IN_NAME, words.length - i); n >= 1; n--) {
       if (n === 1 && words[i].length < MIN_SINGLE_WORD_LENGTH) continue
       const phrase = words.slice(i, i + n).join(' ')
-      const entry = index.byKey.get(normalizeName(phrase))
-      if (!entry) continue
-      if (!seen.has(entry.id)) {
-        seen.add(entry.id)
+      // An exact name, or (2+ words) the end of exactly one full name, which Review then offers to complete.
+      const id = index.byKey.get(normalizeName(phrase))?.id ?? (n >= 2 ? fullNameEnding(phrase, index)?.entry.id : null)
+      if (!id) continue
+      if (!seen.has(id)) {
+        seen.add(id)
         found.push(phrase)
       }
       i += n - 1

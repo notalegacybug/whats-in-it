@@ -6,6 +6,7 @@ export interface RefIndex {
   /** Hazard lists this reference was built from; ingredients on any other list are not flagged. */
   sources: SourceId[]
   byKey: Map<string, RefEntry>
+  entries: Map<string, RefEntry>
   keys: string[]
 }
 
@@ -18,5 +19,6 @@ export function buildIndex(ref: Reference): RefIndex {
       if (key && !byKey.has(key)) byKey.set(key, entry)
     }
   }
-  return { version: ref.version, sources: ref.sources ?? [], byKey, keys: [...byKey.keys()] }
+  const entries = new Map(ref.entries.map((e) => [e.id, e]))
+  return { version: ref.version, sources: ref.sources ?? [], byKey, entries, keys: [...byKey.keys()] }
 }

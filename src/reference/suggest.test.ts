@@ -39,3 +39,27 @@ test('empty or blank input returns null', () => {
   expect(suggest('', idx)).toBeNull()
   expect(suggest('   ', idx)).toBeNull()
 })
+
+describe('a common short name suggests the one full name it ends', () => {
+  const names = [
+    'Panax Ginseng Root Extract',
+    'Hydrolyzed Ginseng Root Extract',
+    'Hydrolyzed Panax Ginseng Root Extract',
+    'Camellia Sinensis Leaf/Panax Ginseng Root Extract',
+    'PEG-50 Shea Butter',
+    'Hydrogenated Shea Butter',
+    'Pelargonium Sidoides Root Extract',
+    'Angelica Acutiloba Root Extract',
+  ]
+  const idx = buildIndex({ version: 't', builtAt: '2026-01-01', entries: names.map((name) => entry({ id: `name:${name}`, name })) })
+
+  test('modified forms and blends are not counted, leaving one plant name', () => {
+    expect(suggest('Ginseng Root Extract', idx)).toBe('Panax Ginseng Root Extract')
+  })
+  test('a generic ending that fits several plants suggests nothing', () => {
+    expect(suggest('Root Extract', idx)).toBeNull()
+  })
+  test('only modified forms left means no suggestion', () => {
+    expect(suggest('Shea Butter', idx)).toBeNull()
+  })
+})

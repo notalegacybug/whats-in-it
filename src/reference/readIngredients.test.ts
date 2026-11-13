@@ -56,3 +56,13 @@ test('readIngredients turns a description into the names it mentions', () => {
     fromDescription: true,
   })
 })
+
+test('a description phrase that is the end of one full name is picked up, as written, for the review screen to suggest', () => {
+  const idx = buildIndex({
+    version: 't',
+    builtAt: '2026-01-01',
+    entries: [entry('Panax Ginseng Root Extract'), entry('Hydrolyzed Ginseng Root Extract'), entry('Glutathione')],
+  })
+  const text = 'We have included Ginseng Root Extract and Glutathione in our cream, to help your skin feel firm, while we keep it light.'
+  expect(readIngredients(text, idx).ingredients).toEqual(['Ginseng Root Extract', 'Glutathione'])
+})

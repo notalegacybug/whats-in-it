@@ -7,7 +7,7 @@ import { Review } from './Review'
 
 vi.mock('../../reference/suggest', async (importOriginal) => {
   const real = await importOriginal<typeof import('../../reference/suggest')>()
-  return { suggest: vi.fn(real.suggest) }
+  return { ...real, suggest: vi.fn(real.suggest) }
 })
 
 const user = userEvent.setup()
