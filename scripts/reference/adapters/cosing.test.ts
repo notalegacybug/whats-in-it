@@ -1,6 +1,6 @@
 import { parseCosing } from './cosing'
 
-// FIXTURE, NOT REAL DATA: cosing.csv could not be downloaded; column names are assumptions.
+// FIXTURE, NOT REAL DATA: invented rows in the real cosing.csv column layout.
 const fixture: Record<string, string>[] = [
   { 'INCI name': 'TITANIUM DIOXIDE', 'CAS No': '13463-67-7', Function: 'COLORANT, OPACIFYING', Restriction: 'V/143' },
   { 'INCI name': 'CI 77891', 'CAS No': '13463-67-7 / 1317-70-0', Function: 'COLORANT', Restriction: '' },
@@ -34,4 +34,9 @@ test('CosIng: no CAS is kept as []; nameless rows and missing cells are skipped 
   expect(out.find((r) => r.name === 'AQUA')!.cas).toEqual([])
   expect(out).toHaveLength(5)
   expect(parseCosing([{ Function: 'x' }])).toEqual([])
+})
+
+test('CosIng: a function repeated in the cell is listed once', () => {
+  const [r] = parseCosing([{ 'INCI name': 'CI 77891', 'CAS No': '13463-67-7', Function: 'COLORANT, COLORANT', Restriction: 'IV/143' }])
+  expect(r.functionNote).toBe('colorant')
 })

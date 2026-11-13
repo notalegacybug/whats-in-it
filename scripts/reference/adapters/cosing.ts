@@ -13,6 +13,10 @@ export const COLUMNS = {
 // CosIng writes Annex II (banned) restrictions as "II/<n>".
 const BANNED_RE = /^II\//
 
+// CosIng sometimes repeats a function in one cell ("COLORANT, COLORANT").
+const functions = (text: string) =>
+  [...new Set(text.toLowerCase().replace(/\s+/g, ' ').split(',').map((f) => f.trim()).filter(Boolean))].join(', ')
+
 export function parseCosing(rows: Row[]): CatalogueRecord[] {
   const out: CatalogueRecord[] = []
   for (const row of rows) {
@@ -23,7 +27,7 @@ export function parseCosing(rows: Row[]): CatalogueRecord[] {
       aliases: [],
       // Cells like "56-81-5 / 25618-55-7": parseCas splits on spaces, so "/" must not glue them.
       cas: parseCas(cell(row, COLUMNS.cas).replaceAll('/', ' ')),
-      functionNote: cell(row, COLUMNS.function).toLowerCase().replace(/\s+/g, ' '),
+      functionNote: functions(cell(row, COLUMNS.function)),
       euCosmeticsBanned: BANNED_RE.test(cell(row, COLUMNS.restriction)),
     })
   }
