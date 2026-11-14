@@ -280,3 +280,62 @@ test('two unlisted entries with the same main name become one', () => {
   expect(reference.entries).toHaveLength(1)
   expect(reference.entries[0].id).toBe('cas:10035-04-8')
 })
+
+describe('common names from lower-ranked name sources', () => {
+  const coconut = cat('Cocos Nucifera Oil', ['8001-31-8'])
+  const pantothenic = cat('Pantothenic Acid', ['79-83-4'])
+  const panthenol = cat('Panthenol', ['81-13-0'])
+  const formaldehyde = flag('Formaldehyde', ['50-00-0'], listing('NTP', { level: 'strong' }))
+  const run = (commonNames: { joinNames: string[]; commonNames: string[] }[][]) =>
+    mergeReference({ flagged: [formaldehyde], catalogue: [coconut, pantothenic, panthenol], commonNames, ...base }).reference
+  const aliasesOf = (r: Reference, id: string) => r.entries.find((e) => e.id === id)!.aliases
+
+  test('a substance found by its official name (brackets removed) gains its everyday names', () => {
+    const r = run([[{ joinNames: ['COCOS NUCIFERA (COCONUT) OIL'], commonNames: ['Coconut oil', 'COCOS NUCIFERA (COCONUT) OIL'] }]])
+    expect(aliasesOf(r, 'cas:8001-31-8')).toEqual(expect.arrayContaining(['coconut oil', 'cocos nucifera (coconut) oil']))
+  })
+
+  test('a common name never takes over an existing name of another entry', () => {
+    const r = run([[{ joinNames: ['Cocos Nucifera Oil'], commonNames: ['Formaldehyde', 'Panthenol'] }]])
+    expect(aliasesOf(r, 'cas:8001-31-8')).not.toContain('formaldehyde')
+    expect(aliasesOf(r, 'cas:8001-31-8')).not.toContain('panthenol')
+  })
+
+  test('a substance whose names reach a flagged and an unflagged entry is skipped', () => {
+    const r = run([[{ joinNames: ['Formaldehyde', 'Cocos Nucifera Oil'], commonNames: ['Mystery Preservative'] }]])
+    expect(r.entries.some((e) => e.aliases.includes('mystery preservative'))).toBe(false)
+  })
+
+  test('a substance whose names reach several unflagged entries attaches to the base (shortest) name', () => {
+    const r = run([[{ joinNames: ['Pantothenic Acid', 'Panthenol'], commonNames: ['Vitamin B5'] }]])
+    expect(aliasesOf(r, 'cas:81-13-0')).toContain('vitamin b5')
+  })
+
+  test('codes, lab impurity names and dotted chemical names are not added', () => {
+    const r = run([[{ joinNames: ['Cocos Nucifera Oil'], commonNames: ['NCI-C56393', 'Colestyramine Impurity A', '.beta.-Coconut', 'Coconut Oil'] }]])
+    expect(aliasesOf(r, 'cas:8001-31-8')).toEqual(['coconut oil'])
+  })
+
+  test('within one source, a common name claimed for two entries is dropped', () => {
+    const r = run([[
+      { joinNames: ['Panthenol'], commonNames: ['Vitamin B5'] },
+      { joinNames: ['Pantothenic Acid'], commonNames: ['Vitamin B5'] },
+    ]])
+    // Two substances in one source claim the same everyday name: neither gets it.
+    expect(r.entries.some((e) => e.aliases.includes('vitamin b5'))).toBe(false)
+  })
+
+  test('a higher-ranked source claims a name first', () => {
+    const r = run([
+      [{ joinNames: ['Panthenol'], commonNames: ['Vitamin B5'] }],
+      [{ joinNames: ['Pantothenic Acid'], commonNames: ['Vitamin B5'] }],
+    ])
+    expect(aliasesOf(r, 'cas:81-13-0')).toContain('vitamin b5')
+    expect(aliasesOf(r, 'cas:79-83-4')).not.toContain('vitamin b5')
+  })
+
+  test('vague or code-like names are not added', () => {
+    const r = run([[{ joinNames: ['Cocos Nucifera Oil'], commonNames: ['Oil', 'COCONUT OIL, UNHYDROGENATED', 'a very long name that goes on and on past six words'] }]])
+    expect(aliasesOf(r, 'cas:8001-31-8')).toEqual([])
+  })
+})

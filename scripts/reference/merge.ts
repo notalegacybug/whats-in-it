@@ -1,6 +1,6 @@
 import type { Listing, RefEntry, Reference } from '../../src/reference/types'
 import { normalizeName } from '../../src/ingredients/normalize'
-import type { CatalogueRecord, NotesFile, SourceRecord } from './types'
+import type { CatalogueRecord, CommonNameGroup, NotesFile, SourceRecord } from './types'
 
 const MIN_ALIAS_LENGTH = 3
 
@@ -16,6 +16,8 @@ export interface MergeInput {
   notes: NotesFile
   // No-CAS flagged names a person allow-listed.
   caslessAllow: Set<string>
+  // Name-only sources, highest rank first (e.g. FDA GSRS); they add everyday names, never listings.
+  commonNames?: CommonNameGroup[][]
   version: string
   builtAt: string
 }
@@ -68,6 +70,7 @@ export function mergeReference(a: MergeInput): { reference: Reference; missingNo
   const entries = [...groups.values()].map((g) => toEntry(g, a.notes))
   cleanAliases(entries)
   cleanCas(entries)
+  addCommonNames(entries, a.commonNames ?? [])
   entries.sort((x, y) => (x.id < y.id ? -1 : x.id > y.id ? 1 : 0))
 
   const missingNotes = [...groups.values()]
@@ -174,4 +177,64 @@ function cleanCas(entries: RefEntry[]): void {
   const holders = new Map<string, number>()
   for (const e of entries) for (const c of e.cas) holders.set(c, (holders.get(c) ?? 0) + 1)
   for (const e of entries) e.cas = e.cas.filter((c) => holders.get(c) === 1 || e.id === casId(c))
+}
+
+const MAX_COMMON_NAME_WORDS = 6
+const MAX_COMMON_NAME_LENGTH = 60
+const VAGUE = new Set(['oil', 'oils', 'extract', 'butter', 'wax', 'water', 'powder', 'juice', 'fat', 'flour', 'leaf', 'root', 'seed', 'acid', 'salt', 'resin', 'gum'])
+const withoutBrackets = (n: string) => normalizeName(n.replace(/\([^)]*\)/g, ' '))
+
+function usableCommonName(n: string): boolean {
+  const words = n.split(' ')
+  return (
+    n.length >= MIN_ALIAS_LENGTH + 1 &&
+    n.length <= MAX_COMMON_NAME_LENGTH &&
+    words.length <= MAX_COMMON_NAME_WORDS &&
+    /[a-z]/.test(n) &&
+    !/[,;:.]/.test(n) &&
+    !/\bimpurity\b|\brelated compound\b|^nci-/.test(n) &&
+    !(words.length === 1 && VAGUE.has(n))
+  )
+}
+
+// Ranked: a name is added only if no existing entry uses it, its substance maps to exactly one entry, and no
+// other substance in the same source claims it. Higher-ranked sources claim names before lower ones.
+function addCommonNames(entries: RefEntry[], sources: CommonNameGroup[][]): void {
+  const owner = new Map<string, RefEntry>()
+  const claim = (key: string, e: RefEntry) => {
+    if (!owner.has(key)) owner.set(key, e)
+  }
+  for (const e of entries) for (const k of [e.name, ...e.aliases].map(normalizeName)) claim(k, e)
+  const taken = new Set(owner.keys())
+
+  for (const groups of sources) {
+    const proposals = new Map<string, Set<RefEntry>>()
+    for (const g of groups) {
+      const homes = new Set<RefEntry>()
+      for (const n of g.joinNames) {
+        for (const k of [normalizeName(n), withoutBrackets(n)]) {
+          const e = owner.get(k)
+          if (e && taken.has(k)) homes.add(e)
+        }
+      }
+      // Several unflagged entries (e.g. "...Butter" and "...Butter Extract"): the base, shortest name. Never guess
+      // when a flagged entry is among them.
+      if (homes.size === 0 || (homes.size > 1 && [...homes].some((e) => e.listings.length > 0))) continue
+      const [home] = [...homes].sort((x, y) => x.name.length - y.name.length || (x.id < y.id ? -1 : 1))
+      for (const name of g.commonNames) {
+        const k = normalizeName(name)
+        if (taken.has(k) || !usableCommonName(k)) continue
+        if (!proposals.has(k)) proposals.set(k, new Set())
+        proposals.get(k)!.add(home)
+      }
+    }
+    for (const [k, homes] of proposals) {
+      // Two different substances in this source claim the same everyday name: neither gets it.
+      if (homes.size !== 1) continue
+      const [home] = homes
+      home.aliases.push(k)
+      taken.add(k)
+    }
+  }
+  for (const e of entries) e.aliases.sort()
 }

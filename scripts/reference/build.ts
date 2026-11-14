@@ -9,6 +9,7 @@ import { COLUMNS as COSING_COLUMNS, parseCosing } from './adapters/cosing'
 import { COLUMNS as ENUMBERS_COLUMNS, parseENumbers } from './adapters/eNumbers'
 import { COLUMNS as EU_CLP_COLUMNS, parseEuClp } from './adapters/euClp'
 import { COLUMNS as FDA_COLUMNS, parseFda } from './adapters/fda'
+import { COLUMNS as GSRS_COLUMNS, parseGsrs } from './adapters/gsrs'
 import { COLUMNS as IARC_COLUMNS, parseIarc } from './adapters/iarc'
 import { COLUMNS as NTP_COLUMNS, parseNtp } from './adapters/ntp'
 import { COLUMNS as PROP65_COLUMNS, parseProp65 } from './adapters/prop65'
@@ -18,7 +19,7 @@ import { checkSourceFile } from './guard'
 import { mergeReference } from './merge'
 import { withEdition } from './util'
 import { checkNotes } from './notesCheck'
-import type { CatalogueRecord, NotesFile, Row, SourceRecord } from './types'
+import type { CatalogueRecord, CommonNameGroup, NotesFile, Row, SourceRecord } from './types'
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..', '..')
 const path = (...parts: string[]) => join(ROOT, ...parts)
@@ -60,6 +61,11 @@ const catalogueSources: Source<CatalogueRecord>[] = [
   { label: 'cosing', file: 'cosing.csv', columns: COSING_COLUMNS, parse: parseCosing },
   { label: 'fda-saf', file: 'fda-saf.csv', columns: FDA_COLUMNS, parse: parseFda },
   { label: 'e-numbers', file: 'e-numbers.csv', columns: ENUMBERS_COLUMNS, parse: parseENumbers },
+]
+
+// Name-only sources, highest rank first. Official names from the sources above always outrank these.
+const nameSources: Source<CommonNameGroup>[] = [
+  { label: 'gsrs', file: 'gsrs-names.csv', columns: GSRS_COLUMNS, parse: parseGsrs },
 ]
 
 const problems: string[] = []
@@ -161,6 +167,7 @@ function main(): number {
   }
   const catalogue: CatalogueRecord[] = []
   for (const s of catalogueSources) catalogue.push(...(load(s, false, config) ?? []))
+  const commonNames = nameSources.map((s) => load(s, false, config) ?? [])
 
   const caslessAllow = loadCaslessAllow()
   const notes = readJson<NotesFile>(path('data', 'notes', 'notes.json'))
@@ -178,6 +185,7 @@ function main(): number {
     catalogue,
     notes,
     caslessAllow,
+    commonNames,
     version,
     builtAt: new Date().toISOString(),
   })

@@ -24,3 +24,9 @@ export interface CatalogueRecord {
 }
 
 export type NotesFile = Record<string, { note: string; caveat?: string }>
+
+// One substance in a name-only source (e.g. FDA GSRS): names that identify it, and everyday names to add.
+export interface CommonNameGroup {
+  joinNames: string[]
+  commonNames: string[]
+}

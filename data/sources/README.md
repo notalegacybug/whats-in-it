@@ -13,6 +13,7 @@ an adapter in `scripts/reference/adapters/`. Downloaded originals live in `origi
 | `fda-saf.csv` | obtained (ingredient inventory) | 3970 |
 | `cosing.csv` | obtained via the CosIng search API (ingredient inventory) | 33658 |
 | `e-numbers.csv` | **MISSING**, not built (ingredient inventory) | - |
+| `gsrs-names.csv` | obtained (everyday names only, ranked below official names) | 16467 substances |
 
 ## Build settings: `config.json`
 
@@ -157,6 +158,20 @@ reconstructed from memory. When the real files arrive, compare their headers wit
 - **Merging:** rows sharing a first CAS number merge. A secondary CAS number held by two entries is kept only
   where it is the main number. Entries with the same main name merge, so a label name never resolves to an
   unlisted twin of a listed substance (for example lead acetate under two CAS numbers).
+
+## gsrs-names.csv
+
+- **Source:** US FDA Global Substance Registration System (GSRS), UNII names file,
+  https://precision.fda.gov/uniisearch/archive (public US government data). Collected 2026-11-13 from the
+  4 Aug 2026 release by `node scripts/fetch-gsrs.mjs`, which downloads `UNIIs.zip` into `original/gsrs/`
+  (git-ignored) and keeps only substances sharing a name with cosing.csv, fda-saf.csv or ntp.csv.
+- **Columns:** `UNII`, `Name`, `Type` (`of` official, `cn` common, `sys` systematic; codes and brand names are dropped).
+- **Use:** a name source, not an inventory and never a hazard list. A substance is linked to one of our entries by
+  its official or systematic names (brackets removed, so "Cocos Nucifera (Coconut) Oil" finds "Cocos Nucifera Oil"),
+  then its common names become aliases ("Coconut Oil"). Ranking: official names from the other sources always win;
+  a common name is added only if no entry already uses it and no other GSRS substance claims it. If its names
+  reach several unflagged entries it joins the shortest-named (base) one; if a flagged entry is among them it is
+  skipped. Codes, "impurity" names, dotted chemical names and single vague words ("oil") are not added.
 
 ## e-numbers.csv - MISSING
 
