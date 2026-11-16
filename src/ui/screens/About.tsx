@@ -73,7 +73,7 @@ export function About() {
       </section>
       {index ? <p>Reference version {index.version}</p> : null}
       <p>
-        <a href="/privacy">Privacy policy</a>: no accounts, no tracking; your scans stay on this phone.
+        <a href="/privacy.html">Privacy policy</a>: no accounts, no tracking; your scans stay on this phone.
       </p>
       <p>
         An ingredient that is not on these lists is shown as "No known concern on these lists". That is not a
