@@ -58,3 +58,11 @@ test('result item: a function description reads as a use, not a rating', () => {
   show({ input: 'Glycerin', verdict: 'no_known_concern', matches: [{ key: 'glycerin', verdict: 'no_known_concern', entry: glycerin }] })
   expect(screen.getByText('Used as: humectant, solvent')).toBeInTheDocument()
 })
+
+test('result item: sources sit on one short line; the full wording stays for screen readers', () => {
+  show(watched([listing({ edition: '15th Report on Carcinogens (2021)' }), listing({ source: 'IARC', classification: 'Group 1', year: 2012, qualifier: 'inhalation' })]))
+  const line = screen.getByTestId('sources')
+  expect(line).toHaveTextContent('Source: NTP 2021 · IARC 2012 (inhalation)')
+  expect(screen.queryByText(/Known to be a human carcinogen/)).not.toBeInTheDocument()
+  expect(screen.getByRole('link', { name: 'IARC · Group 1 · 2012' })).toHaveTextContent('IARC 2012')
+})

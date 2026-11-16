@@ -4,6 +4,7 @@ import {
   CHECK_HORMONE,
   checkedAgainst,
   DISCLAIMER,
+  EXTRA_HAZARDS,
   HIDE_HORMONE,
   HORMONE_ON,
   PARTIAL_CHECK,
@@ -71,9 +72,10 @@ export function Result() {
   )
 
   // Cancer is always checked; the hormone check is on when the person turned it on for this product.
-  const hormoneAvailable = !!index?.sources.includes('ED_LISTS')
+  // Saved as 'hormone' (the first extra check) so products saved before reproductive lists existed still open with it on.
+  const hormoneAvailable = !!index?.sources.some((s) => s === 'ED_LISTS' || s === 'PROP65')
   const hormoneOn = hormoneAvailable && !!record?.checks?.includes('hormone')
-  const hazards: Hazard[] = useMemo(() => (hormoneOn ? ['cancer', 'hormone'] : CANCER_ONLY), [hormoneOn])
+  const hazards: Hazard[] = useMemo(() => (hormoneOn ? ['cancer', ...EXTRA_HAZARDS] : CANCER_ONLY), [hormoneOn])
   const results = useMemo(() => (record && index ? analyse(record.ingredients, index, hazards) : []), [record, index, hazards])
 
   const unchecked = results.filter((r) => r.verdict === 'not_recognised')

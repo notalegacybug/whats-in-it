@@ -3,17 +3,26 @@ import { CANCER_ONLY, listingsFor } from '../../reference/analyse'
 import { MyResearch, type ResearchActions } from './MyResearch'
 import type { Hazard, IngredientResult, Listing, Match } from '../../reference/types'
 
-function ListingLine({ listing }: { listing: Listing }) {
-  const text = [SOURCE_LABEL[listing.source], listing.classification, listing.year ?? listing.edition]
-    .filter((part) => part !== null && part !== undefined)
-    .join(' · ')
+// One small line per flagged ingredient: "Source: NTP 2021 · IARC 2012 (inhalation)". The verdict tag already
+// says how strong the listing is, so the full wording is kept for screen readers rather than shown.
+function SourceLine({ listings }: { listings: Listing[] }) {
   return (
-    <li>
-      <a href={listing.url} target="_blank" rel="noopener noreferrer">
-        {text}
-      </a>
-      {listing.qualifier && <span> {listing.qualifier}</span>}
-    </li>
+    <p className="sources" data-testid="sources">
+      Source:{' '}
+      {listings.map((l, i) => {
+        const year = l.year ?? l.edition?.match(/\b(?:19|20)\d{2}\b/)?.[0] ?? null
+        const full = [SOURCE_LABEL[l.source], l.classification, l.year ?? l.edition].filter((p) => p !== null && p !== undefined).join(' · ')
+        return (
+          <span key={i}>
+            {i > 0 && ' · '}
+            <a href={l.url} target="_blank" rel="noopener noreferrer" aria-label={full} title={l.classification}>
+              {[SOURCE_LABEL[l.source], year].filter(Boolean).join(' ')}
+            </a>
+            {l.qualifier && ` (${l.qualifier})`}
+          </span>
+        )
+      })}
+    </p>
   )
 }
 
@@ -30,11 +39,7 @@ function WatchMatch({ input, match, hazards }: { input: string; match: Match; ha
         </p>
       )}
       {entry.caveat && <p>{entry.caveat}</p>}
-      <ul>
-        {listingsFor(entry, hazards).map((l, i) => (
-          <ListingLine key={i} listing={l} />
-        ))}
-      </ul>
+      <SourceLine listings={listingsFor(entry, hazards)} />
       {entry.euCosmeticsBanned && <p>Also banned in EU cosmetics</p>}
     </div>
   )

@@ -452,3 +452,13 @@ progress {
   font-size: 0.9rem;
 }
 .tag.hazard { border-color: var(--text); color: var(--text); }
+
+/* Where a flag comes from: small and quiet, one line, still tappable. */
+.sources {
+  font-size: 0.8rem;
+  color: var(--text-soft);
+  margin: 0.2rem 0 0;
+}
+.sources a {
+  color: var(--text-soft);
+}

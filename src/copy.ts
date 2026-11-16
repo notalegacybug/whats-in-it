@@ -60,11 +60,17 @@ export const HORMONE_SOURCES_ABOUT: { id: SourceId; name: string; url: string }[
 ];
 const ALL_SOURCES = [...SOURCES_ABOUT, ...HORMONE_SOURCES_ABOUT];
 
-export const HAZARD_CHIP: Record<Hazard, string> = { cancer: 'Cancer list', hormone: 'Hormone list' };
-export const CHECK_HORMONE = 'Check hormone disruptors';
-export const HIDE_HORMONE = 'Hide hormone-disruptor check';
+export const HAZARD_CHIP: Record<Hazard, string> = {
+  cancer: 'Cancer list',
+  hormone: 'Hormone list',
+  reproductive: 'Reproductive list',
+};
+// One optional check covers both: hormone disruptors (EU ED Lists) and reproductive harm (Prop 65).
+export const EXTRA_HAZARDS: Hazard[] = ['hormone', 'reproductive'];
+export const CHECK_HORMONE = 'Check hormone & reproductive effects';
+export const HIDE_HORMONE = 'Hide hormone & reproductive check';
 export const HORMONE_ON =
-  'Hormone-disruptor check is on for this product: ingredients are also checked against the EU Endocrine Disruptor Lists.';
+  'Hormone & reproductive check is on for this product: ingredients are also checked against hormone-disruptor and reproductive-harm lists.';
 
 /** The sources that answer the checks in use. */
 export function sourcesFor(sources: SourceId[], hazards: Hazard[]): SourceId[] {
@@ -90,10 +96,10 @@ export function resultSummary(
   const couldnt = unchecked ? ` We couldn't check ${unchecked}.` : '';
   if (flagged) {
     const [verb, pronoun] = flagged === 1 ? ['is', 'It is'] : ['are', 'They are'];
-    return `${flagged} of ${total} ingredients ${verb} on a ${hormone ? 'cancer or hormone-disruptor' : 'cancer'} list. ${pronoun} shown first, under "Watch for".${couldnt}`;
+    return `${flagged} of ${total} ingredients ${verb} on a ${hormone ? 'cancer, hormone or reproductive' : 'cancer'} list. ${pronoun} shown first, under "Watch for".${couldnt}`;
   }
   const names = ALL_SOURCES.filter((s) => sources.includes(s.id)).map((s) => SOURCE_LABEL[s.id]);
-  const lists = hormone ? 'cancer and hormone-disruptor lists' : 'cancer lists';
+  const lists = hormone ? 'cancer, hormone and reproductive lists' : 'cancer lists';
   if (!names.length) return `No cancer lists are loaded yet, so nothing can be flagged.${couldnt}`;
   const n = unchecked ? total - unchecked : total;
   const noun = n === 1 ? 'ingredient' : 'ingredients';

@@ -27,8 +27,9 @@ test('Prop 65: only cancer rows; bracketed route text moves to qualifier', () =>
     qualifier: 'airborne, unbound particles of respirable size',
     url: 'https://oehha.ca.gov/proposition-65/proposition-65-list',
   })
-  expect(out.some((x) => x.name === 'Toluene')).toBe(false) // developmental only
-  expect(out.find((x) => x.name === 'Benzene')).toBeDefined() // cancer among several toxicities
+  const cancer = out.filter((x) => (x.listing.hazard ?? 'cancer') === 'cancer')
+  expect(cancer.some((x) => x.name === 'Toluene')).toBe(false) // developmental only
+  expect(cancer.find((x) => x.name === 'Benzene')).toBeDefined() // cancer among several toxicities
 })
 
 test('Prop 65: year comes from Date Listed, null when absent', () => {
@@ -54,4 +55,22 @@ test('Prop 65: only a route/form parenthetical becomes the qualifier; other brac
   expect(out[0].listing).not.toHaveProperty('qualifier')
   expect(out[1].name).toBe('Titanium dioxide')
   expect(out[1].listing.qualifier).toBe('airborne, unbound particles of respirable size')
+})
+
+
+test('Prop 65: reproductive rows become one reproductive listing, separate from cancer', () => {
+  const out = parseProp65(fixture)
+  const toluene = out.filter((x) => x.name === 'Toluene')
+  expect(toluene.map((x) => x.listing)).toEqual([
+    expect.objectContaining({
+      source: 'PROP65',
+      hazard: 'reproductive',
+      classification: 'Listed as causing developmental or reproductive harm (developmental, female, male)',
+      level: 'possible',
+      year: 1991,
+    }),
+  ])
+  const benzene = out.filter((x) => x.name === 'Benzene').map((x) => x.listing.hazard ?? 'cancer')
+  expect(benzene.sort()).toEqual(['cancer', 'reproductive'])
+  expect(out.filter((x) => x.name === 'Formaldehyde (gas)').map((x) => x.listing.hazard ?? 'cancer')).toEqual(['cancer'])
 })

@@ -74,7 +74,7 @@ export function MyScans() {
               <li key={product.id}>
                 <Link to={`/result/${product.id}`}>{title}</Link>{' '}
                 <span>{new Date(scannedAt).toLocaleDateString()}</span>{' '}
-                <span className="tag">{product.checks?.includes('hormone') ? 'Cancer + hormone check' : 'Cancer check'}</span>{' '}
+                <span className="tag">{product.checks?.includes('hormone') ? 'Cancer + hormone & reproductive check' : 'Cancer check'}</span>{' '}
                 <button type="button" className="link-button" aria-label={`Delete ${title}`} onClick={() => setConfirming(product.id)}>
                   Delete
                 </button>
