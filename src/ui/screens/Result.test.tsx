@@ -147,7 +147,7 @@ test('result: every ingredient carries its own verdict tag', async () => {
     'Watch for: possible',
     "Couldn't check",
     "Couldn't check",
-    'Not on cancer lists checked',
+    'Not on lists checked',
   ])
 })
 

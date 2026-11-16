@@ -11,7 +11,7 @@ export const VERDICT_LABEL: Record<Verdict, string> = {
 export const VERDICT_TAG: Record<Verdict, string> = {
   watch_strong: 'Watch for: strong evidence',
   watch_possible: 'Watch for: possible',
-  no_known_concern: 'Not on cancer lists checked',
+  no_known_concern: 'Not on lists checked',
   not_recognised: "Couldn't check",
 };
 
@@ -35,7 +35,7 @@ export function descriptionNotice(found: number): string {
 }
 
 export const DISCLAIMER =
-  'Not medical advice. Results show whether an ingredient appears on published cancer lists (and, when you turn it on, hormone-disruptor lists). A listing describes a hazard, not the risk from this product.';
+  'Not medical advice. Results show whether an ingredient appears on published cancer lists (and, when you turn it on, hormone and reproductive lists). A listing describes a hazard, not the risk from this product.';
 
 export const OCR_EMPTY_MESSAGE = "We couldn't read any ingredients. Type or paste them below.";
 
