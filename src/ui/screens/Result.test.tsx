@@ -286,3 +286,13 @@ test('result: a saved "may contain" warning shows as allergen tags under the sum
   await screen.findByRole('heading', { level: 1 })
   expect(screen.getByTestId('may-contain')).toHaveTextContent('Label says it may contain: peanuts, tree nuts')
 })
+
+test('turning on the extra check gives a clear answer next to the button and at the top, even when nothing is found', async () => {
+  const user = userEvent.setup()
+  const index = buildIndex({ version: 'v', builtAt: 'x', sources: ['NTP', 'ED_LISTS', 'PROP65'], entries: [{ id: 'name:glycerin', name: 'Glycerin', aliases: [], cas: [], listings: [] }] })
+  renderScreen(<Result />, { route: '/result/p1', path: '/result/:id', store: fakeStore([record({ ingredients: ['Glycerin'] })]), index })
+  await user.click(await screen.findByRole('button', { name: 'Check hormone & reproductive effects' }))
+  expect(screen.getByTestId('extra-check-result')).toHaveTextContent('Hormone & reproductive check: none of the ingredients are on these lists.')
+  expect(screen.getByTestId('check-lines')).toHaveTextContent('Hormone & reproductive lists: none found')
+  expect(screen.getByTestId('check-lines')).toHaveTextContent('Cancer lists: none found')
+})

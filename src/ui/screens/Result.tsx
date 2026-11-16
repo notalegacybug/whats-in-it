@@ -15,7 +15,7 @@ import {
 import { deleteNote, getNotes, saveNote, type MyNote } from '../../notes/myNotes'
 import type { ProductRecord } from '../../products/types'
 import { allergensOf } from '../../reference/allergens'
-import { analyse, CANCER_ONLY, SEVERITY } from '../../reference/analyse'
+import { analyse, CANCER_ONLY, listingsFor, SEVERITY } from '../../reference/analyse'
 import type { Hazard } from '../../reference/types'
 import { addScan } from '../../scans/myScans'
 import type { ResearchActions } from '../components/MyResearch'
@@ -83,6 +83,14 @@ export function Result() {
   const unchecked = results.filter((r) => r.verdict === 'not_recognised')
   const researched = unchecked.filter((r) => r.matches.some((m) => !m.entry && notes.has(m.key))).length
   const withAllergens = results.filter((r) => allergensOf(r).length > 0).length
+  // Per check: how many ingredients are on its lists, so a clean result is stated, not implied.
+  const onLists = (hz: Hazard[]) =>
+    results.filter((r) => r.matches.some((m) => m.entry && listingsFor(m.entry, hz).length > 0)).length
+  const countFor = (hz: Hazard[]) => {
+    const n = onLists(hz)
+    return n === 0 ? 'none found' : `${n} found`
+  }
+  const extraFound = onLists(EXTRA_HAZARDS)
   const sources = sourcesFor(index?.sources ?? [], hazards)
   const checked = checkedAgainst(sources)
   const summary =
@@ -143,6 +151,12 @@ export function Result() {
           {summary}
         </p>
       )}
+      {results.length > 0 && (
+        <ul className="check-lines" data-testid="check-lines">
+          <li>{`Cancer lists: ${countFor(['cancer'])}`}</li>
+          {hormoneOn && <li>{`Hormone & reproductive lists: ${countFor(EXTRA_HAZARDS)}`}</li>}
+        </ul>
+      )}
       <MayContain groups={record.mayContain ?? []} />
       {SEVERITY.map((verdict) => {
         const items = results.filter((r) => r.verdict === verdict)
@@ -164,6 +178,13 @@ export function Result() {
       <p className="checked-against">{checked}</p>
       <p className="disclaimer">{DISCLAIMER}</p>
       <p>
+        {hormoneOn && (
+          <span className="extra-check-result" data-testid="extra-check-result" role="status">
+            {extraFound === 0
+              ? 'Hormone & reproductive check: none of the ingredients are on these lists.'
+              : `Hormone & reproductive check: ${extraFound} ingredient${extraFound === 1 ? ' is' : 's are'} on these lists, shown above under "Watch for".`}
+          </span>
+        )}
         {hormoneAvailable && (
           <button type="button" className={hormoneOn ? undefined : 'primary'} onClick={() => void setHormone(!hormoneOn)}>
             {hormoneOn ? HIDE_HORMONE : CHECK_HORMONE}

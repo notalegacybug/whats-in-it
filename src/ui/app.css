@@ -465,3 +465,5 @@ progress {
 /* Allergens are information for sensitive people, not a hazard verdict: a calm teal outline. */
 .tag.allergen { border-color: var(--brand); color: var(--brand); background: var(--brand-soft); }
 .may-contain { font-size: 0.9rem; color: var(--text-soft); margin: 0.5rem 0; }
+.check-lines { list-style: none; padding: 0; margin: 0.5rem 0; font-size: 0.9rem; color: var(--text-soft); }
+.extra-check-result { display: block; margin: 0.5rem 0; padding: 0.6rem 0.9rem; border-radius: 0.6rem; background: var(--brand-soft); font-weight: 600; }
