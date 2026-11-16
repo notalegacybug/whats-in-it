@@ -27,6 +27,8 @@ export interface RefEntry {
   functionNote?: string // inventory function, e.g. "humectant"
   caveat?: string
   euCosmeticsBanned?: boolean
+  /** On the EU list of fragrance allergens that cosmetics must name on the label. */
+  fragranceAllergen?: boolean
 }
 
 export interface Reference {

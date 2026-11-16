@@ -14,6 +14,7 @@ import {
 } from '../../copy'
 import { deleteNote, getNotes, saveNote, type MyNote } from '../../notes/myNotes'
 import type { ProductRecord } from '../../products/types'
+import { allergensOf } from '../../reference/allergens'
 import { analyse, CANCER_ONLY, SEVERITY } from '../../reference/analyse'
 import type { Hazard } from '../../reference/types'
 import { addScan } from '../../scans/myScans'
@@ -80,6 +81,7 @@ export function Result() {
 
   const unchecked = results.filter((r) => r.verdict === 'not_recognised')
   const researched = unchecked.filter((r) => r.matches.some((m) => !m.entry && notes.has(m.key))).length
+  const withAllergens = results.filter((r) => allergensOf(r).length > 0).length
   const sources = sourcesFor(index?.sources ?? [], hazards)
   const checked = checkedAgainst(sources)
   const summary =
@@ -91,7 +93,9 @@ export function Result() {
       },
       sources,
       hormoneOn,
-    ) + (researched ? ` You added your own research for ${researched}.` : '')
+    ) +
+    (withAllergens ? ` ${withAllergens} contain${withAllergens === 1 ? 's' : ''} a known allergen.` : '') +
+    (researched ? ` You added your own research for ${researched}.` : '')
 
   if (record === undefined) return <p role="status">Loading…</p>
   if (record === null) {

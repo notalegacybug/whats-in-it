@@ -257,3 +257,25 @@ describe('hormone-disruptor check', () => {
     expect(screen.queryByRole('button', { name: 'Check hormone & reproductive effects' })).not.toBeInTheDocument()
   })
 })
+
+describe('allergen tags', () => {
+  const allergenIndex = buildIndex({
+    version: 'v-a',
+    builtAt: '2026-01-01',
+    sources: ['NTP'],
+    entries: [
+      { id: 'cas:78-70-6', name: 'Linalool', aliases: [], cas: ['78-70-6'], listings: [], fragranceAllergen: true },
+      { id: 'name:glycerin', name: 'Glycerin', aliases: [], cas: [], listings: [] },
+    ],
+  })
+
+  test('fragrance and food allergens get a small tag each; the summary counts them; verdicts are unchanged', async () => {
+    const store = fakeStore([record({ ingredients: ['Linalool', 'Glycerin', 'Whole Milk Powder', 'Soya Lecithin'] })])
+    renderScreen(<Result />, { route: '/result/p1', path: '/result/:id', store, index: allergenIndex })
+    await screen.findByRole('heading', { level: 1 })
+    const tags = screen.getAllByTestId('allergen-tag').map((t) => t.textContent).sort()
+    expect(tags).toEqual(['Allergen: fragrance', 'Allergen: milk', 'Allergen: soy'])
+    expect(screen.getByTestId('result-summary')).toHaveTextContent('3 contain a known allergen.')
+    expect(screen.queryByRole('heading', { name: /Watch for/ })).not.toBeInTheDocument()
+  })
+})

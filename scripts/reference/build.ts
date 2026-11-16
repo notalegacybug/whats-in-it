@@ -10,6 +10,7 @@ import { COLUMNS as ED_LISTS_COLUMNS, parseEdLists } from './adapters/edLists'
 import { COLUMNS as ENUMBERS_COLUMNS, parseENumbers } from './adapters/eNumbers'
 import { COLUMNS as EU_CLP_COLUMNS, parseEuClp } from './adapters/euClp'
 import { COLUMNS as FDA_COLUMNS, parseFda } from './adapters/fda'
+import { COLUMNS as ALLERGEN_COLUMNS, parseFragranceAllergens } from './adapters/fragranceAllergens'
 import { COLUMNS as GSRS_COLUMNS, parseGsrs } from './adapters/gsrs'
 import { COLUMNS as IARC_COLUMNS, parseIarc } from './adapters/iarc'
 import { COLUMNS as NTP_COLUMNS, parseNtp } from './adapters/ntp'
@@ -21,7 +22,7 @@ import { mergeReference } from './merge'
 import { withEdition } from './util'
 import { checkNotes } from './notesCheck'
 import { parseAliasOverrides } from './overrides'
-import type { CatalogueRecord, CommonNameGroup, NotesFile, Row, SourceRecord } from './types'
+import type { CatalogueRecord, CommonNameGroup, FragranceAllergen, NotesFile, Row, SourceRecord } from './types'
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..', '..')
 const path = (...parts: string[]) => join(ROOT, ...parts)
@@ -70,6 +71,13 @@ const catalogueSources: Source<CatalogueRecord>[] = [
 const nameSources: Source<CommonNameGroup>[] = [
   { label: 'gsrs', file: 'gsrs-names.csv', columns: GSRS_COLUMNS, parse: parseGsrs },
 ]
+
+const allergenSource: Source<FragranceAllergen> = {
+  label: 'allergens',
+  file: 'eu-fragrance-allergens.csv',
+  columns: ALLERGEN_COLUMNS,
+  parse: parseFragranceAllergens,
+}
 
 const problems: string[] = []
 const summary: string[] = []
@@ -172,6 +180,7 @@ function main(): number {
   for (const s of catalogueSources) catalogue.push(...(load(s, false, config) ?? []))
   const overridesFile = path('data', 'overrides', 'aliases.csv')
   const aliasOverrides = existsSync(overridesFile) ? parseAliasOverrides(readCsv(overridesFile).rows) : []
+  const fragranceAllergens = load(allergenSource, false, config) ?? []
   const commonNames = [aliasOverrides, ...nameSources.map((s) => load(s, false, config) ?? [])]
 
   const caslessAllow = loadCaslessAllow()
@@ -191,6 +200,7 @@ function main(): number {
     notes,
     caslessAllow,
     commonNames,
+    fragranceAllergens,
     version,
     builtAt: new Date().toISOString(),
   })

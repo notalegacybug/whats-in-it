@@ -49,6 +49,28 @@ export function About() {
           <SourceLinks sources={hormone} />
         </section>
       )}
+      <section aria-labelledby="allergens">
+        <h2 id="allergens">Allergen tags</h2>
+        <p>
+          Always on, for information. They do not change whether an ingredient is listed under "Watch for".
+        </p>
+        <ul>
+          <li>
+            Fragrance allergens: the substances EU law requires cosmetics to name on the label (
+            <a href="https://ec.europa.eu/growth/tools-databases/cosing/" target="_blank" rel="noopener noreferrer">
+              EU CosIng, Annex III
+            </a>
+            ).
+          </li>
+          <li>
+            Food allergens: the 14 groups EU law requires food labels to highlight (
+            <a href="https://eur-lex.europa.eu/eli/reg/2011/1169/oj" target="_blank" rel="noopener noreferrer">
+              Regulation (EU) No 1169/2011, Annex II
+            </a>
+            ), matched by ingredient name.
+          </li>
+        </ul>
+      </section>
       {index ? <p>Reference version {index.version}</p> : null}
       <p>
         An ingredient that is not on these lists is shown as "No known concern on these lists". That is not a

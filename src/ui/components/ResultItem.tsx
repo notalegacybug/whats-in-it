@@ -1,4 +1,5 @@
 import { HAZARD_CHIP, MY_TAG_LABEL, SOURCE_LABEL, USED_AS, VERDICT_TAG } from '../../copy'
+import { allergensOf } from '../../reference/allergens'
 import { CANCER_ONLY, listingsFor } from '../../reference/analyse'
 import { MyResearch, type ResearchActions } from './MyResearch'
 import type { Hazard, IngredientResult, Listing, Match } from '../../reference/types'
@@ -77,6 +78,12 @@ export function ResultItem({
             <span className={`tag hazard ${h}`}>{HAZARD_CHIP[h]}</span>
           </span>
         ))}
+      {allergensOf(result).map((a) => (
+        <span key={a}>
+          {' '}
+          <span className="tag allergen" data-testid="allergen-tag">{`Allergen: ${a}`}</span>
+        </span>
+      ))}
       {yourTags.map((t) => (
         <span key={t}>
           {' '}

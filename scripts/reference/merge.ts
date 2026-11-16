@@ -1,6 +1,6 @@
 import type { Listing, RefEntry, Reference } from '../../src/reference/types'
 import { normalizeName } from '../../src/ingredients/normalize'
-import type { CatalogueRecord, CommonNameGroup, NotesFile, SourceRecord } from './types'
+import type { CatalogueRecord, CommonNameGroup, FragranceAllergen, NotesFile, SourceRecord } from './types'
 
 const MIN_ALIAS_LENGTH = 3
 
@@ -18,6 +18,8 @@ export interface MergeInput {
   caslessAllow: Set<string>
   // Name-only sources, highest rank first (e.g. FDA GSRS); they add everyday names, never listings.
   commonNames?: CommonNameGroup[][]
+  // EU label-required fragrance allergens: a mark on the entry, never a listing or verdict.
+  fragranceAllergens?: FragranceAllergen[]
   version: string
   builtAt: string
 }
@@ -71,6 +73,7 @@ export function mergeReference(a: MergeInput): { reference: Reference; missingNo
   cleanAliases(entries)
   cleanCas(entries)
   addCommonNames(entries, a.commonNames ?? [])
+  markFragranceAllergens(entries, a.fragranceAllergens ?? [])
   entries.sort((x, y) => (x.id < y.id ? -1 : x.id > y.id ? 1 : 0))
 
   const missingNotes = [...groups.values()]
@@ -238,4 +241,13 @@ function addCommonNames(entries: RefEntry[], sources: CommonNameGroup[][]): void
     }
   }
   for (const e of entries) e.aliases.sort()
+}
+
+// Marked by CAS number or by any label name (e.g. "Citral" also covers "Geranial" and "Neral").
+function markFragranceAllergens(entries: RefEntry[], allergens: FragranceAllergen[]): void {
+  const cas = new Set(allergens.flatMap((a) => a.cas))
+  const names = new Set(allergens.flatMap((a) => a.names.map(normalizeName)))
+  for (const e of entries) {
+    if (e.cas.some((c) => cas.has(c)) || [e.name, ...e.aliases].some((n) => names.has(normalizeName(n)))) e.fragranceAllergen = true
+  }
 }

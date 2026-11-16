@@ -353,3 +353,23 @@ test('hand-checked label words rank above every other name source', () => {
   })
   expect(reference.entries.find((e) => e.name === 'PARFUM')!.aliases).toContain('fragrance')
 })
+
+test('fragrance allergens are marked by CAS number or label name, and never add a listing', () => {
+  const linalool = cat('LINALOOL', ['78-70-6'])
+  const citral = cat('CITRAL', [])
+  const glycerinEntry = cat('Glycerin', ['56-81-5'])
+  const { reference } = mergeReference({
+    flagged: [],
+    catalogue: [linalool, citral, glycerinEntry],
+    fragranceAllergens: [
+      { names: ['Linalool'], cas: ['78-70-6'] },
+      { names: ['Citral', 'Geranial', 'Neral'], cas: ['5392-40-5'] },
+    ],
+    ...base,
+  })
+  const byName = Object.fromEntries(reference.entries.map((e) => [e.name, e]))
+  expect(byName.LINALOOL.fragranceAllergen).toBe(true)
+  expect(byName.CITRAL.fragranceAllergen).toBe(true)
+  expect(byName.Glycerin.fragranceAllergen).toBeUndefined()
+  expect(reference.entries.every((e) => e.listings.length === 0)).toBe(true)
+})

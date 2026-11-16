@@ -14,6 +14,7 @@ an adapter in `scripts/reference/adapters/`. Downloaded originals live in `origi
 | `cosing.csv` | obtained via the CosIng search API (ingredient inventory) | 33658 |
 | `e-numbers.csv` | **MISSING**, not built (ingredient inventory) | - |
 | `edlists.csv` | obtained (hormone-disruptor lists I, II, III; optional check) | 400 rows |
+| `eu-fragrance-allergens.csv` | obtained via the CosIng search API (allergen tags) | 65 entries |
 | `gsrs-names.csv` | obtained (everyday names only, ranked below official names) | 16467 substances |
 
 ## Build settings: `config.json`
@@ -173,6 +174,19 @@ reconstructed from memory. When the real files arrive, compare their headers wit
   endocrine disruptor at EU level"); List II ("Under EU evaluation") and List III ("Considered an endocrine
   disruptor by a national authority") = possible. Hand-written notes are not required for hormone-only
   entries; the result shows the ingredient's function instead.
+
+## eu-fragrance-allergens.csv
+
+- **Source:** EU CosIng (CC BY 4.0), Annex III substances whose condition says their presence must be indicated
+  in the list of ingredients above 0.001% (leave-on) / 0.01% (rinse-off): the EU fragrance-allergen rule,
+  including the 2023 additions (Regulation (EU) 2023/1545). Collected 2026-11-16 by
+  `node scripts/fetch-fragrance-allergens.mjs`; 65 entries (some name several substances, e.g. Citral; Geranial; Neral).
+- **Columns:** `Name` (label names, `;`-separated), `Chemical name`, `CAS`, `Annex III ref`.
+- **Use:** marks matching entries (by CAS or label name) with `fragranceAllergen`; shown as an "Allergen:
+  fragrance" tag. Never a listing or verdict. CosIng shares one CAS across some plant oils and extracts, so a few
+  related extracts are also marked.
+- **Food allergens** are not a data file: `src/reference/foodAllergens.ts` holds the 14 EU groups (Regulation (EU)
+  No 1169/2011, Annex II) as hand-checked whole-word patterns, tested in `foodAllergens.test.ts`.
 
 ## gsrs-names.csv
 

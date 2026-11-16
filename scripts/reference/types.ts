@@ -30,3 +30,9 @@ export interface CommonNameGroup {
   joinNames: string[]
   commonNames: string[]
 }
+
+// A substance the EU requires cosmetics to name on the label as a fragrance allergen.
+export interface FragranceAllergen {
+  names: string[]
+  cas: string[]
+}
