@@ -202,3 +202,58 @@ test('result: edit ingredients opens the review screen with this product loaded'
   await user.click(await screen.findByRole('button', { name: 'Edit ingredients' }))
   expect(screen.getByTestId('where')).toHaveTextContent('/review')
 })
+
+describe('hormone-disruptor check', () => {
+  const user = userEvent.setup()
+  const hormoneIndex = buildIndex({
+    version: 'v-h',
+    builtAt: '2026-01-01',
+    sources: ['NTP', 'ED_LISTS'],
+    entries: [
+      {
+        id: 'cas:94-26-8',
+        name: 'Butylparaben',
+        aliases: [],
+        cas: ['94-26-8'],
+        functionNote: 'preservative',
+        listings: [
+          { source: 'ED_LISTS', hazard: 'hormone', classification: 'Identified as an endocrine disruptor at EU level', level: 'strong', year: 2020, url: 'https://edlists.org/x' },
+        ],
+      },
+      { id: 'name:glycerin', name: 'Glycerin', aliases: [], cas: [], listings: [] },
+    ],
+  })
+  const open = (over = {}) => {
+    const store = fakeStore([record({ ingredients: ['Butylparaben', 'Glycerin'], ...over })])
+    renderScreen(<Result />, { route: '/result/p1', path: '/result/:id', store, index: hormoneIndex })
+    return store
+  }
+
+  test('off by default: a hormone-listed ingredient is not flagged until the check is turned on', async () => {
+    const store = open()
+    await screen.findByRole('heading', { level: 1 })
+    expect(screen.queryByRole('heading', { name: /Watch for/ })).not.toBeInTheDocument()
+    await user.click(screen.getByRole('button', { name: 'Check hormone disruptors' }))
+    expect(screen.getByRole('heading', { name: 'Watch for (strong evidence) (1)' })).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'EU ED Lists · Identified as an endocrine disruptor at EU level · 2020' })).toBeInTheDocument()
+    expect(screen.getByText('Hormone list')).toBeInTheDocument()
+    expect(screen.getByText('Used as: preservative')).toBeInTheDocument()
+    expect(screen.getByTestId('result-summary')).toHaveTextContent('1 of 2 ingredients is on a cancer or hormone-disruptor list.')
+    expect(screen.getAllByText('Checked against: NTP, EU ED Lists').length).toBeGreaterThan(0)
+    expect(store.setChecks).toHaveBeenCalledWith('p1', ['hormone'])
+  })
+
+  test('a product saved with the check on opens with it on, and it can be hidden again', async () => {
+    const store = open({ checks: ['hormone'] })
+    expect(await screen.findByRole('heading', { name: 'Watch for (strong evidence) (1)' })).toBeInTheDocument()
+    await user.click(screen.getByRole('button', { name: 'Hide hormone-disruptor check' }))
+    expect(screen.queryByRole('heading', { name: /Watch for/ })).not.toBeInTheDocument()
+    expect(store.setChecks).toHaveBeenCalledWith('p1', [])
+  })
+
+  test('no button when the reference has no hormone lists', async () => {
+    renderResult()
+    await screen.findByRole('heading', { level: 1 })
+    expect(screen.queryByRole('button', { name: 'Check hormone disruptors' })).not.toBeInTheDocument()
+  })
+})

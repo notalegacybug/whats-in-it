@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { DISCLAIMER, NOT_YET_INCLUDED, SOURCES_ABOUT } from '../../copy'
+import { CHECK_HORMONE, DISCLAIMER, HORMONE_SOURCES_ABOUT, NOT_YET_INCLUDED, SOURCES_ABOUT } from '../../copy'
 import { useReference } from '../ReferenceGate'
 
 type SourceAbout = (typeof SOURCES_ABOUT)[number]
@@ -21,6 +21,7 @@ export function About() {
   const included = index?.sources ?? []
   const checked = SOURCES_ABOUT.filter((s) => included.includes(s.id))
   const notYet = SOURCES_ABOUT.filter((s) => !included.includes(s.id))
+  const hormone = HORMONE_SOURCES_ABOUT.filter((s) => included.includes(s.id))
   return (
     <main>
       <p><Link to="/">Home</Link></p>
@@ -35,6 +36,16 @@ export function About() {
           <h2 id="not-yet-included">Not yet included</h2>
           <p>{NOT_YET_INCLUDED}</p>
           <SourceLinks sources={notYet} />
+        </section>
+      )}
+      {hormone.length > 0 && (
+        <section aria-labelledby="hormone-check">
+          <h2 id="hormone-check">Hormone-disruptor check (optional)</h2>
+          <p>
+            Turn it on from a result with "{CHECK_HORMONE}". Only substances listed for effects on human health
+            are used. "Under evaluation" means a review is in progress, not a finding.
+          </p>
+          <SourceLinks sources={hormone} />
         </section>
       )}
       {index ? <p>Reference version {index.version}</p> : null}

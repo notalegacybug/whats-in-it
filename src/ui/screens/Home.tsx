@@ -4,7 +4,7 @@ export function Home() {
   return (
     <main>
       <h1>Ingredient Safety</h1>
-      <p className="lede">Check a food or cosmetic label against published cancer hazard lists.</p>
+      <p className="lede">Check a food or cosmetic label against published cancer lists, and optionally hormone-disruptor lists.</p>
       <nav aria-label="Ways to check a label">
         <ul className="actions">
           <li>

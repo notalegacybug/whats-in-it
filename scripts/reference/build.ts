@@ -6,6 +6,7 @@ import Papa from 'papaparse'
 import type { Reference, SourceId } from '../../src/reference/types'
 import { normalizeName } from '../../src/ingredients/normalize'
 import { COLUMNS as COSING_COLUMNS, parseCosing } from './adapters/cosing'
+import { COLUMNS as ED_LISTS_COLUMNS, parseEdLists } from './adapters/edLists'
 import { COLUMNS as ENUMBERS_COLUMNS, parseENumbers } from './adapters/eNumbers'
 import { COLUMNS as EU_CLP_COLUMNS, parseEuClp } from './adapters/euClp'
 import { COLUMNS as FDA_COLUMNS, parseFda } from './adapters/fda'
@@ -43,7 +44,7 @@ interface Source<T> {
   parse: (rows: Row[], config: Config) => T[]
 }
 
-const HAZARD_IDS: SourceId[] = ['IARC', 'NTP', 'PROP65', 'EU_CLP']
+const HAZARD_IDS: SourceId[] = ['IARC', 'NTP', 'PROP65', 'EU_CLP', 'ED_LISTS']
 
 const hazardSources: (Source<SourceRecord> & { id: SourceId })[] = [
   { id: 'IARC', label: 'IARC', file: 'iarc.csv', columns: IARC_COLUMNS, parse: parseIarc },
@@ -56,6 +57,7 @@ const hazardSources: (Source<SourceRecord> & { id: SourceId })[] = [
     columns: EU_CLP_COLUMNS,
     parse: (rows, config) => parseEuClp(rows, config.euClpAnnexYear as number),
   },
+  { id: 'ED_LISTS', label: 'ED_LISTS', file: 'edlists.csv', columns: ED_LISTS_COLUMNS, parse: parseEdLists },
 ]
 
 const catalogueSources: Source<CatalogueRecord>[] = [

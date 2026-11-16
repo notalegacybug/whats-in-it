@@ -13,6 +13,7 @@ an adapter in `scripts/reference/adapters/`. Downloaded originals live in `origi
 | `fda-saf.csv` | obtained (ingredient inventory) | 3970 |
 | `cosing.csv` | obtained via the CosIng search API (ingredient inventory) | 33658 |
 | `e-numbers.csv` | **MISSING**, not built (ingredient inventory) | - |
+| `edlists.csv` | obtained (hormone-disruptor lists I, II, III; optional check) | 400 rows |
 | `gsrs-names.csv` | obtained (everyday names only, ranked below official names) | 16467 substances |
 
 ## Build settings: `config.json`
@@ -158,6 +159,22 @@ reconstructed from memory. When the real files arrive, compare their headers wit
 - **Merging:** rows sharing a first CAS number merge. A secondary CAS number held by two entries is kept only
   where it is the main number. Entries with the same main name merge, so a label name never resolves to an
   unlisted twin of a listed substance (for example lead acetate under two CAS numbers).
+
+## edlists.csv
+
+- **Source:** EU Endocrine Disruptor Lists, https://edlists.org, run by national authorities of several EU
+  countries and administered by the Danish Environmental Protection Agency. Collected 2026-11-16 by
+  `node scripts/fetch-edlists.mjs`, which reads the table on each list's web page (the site's Excel export
+  refuses scripted requests). Pages are kept in `original/edlists/` (git-ignored).
+- **Reuse terms:** the site states no licence. The rows are regulatory facts (substance, list, status, year)
+  and every listing links back to the list. **Owner to confirm** with the site if the app is published widely.
+- **Columns:** `Name` (names separated by `;`), `CAS` (one or more), `EC`, `Health effects`,
+  `Environmental effects`, `Status`, `Year`, `Regulatory field`, `List`.
+- **Use:** hazard `hormone`, off by default; the person turns it on per product. Only rows with
+  `Health effects` = Yes are used (many List I rows concern wildlife only). List I = strong ("Identified as an
+  endocrine disruptor at EU level"); List II ("Under EU evaluation") and List III ("Considered an endocrine
+  disruptor by a national authority") = possible. Hand-written notes are not required for hormone-only
+  entries; the result shows the ingredient's function instead.
 
 ## gsrs-names.csv
 

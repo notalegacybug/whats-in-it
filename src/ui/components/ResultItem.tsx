@@ -1,6 +1,7 @@
-import { MY_TAG_LABEL, SOURCE_LABEL, USED_AS, VERDICT_TAG } from '../../copy'
+import { HAZARD_CHIP, MY_TAG_LABEL, SOURCE_LABEL, USED_AS, VERDICT_TAG } from '../../copy'
+import { CANCER_ONLY, listingsFor } from '../../reference/analyse'
 import { MyResearch, type ResearchActions } from './MyResearch'
-import type { IngredientResult, Listing, Match } from '../../reference/types'
+import type { Hazard, IngredientResult, Listing, Match } from '../../reference/types'
 
 function ListingLine({ listing }: { listing: Listing }) {
   const text = [SOURCE_LABEL[listing.source], listing.classification, listing.year ?? listing.edition]
@@ -16,15 +17,21 @@ function ListingLine({ listing }: { listing: Listing }) {
   )
 }
 
-function WatchMatch({ input, match }: { input: string; match: Match }) {
+function WatchMatch({ input, match, hazards }: { input: string; match: Match; hazards: Hazard[] }) {
   const entry = match.entry!
   return (
     <div className="match">
       {entry.name.toLowerCase() !== input.trim().toLowerCase() && <p>Matched as {entry.name}</p>}
       {entry.note && <p>{entry.note}</p>}
+      {!entry.note && entry.functionNote && (
+        <p>
+          {USED_AS}
+          {entry.functionNote}
+        </p>
+      )}
       {entry.caveat && <p>{entry.caveat}</p>}
       <ul>
-        {entry.listings.map((l, i) => (
+        {listingsFor(entry, hazards).map((l, i) => (
           <ListingLine key={i} listing={l} />
         ))}
       </ul>
@@ -33,7 +40,15 @@ function WatchMatch({ input, match }: { input: string; match: Match }) {
   )
 }
 
-export function ResultItem({ result, research }: { result: IngredientResult; research?: ResearchActions }) {
+export function ResultItem({
+  result,
+  research,
+  hazards = CANCER_ONLY,
+}: {
+  result: IngredientResult
+  research?: ResearchActions
+  hazards?: Hazard[]
+}) {
   const watching = result.matches.filter((m) => m.verdict === 'watch_strong' || m.verdict === 'watch_possible')
   const first = result.matches[0]?.entry
   // When some parts were recognised, name only the ones that were not, so the person knows what to look at.
@@ -49,6 +64,14 @@ export function ResultItem({ result, research }: { result: IngredientResult; res
       <span className={`tag ${result.verdict}`} data-testid="verdict-tag">
         {VERDICT_TAG[result.verdict]}
       </span>
+      {/* With more than one check on, say which kind of list each flagged ingredient is on. */}
+      {hazards.length > 1 &&
+        [...new Set(watching.flatMap((m) => listingsFor(m.entry!, hazards).map((l) => l.hazard ?? 'cancer')))].map((h) => (
+          <span key={h}>
+            {' '}
+            <span className={`tag hazard ${h}`}>{HAZARD_CHIP[h]}</span>
+          </span>
+        ))}
       {yourTags.map((t) => (
         <span key={t}>
           {' '}
@@ -69,7 +92,7 @@ export function ResultItem({ result, research }: { result: IngredientResult; res
         </p>
       )}
       {watching.map((m) => (
-        <WatchMatch key={m.key} input={result.input} match={m} />
+        <WatchMatch key={m.key} input={result.input} match={m} hazards={hazards} />
       ))}
     </li>
   )

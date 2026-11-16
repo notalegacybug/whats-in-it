@@ -59,7 +59,7 @@ Listed entries that a person could meet on a label get a short hand-checked note
   is and where it comes from, nothing more.
 - After changing notes, bump the version, rebuild, and run `npm run reference:sample` so the sample shows the new text.
 
-## Current data state (reference 2026.11.5)
+## Current data state (reference 2026.11.7)
 
 | Source | Kind | State |
 | --- | --- | --- |
@@ -70,6 +70,7 @@ Listed entries that a person could meet on a label get a short hand-checked note
 | FDA Substances Added to Food | ingredient inventory | included |
 | EU CosIng | ingredient inventory | included (33,658 ingredients, collected by `node scripts/fetch-cosing.mjs`) |
 | EU E numbers | ingredient inventory | **missing** |
+| EU Endocrine Disruptor Lists (edlists.org) | hormone-disruptor lists, optional check | included (111 listed entries), collected by `node scripts/fetch-edlists.mjs` |
 | US FDA GSRS (UNII names) | everyday names (e.g. Coconut Oil) | included, collected by `node scripts/fetch-gsrs.mjs` |
 
 The app states this to users: the About screen lists the included lists under "Checked against" and the rest under

@@ -74,7 +74,8 @@ export function mergeReference(a: MergeInput): { reference: Reference; missingNo
   entries.sort((x, y) => (x.id < y.id ? -1 : x.id > y.id ? 1 : 0))
 
   const missingNotes = [...groups.values()]
-    .filter((g) => g.flagged.length > 0 && g.catalogue.length > 0 && !a.notes[g.id])
+    // Hand-written notes are required for cancer listings; hormone-only entries fall back to their function text.
+    .filter((g) => g.flagged.some((r) => r.listing.hazard !== 'hormone') && g.catalogue.length > 0 && !a.notes[g.id])
     .map((g) => g.id)
     .sort()
 
@@ -143,7 +144,7 @@ function uniqueListings(listings: Listing[]): Listing[] {
   const seen = new Set<string>()
   const out: Listing[] = []
   for (const l of listings) {
-    const key = JSON.stringify([l.source, l.classification, l.level, l.year, l.url, l.qualifier ?? null, l.edition ?? null])
+    const key = JSON.stringify([l.source, l.hazard ?? null, l.classification, l.level, l.year, l.url, l.qualifier ?? null, l.edition ?? null])
     if (!seen.has(key)) {
       seen.add(key)
       out.push(l)

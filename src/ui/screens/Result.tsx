@@ -1,9 +1,20 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
-import { checkedAgainst, DISCLAIMER, PARTIAL_CHECK, resultSummary, VERDICT_LABEL } from '../../copy'
+import {
+  CHECK_HORMONE,
+  checkedAgainst,
+  DISCLAIMER,
+  HIDE_HORMONE,
+  HORMONE_ON,
+  PARTIAL_CHECK,
+  resultSummary,
+  sourcesFor,
+  VERDICT_LABEL,
+} from '../../copy'
 import { deleteNote, getNotes, saveNote, type MyNote } from '../../notes/myNotes'
 import type { ProductRecord } from '../../products/types'
-import { analyse, SEVERITY } from '../../reference/analyse'
+import { analyse, CANCER_ONLY, SEVERITY } from '../../reference/analyse'
+import type { Hazard } from '../../reference/types'
 import { addScan } from '../../scans/myScans'
 import type { ResearchActions } from '../components/MyResearch'
 import { ResultItem } from '../components/ResultItem'
@@ -59,11 +70,16 @@ export function Result() {
     [notes, refreshNotes],
   )
 
-  const results = useMemo(() => (record && index ? analyse(record.ingredients, index) : []), [record, index])
+  // Cancer is always checked; the hormone check is on when the person turned it on for this product.
+  const hormoneAvailable = !!index?.sources.includes('ED_LISTS')
+  const hormoneOn = hormoneAvailable && !!record?.checks?.includes('hormone')
+  const hazards: Hazard[] = useMemo(() => (hormoneOn ? ['cancer', 'hormone'] : CANCER_ONLY), [hormoneOn])
+  const results = useMemo(() => (record && index ? analyse(record.ingredients, index, hazards) : []), [record, index, hazards])
 
   const unchecked = results.filter((r) => r.verdict === 'not_recognised')
   const researched = unchecked.filter((r) => r.matches.some((m) => !m.entry && notes.has(m.key))).length
-  const checked = checkedAgainst(index?.sources ?? [])
+  const sources = sourcesFor(index?.sources ?? [], hazards)
+  const checked = checkedAgainst(sources)
   const summary =
     resultSummary(
       {
@@ -71,7 +87,8 @@ export function Result() {
         unchecked: unchecked.length,
         total: results.length,
       },
-      index?.sources ?? [],
+      sources,
+      hormoneOn,
     ) + (researched ? ` You added your own research for ${researched}.` : '')
 
   if (record === undefined) return <p role="status">Loading…</p>
@@ -82,6 +99,14 @@ export function Result() {
         <Link to="/">Back to start</Link>
       </main>
     )
+  }
+
+  // Saved on the product, so it opens the same way next time and shows in My scans.
+  async function setHormone(on: boolean) {
+    if (!record) return
+    const checks: Hazard[] = on ? ['hormone'] : []
+    setRecord({ ...record, checks })
+    await store.setChecks(record.id, checks).catch(() => {})
   }
 
   // Fixing a misread name starts a new version of this product; the saved one is kept.
@@ -101,6 +126,11 @@ export function Result() {
           {PARTIAL_CHECK}
         </p>
       )}
+      {hormoneOn && (
+        <p role="note" className="check-on">
+          {HORMONE_ON}
+        </p>
+      )}
       {results.length > 0 && (
         <p className="summary" data-testid="result-summary">
           {summary}
@@ -117,7 +147,7 @@ export function Result() {
             {verdict === 'no_known_concern' && <p className="checked-against">{checked}</p>}
             <ul>
               {items.map((r, i) => (
-                <ResultItem key={i} result={r} research={research} />
+                <ResultItem key={i} result={r} research={research} hazards={hazards} />
               ))}
             </ul>
           </section>
@@ -126,6 +156,11 @@ export function Result() {
       <p className="checked-against">{checked}</p>
       <p className="disclaimer">{DISCLAIMER}</p>
       <p>
+        {hormoneAvailable && (
+          <button type="button" className={hormoneOn ? undefined : 'primary'} onClick={() => void setHormone(!hormoneOn)}>
+            {hormoneOn ? HIDE_HORMONE : CHECK_HORMONE}
+          </button>
+        )}
         <button type="button" onClick={editIngredients}>
           Edit ingredients
         </button>

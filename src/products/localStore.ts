@@ -47,6 +47,15 @@ export function createLocalStore(): ProductStore {
       return record
     },
 
+    async setChecks(id, checks) {
+      await withDb(async (db) => {
+        const tx = db.transaction('products', 'readwrite')
+        const record = await tx.store.get(id)
+        if (record) await tx.store.put({ ...record, checks })
+        await tx.done
+      })
+    },
+
     async delete(id) {
       await withDb(async (db) => {
         const tx = db.transaction(['products', 'scans'], 'readwrite')

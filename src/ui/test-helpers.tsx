@@ -55,6 +55,10 @@ export function fakeStore(seed: ProductRecord[] = []) {
       return rec
     }),
     get: vi.fn(async (id: string) => rows.find((r) => r.id === id) ?? null),
+    setChecks: vi.fn(async (id: string, checks: NonNullable<ProductRecord['checks']>) => {
+      const r = rows.find((x) => x.id === id)
+      if (r) r.checks = checks
+    }),
     delete: vi.fn(async (id: string) => {
       const i = rows.findIndex((r) => r.id === id)
       if (i >= 0) rows.splice(i, 1)

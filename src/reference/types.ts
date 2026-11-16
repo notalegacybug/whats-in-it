@@ -1,9 +1,13 @@
-export type SourceId = 'IARC' | 'NTP' | 'PROP65' | 'EU_CLP'
+export type SourceId = 'IARC' | 'NTP' | 'PROP65' | 'EU_CLP' | 'ED_LISTS'
+/** What a list is about. Cancer is always checked; hormone disruption is a check the person turns on. */
+export type Hazard = 'cancer' | 'hormone'
 export type Level = 'strong' | 'possible'
 export type Verdict = 'watch_strong' | 'watch_possible' | 'no_known_concern' | 'not_recognised'
 
 export interface Listing {
   source: SourceId
+  /** Absent means cancer. */
+  hazard?: Hazard
   classification: string
   level: Level
   year: number | null
