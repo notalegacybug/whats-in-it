@@ -10,15 +10,23 @@ export default defineConfig({
       // Registered from src/main.tsx so unit tests (which never import it) never touch a service worker.
       injectRegister: false,
       manifest: {
+        // Fields PWABuilder needs to generate the Android (Play Store) package.
+        id: '/',
         name: 'Ingredient Safety',
-        short_name: 'Ingredient Safety',
+        short_name: 'Ingredients',
+        description: 'Check food and cosmetic ingredient labels against published cancer, hormone and allergen lists.',
         display: 'standalone',
+        orientation: 'portrait',
         start_url: '/',
-        theme_color: '#1a1a1a',
-        background_color: '#ffffff',
+        scope: '/',
+        lang: 'en',
+        categories: ['health', 'utilities'],
+        theme_color: '#0f4c5c',
+        background_color: '#edf2f4',
         icons: [
-          { src: '/icons/icon-192.png', sizes: '192x192', type: 'image/png' },
-          { src: '/icons/icon-512.png', sizes: '512x512', type: 'image/png' },
+          { src: '/icons/icon-192.png', sizes: '192x192', type: 'image/png', purpose: 'any' },
+          { src: '/icons/icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'any' },
+          { src: '/icons/icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
         ],
       },
       workbox: {
