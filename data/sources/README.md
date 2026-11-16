@@ -8,7 +8,7 @@ an adapter in `scripts/reference/adapters/`. Downloaded originals live in `origi
 | --- | --- | --- |
 | `iarc.csv` | obtained, **held back from git** (see reuse terms) | 1128 |
 | `ntp.csv` | obtained | 349 |
-| `prop65.csv` | **MISSING**, download blocked | - |
+| `prop65.csv` | obtained (downloaded by the owner; cancer and reproductive rows) | 984 rows |
 | `eu-clp.csv` | **MISSING**, download blocked | - |
 | `fda-saf.csv` | obtained (ingredient inventory) | 3970 |
 | `cosing.csv` | obtained via the CosIng search API (ingredient inventory) | 33658 |
@@ -82,24 +82,22 @@ reconstructed from memory. When the real files arrive, compare their headers wit
 - **Reuse terms** (https://ntp.niehs.nih.gov/support/policies): unless a copyright is indicated, NTP website
   information is public domain and may be copied and distributed without permission; citing NTP is appreciated.
 
-## prop65.csv - MISSING
+## prop65.csv
 
-- **Source:** OEHHA Proposition 65 list - https://oehha.ca.gov/proposition-65/proposition-65-list
-- **What happened:** the site answers automated requests with a bot-detection challenge page (Incapsula), not
-  the page. It was not worked around. The California open-data portal had no copy.
-- **What a person needs to do:** open the page in a browser, download the list's spreadsheet, open it, save
-  as CSV (UTF-8) to `data/sources/prop65.csv`. The header row must contain `Chemical`, `Type of Toxicity`,
-  `CAS No.`, `Date Listed` (the adapter reads only these; if the real headers differ, edit `COLUMNS` in
-  `scripts/reference/adapters/prop65.ts` and the test fixture). Record here the download date, the "last
-  updated" date and row count.
-
-**Assumed cell formats, unverified** (the adapter was written without seeing the real file; if the real wording differs it could silently drop every cancer row):
-- `Type of Toxicity` contains the word `cancer`, possibly alongside other toxicities, comma-separated (e.g. `cancer, developmental, male`).
-- `Date Listed` contains a four-digit year somewhere in the cell.
-- In `Chemical`, a trailing parenthetical in the name becomes the qualifier only if it contains one of: airborne, inhalation, inhalable, respirable, oral, dermal, particles, fibres, fibers, dust, unbound, aerosol, mist, vapour, vapor (`ROUTE_WORDS` in `scripts/reference/util.ts`). Any other bracket stays in the name, so `Chromium (hexavalent compounds)` is not shortened to `Chromium`.
-- The build refuses a source that yields 0 records or lacks its expected headers.
-
-- **Reuse terms:** not checked (site blocked). Check OEHHA's conditions of use before committing the file.
+- **Source:** OEHHA Proposition 65 list, https://oehha.ca.gov/proposition-65/proposition-65-list. The site
+  blocks automated downloads, so the owner downloads it in a browser and saves it as
+  `original/p65chemicalslist.csv`. Current copy: list dated 31 July 2026, downloaded 2026-11-16.
+- **Preparation:** `npx tsx scripts/prepare-prop65.ts` writes `prop65.csv` (logic in
+  `scripts/reference/prop65Prepare.ts`, tested). It finds the header row below the title rows, drops
+  footnotes and dose notes ("Adult", "Infant boys ..."), **drops chemicals marked "Delisted <date>"** (shown as
+  strikeout on the website; 25 rows), gives indented group members ("Lead" under "Lead and lead compounds") the
+  group's listing, removes note brackets ("[Basis for listing changed ...]") but keeps chemical brackets
+  ("Dibenzo[a,h]pyrene"), and reads two-digit years (87-99 = 19xx, 00-86 = 20xx; the list began in 1987).
+- **Columns used:** `Chemical`, `Type of Toxicity`, `CAS No.`, `Date Listed`.
+- **Use:** rows with `cancer` give a cancer listing (always checked). Rows with `developmental`, `female` or
+  `male` give one reproductive listing per chemical (endpoints merged, latest year), shown only when the person
+  turns on "Check hormone & reproductive effects". All Prop 65 listings are level "possible".
+- **Reuse terms:** not yet checked; OEHHA is a California state agency. **Owner to confirm** before a wide release.
 
 ## eu-clp.csv - MISSING
 

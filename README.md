@@ -59,13 +59,13 @@ Listed entries that a person could meet on a label get a short hand-checked note
   is and where it comes from, nothing more.
 - After changing notes, bump the version, rebuild, and run `npm run reference:sample` so the sample shows the new text.
 
-## Current data state (reference 2026.11.7)
+## Current data state (reference 2026.11.8)
 
 | Source | Kind | State |
 | --- | --- | --- |
 | NTP Report on Carcinogens, 15th edition (2021) | hazard list | included (302 listed entries) |
 | IARC Monographs | hazard list | file obtained, **excluded** pending the owner's reuse-terms decision |
-| California Prop 65 | hazard list | **missing**, download blocked for the agent |
+| California Prop 65 | cancer list; reproductive harm (optional check) | included (771 listed entries); owner downloads the file, then `npx tsx scripts/prepare-prop65.ts` |
 | EU CLP Annex VI | hazard list | **missing**, download blocked for the agent |
 | FDA Substances Added to Food | ingredient inventory | included |
 | EU CosIng | ingredient inventory | included (33,658 ingredients, collected by `node scripts/fetch-cosing.mjs`) |

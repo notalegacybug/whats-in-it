@@ -74,3 +74,10 @@ test('Prop 65: reproductive rows become one reproductive listing, separate from 
   expect(benzene.sort()).toEqual(['cancer', 'reproductive'])
   expect(out.filter((x) => x.name === 'Formaldehyde (gas)').map((x) => x.listing.hazard ?? 'cancer')).toEqual(['cancer'])
 })
+
+test('Prop 65: a chemical with reproductive endpoints on separate rows gets one merged listing', () => {
+  const out = parseProp65([row('Toluene', 'developmental', '108-88-3', '1991-01-01'), row('Toluene', 'female', '108-88-3', '2009-08-07')])
+  expect(out.map((x) => x.listing)).toEqual([
+    expect.objectContaining({ hazard: 'reproductive', classification: 'Listed as causing developmental or reproductive harm (developmental, female)', year: 2009 }),
+  ])
+})

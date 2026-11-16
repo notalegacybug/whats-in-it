@@ -15,8 +15,8 @@
 1. **IARC decision.** IARC's terms need written permission to reproduce substantial portions of its list. Decide whether to
    ask IARC for permission or keep the app non-commercial and limited. Until then IARC stays excluded in
    `data/sources/config.json` and `iarc.csv` stays git-ignored. Details: `data/sources/README.md`, "iarc.csv".
-2. **Three downloads** the agent could not get (sites blocked automated requests, or no file was found): `prop65.csv`,
-   `eu-clp.csv`, `e-numbers.csv`. (`cosing.csv` was collected on 2026-11-13 with `scripts/fetch-cosing.mjs`.) Steps for each are in `data/sources/README.md`; the general procedure
+2. **Two downloads** still missing: `eu-clp.csv`, `e-numbers.csv`. (`prop65.csv` was added on 2026-11-16 from the
+   owner's download; refresh it the same way.) (`cosing.csv` was collected on 2026-11-13 with `scripts/fetch-cosing.mjs`.) Steps for each are in `data/sources/README.md`; the general procedure
    (config, version bump, rebuild, sample) is in `README.md`, "Adding a missing source file".
 3. **Notes spot-check** (~15 min): read `docs/reference-review-sample.md` and report any note that is wrong, not neutral,
    or has a wrong caveat.
@@ -25,6 +25,11 @@
 5. **Display rule for form-specific listings.** Some listings cover only one form or route (for example respirable silica
    dust, or a substance listed only as part of a mixture). Today the result shows the listing with its qualifier and a caveat
    where one was written. Decide whether such listings should keep the same "Watch for" heading or be shown differently.
+
+6. **43 notes to write** for Prop 65 cancer-listed ingredients (listed in `data/notes/missing.json`). Until then
+   they show their function text. Write them in `data/notes/notes.json`, bump the version, rebuild without
+   `--allow-missing-notes`.
+7. **Reuse terms** for the EU Endocrine Disruptor Lists and Prop 65: confirm before a wide public release.
 
 ## After that
 

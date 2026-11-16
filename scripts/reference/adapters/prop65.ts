@@ -14,7 +14,42 @@ export const COLUMNS = {
 // Prop 65's reproductive endpoints: developmental, female and male reproductive toxicity.
 const REPRODUCTIVE = /\b(developmental|female|male)\b/gi
 
+const ENDPOINT_ORDER = ['developmental', 'female', 'male']
+
 export function parseProp65(rows: Row[]): SourceRecord[] {
+  return mergeReproductive(parseRows(rows))
+}
+
+// OEHHA lists some chemicals once per endpoint ("developmental" 1991, "female" 2009): one listing each, latest year.
+function mergeReproductive(records: SourceRecord[]): SourceRecord[] {
+  const merged = new Map<string, SourceRecord>()
+  const out: SourceRecord[] = []
+  for (const r of records) {
+    if (r.listing.hazard !== 'reproductive') {
+      out.push(r)
+      continue
+    }
+    const key = `${r.name}|${r.cas.join(',')}|${r.listing.qualifier ?? ''}`
+    const seen = merged.get(key)
+    if (!seen) {
+      merged.set(key, r)
+      out.push(r)
+      continue
+    }
+    const endpoints = (l: SourceRecord['listing']) => /\(([^)]*)\)$/.exec(l.classification)?.[1].split(', ') ?? []
+    const all = [...new Set([...endpoints(seen.listing), ...endpoints(r.listing)])].sort(
+      (a, b) => ENDPOINT_ORDER.indexOf(a) - ENDPOINT_ORDER.indexOf(b),
+    )
+    seen.listing = {
+      ...seen.listing,
+      classification: `Listed as causing developmental or reproductive harm (${all.join(', ')})`,
+      year: Math.max(seen.listing.year ?? 0, r.listing.year ?? 0) || null,
+    }
+  }
+  return out
+}
+
+function parseRows(rows: Row[]): SourceRecord[] {
   const out: SourceRecord[] = []
   for (const row of rows) {
     const toxicity = cell(row, COLUMNS.toxicity)

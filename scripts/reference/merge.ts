@@ -74,8 +74,8 @@ export function mergeReference(a: MergeInput): { reference: Reference; missingNo
   entries.sort((x, y) => (x.id < y.id ? -1 : x.id > y.id ? 1 : 0))
 
   const missingNotes = [...groups.values()]
-    // Hand-written notes are required for cancer listings; hormone-only entries fall back to their function text.
-    .filter((g) => g.flagged.some((r) => r.listing.hazard !== 'hormone') && g.catalogue.length > 0 && !a.notes[g.id])
+    // Hand-written notes are required for cancer listings; hormone and reproductive entries show their function text.
+    .filter((g) => g.flagged.some((r) => (r.listing.hazard ?? 'cancer') === 'cancer') && g.catalogue.length > 0 && !a.notes[g.id])
     .map((g) => g.id)
     .sort()
 

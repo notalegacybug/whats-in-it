@@ -40,10 +40,11 @@ export function About() {
       )}
       {hormone.length > 0 && (
         <section aria-labelledby="hormone-check">
-          <h2 id="hormone-check">Hormone-disruptor check (optional)</h2>
+          <h2 id="hormone-check">Hormone &amp; reproductive check (optional)</h2>
           <p>
-            Turn it on from a result with "{CHECK_HORMONE}". Only substances listed for effects on human health
-            are used. "Under evaluation" means a review is in progress, not a finding.
+            Turn it on from a result with "{CHECK_HORMONE}". Hormone disruptors come from the EU lists below (only
+            substances listed for effects on human health; "under evaluation" means a review is in progress, not a
+            finding). Reproductive harm comes from the California Proposition 65 list.
           </p>
           <SourceLinks sources={hormone} />
         </section>
