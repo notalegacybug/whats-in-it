@@ -1,8 +1,89 @@
+/* Colours live here only. The brand is petrol blue: not red, amber or green, which belong to verdicts. */
 :root {
-  font-family: system-ui, sans-serif;
+  color-scheme: light;
+  --page: #edf2f4;
+  --surface: #ffffff;
+  --surface-soft: #f5f8f9;
+  --text: #14262d;
+  --text-soft: #4d626a;
+  --line: #cfdadf;
+  --brand: #0f4c5c;
+  --brand-text: #ffffff;
+  --brand-soft: #dcebef;
+  --link: #0b5a70;
+  --danger: #b00020;
+  --danger-soft: #fdecee;
+  --warn: #8a5200;
+  --warn-line: #b26a00;
+  --warn-soft: #fff4e0;
+  --ok: #1f6b2a;
+  --ok-soft: #e8f4ea;
+  --mine: #3a3fa8;
+  --mine-soft: #eeeffb;
+  --bar: #0f4c5c;
+  --bar-text: #ffffff;
+  --shadow: 0 1px 2px rgba(20, 38, 45, 0.08);
+}
+
+/* Dark values, used when the phone is dark (unless Light is chosen) or when Dark is chosen. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    color-scheme: dark;
+    --page: #0c1a20;
+    --surface: #14262e;
+    --surface-soft: #1a303a;
+    --text: #e4eef1;
+    --text-soft: #a3b8bf;
+    --line: #2c4651;
+    --brand: #6cc5d6;
+    --brand-text: #06222a;
+    --brand-soft: #1d3d48;
+    --link: #8ad6e4;
+    --danger: #ff9a9a;
+    --danger-soft: #3a1c22;
+    --warn: #f2bd6b;
+    --warn-line: #d39a3f;
+    --warn-soft: #36290f;
+    --ok: #86d693;
+    --ok-soft: #17301d;
+    --mine: #b3b7ff;
+    --mine-soft: #24264d;
+    --bar: #0c1a20;
+    --bar-text: #e4eef1;
+    --shadow: none;
+  }
+}
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --page: #0c1a20;
+  --surface: #14262e;
+  --surface-soft: #1a303a;
+  --text: #e4eef1;
+  --text-soft: #a3b8bf;
+  --line: #2c4651;
+  --brand: #6cc5d6;
+  --brand-text: #06222a;
+  --brand-soft: #1d3d48;
+  --link: #8ad6e4;
+  --danger: #ff9a9a;
+  --danger-soft: #3a1c22;
+  --warn: #f2bd6b;
+  --warn-line: #d39a3f;
+  --warn-soft: #36290f;
+  --ok: #86d693;
+  --ok-soft: #17301d;
+  --mine: #b3b7ff;
+  --mine-soft: #24264d;
+  --bar: #0c1a20;
+  --bar-text: #e4eef1;
+  --shadow: none;
+}
+
+:root {
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   line-height: 1.5;
-  color: #1a1a1a;
-  background: #fff;
+  color: var(--text);
+  background: var(--page);
 }
 
 body {
@@ -12,30 +93,117 @@ body {
 main {
   max-width: 36rem;
   margin: 0 auto;
-  padding: 1rem;
+  padding: 1rem 1rem 3rem;
+}
+
+h1 {
+  font-size: 1.6rem;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  margin: 0.5rem 0 0.75rem;
+}
+
+h2 {
+  font-size: 1.1rem;
+  margin: 0 0 0.5rem;
+}
+
+a {
+  color: var(--link);
+}
+
+:focus-visible {
+  outline: 3px solid var(--brand);
+  outline-offset: 2px;
 }
 
 ul {
   padding-left: 1.25rem;
 }
 
+/* Top bar on every screen: the name goes home, the button switches theme. */
+.app-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.4rem 1rem;
+  background: var(--bar);
+  color: var(--bar-text);
+  border-bottom: 1px solid var(--line);
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.app-name {
+  color: var(--bar-text);
+  font-weight: 700;
+  text-decoration: none;
+  padding: 0.5rem 0;
+}
+
+.app-bar .theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-height: 2.25rem;
+  margin: 0;
+  padding: 0.25rem 0.75rem;
+  border-radius: 1.2rem;
+  border: 1px solid color-mix(in srgb, var(--bar-text) 45%, transparent);
+  background: transparent;
+  color: var(--bar-text);
+}
+
+.theme-dot {
+  width: 0.8rem;
+  height: 0.8rem;
+  border-radius: 50%;
+  border: 1.5px solid currentColor;
+  box-sizing: border-box;
+}
+.theme-dot.light { background: currentColor; }
+.theme-dot.system { background: linear-gradient(90deg, currentColor 50%, transparent 50%); }
+
+/* Controls */
 button,
 input:not([type='radio']),
+select,
 textarea {
   font: inherit;
   min-height: 2.75rem;
   padding: 0.5rem 0.75rem;
   box-sizing: border-box;
+  border-radius: 0.5rem;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--text);
+}
+
+input[type='radio'] {
+  accent-color: var(--brand);
+  width: 1.15rem;
+  height: 1.15rem;
+  margin-right: 0.5rem;
 }
 
 button {
   margin: 0.25rem 0.25rem 0.25rem 0;
   cursor: pointer;
+  background: var(--surface-soft);
+}
+
+button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
 }
 
 button.primary {
   font-weight: 600;
-  border-width: 2px;
+  background: var(--brand);
+  color: var(--brand-text);
+  border-color: var(--brand);
 }
 
 .field {
@@ -52,11 +220,61 @@ button.primary {
   font-weight: 400;
 }
 
+fieldset {
+  border: 1px solid var(--line);
+  border-radius: 0.5rem;
+  margin: 1rem 0;
+}
+
 fieldset label {
-  display: block;
+  display: flex;
+  align-items: center;
   min-height: 2.75rem;
 }
 
+/* Home */
+.lede {
+  color: var(--text-soft);
+  margin: 0 0 1.25rem;
+}
+
+.actions,
+.more,
+.scans {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1.5rem;
+}
+
+.action {
+  display: block;
+  margin-bottom: 0.75rem;
+  padding: 1rem 1.1rem;
+  border-radius: 0.75rem;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-left: 0.4rem solid var(--brand);
+  box-shadow: var(--shadow);
+  color: var(--text);
+  font-size: 1.15rem;
+  font-weight: 650;
+  text-decoration: none;
+}
+
+.action span {
+  display: block;
+  font-size: 0.9rem;
+  font-weight: 400;
+  color: var(--text-soft);
+}
+
+.more li,
+.scans li {
+  padding: 0.6rem 0;
+  border-bottom: 1px solid var(--line);
+}
+
+/* Review rows */
 .rows {
   list-style: none;
   padding: 0;
@@ -77,6 +295,15 @@ fieldset label {
   width: 100%;
 }
 
+.row button {
+  margin: 0;
+}
+
+.suggestion {
+  background: var(--brand-soft);
+  border-color: var(--brand);
+}
+
 .visually-hidden {
   position: absolute;
   width: 1px;
@@ -86,33 +313,57 @@ fieldset label {
   white-space: nowrap;
 }
 
-/* The verdict is always in the heading text; the border is decoration, never the only signal. */
+/* Results. The verdict is always in the text; colour only reinforces it. */
+.summary {
+  font-weight: 600;
+  padding: 0.85rem 1rem;
+  border-radius: 0.75rem;
+  background: var(--brand-soft);
+  border: 1px solid var(--line);
+}
+
 .verdict {
-  margin: 1.5rem 0;
-  padding-left: 0.75rem;
-  border-left: 0.35rem solid #888;
+  margin: 1.25rem 0;
+  padding: 0.85rem 1rem;
+  border-radius: 0.75rem;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-left: 0.4rem solid var(--text-soft);
+  box-shadow: var(--shadow);
 }
 
 .verdict.watch_strong {
-  border-left-color: #b00020;
+  border-left-color: var(--danger);
+  background: var(--danger-soft);
 }
 
 .verdict.watch_possible {
-  border-left-color: #b26a00;
+  border-left-color: var(--warn-line);
+  background: var(--warn-soft);
+}
+
+.verdict.no_known_concern {
+  border-left-color: var(--ok);
 }
 
 .verdict ul {
   list-style: none;
   padding: 0;
+  margin: 0;
 }
 
 .item {
-  margin-bottom: 1rem;
+  padding: 0.6rem 0;
+  border-top: 1px solid var(--line);
 }
 
 .item p,
 .match ul {
   margin: 0.25rem 0;
+}
+
+.item > p {
+  color: var(--text-soft);
 }
 
 .match {
@@ -124,51 +375,57 @@ fieldset label {
   list-style: disc;
 }
 
+.tag {
+  display: inline-block;
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 0.05rem 0.5rem;
+  border-radius: 0.8rem;
+  border: 1px solid var(--text-soft);
+  color: var(--text-soft);
+  background: var(--surface);
+  white-space: nowrap;
+}
+.tag.watch_strong { border-color: var(--danger); color: var(--danger); }
+.tag.watch_possible { border-color: var(--warn-line); color: var(--warn); }
+.tag.no_known_concern { border-color: var(--ok); color: var(--ok); background: var(--ok-soft); }
+/* Set by the person: dashed and violet, so it is never mistaken for the app's own verdict. */
+.tag.mine { border-style: dashed; border-color: var(--mine); color: var(--mine); background: var(--mine-soft); }
+
+.checked-against,
 .disclaimer {
   font-size: 0.9rem;
+  color: var(--text-soft);
+}
+
+.notice {
+  padding: 0.75rem 1rem;
+  border-radius: 0.75rem;
+  border: 1px solid var(--warn-line);
+  background: var(--warn-soft);
 }
 
 progress {
   width: 100%;
+  accent-color: var(--brand);
 }
 
 [role='alert'] {
-  color: #b00020;
+  color: var(--danger);
   font-weight: 600;
 }
 
-.summary {
-  font-weight: 600;
-  padding: 0.75rem;
-  border-radius: 0.4rem;
-  background: #f2f2f2;
-}
-
-/* The tag text carries the verdict; colour only reinforces it. */
-.tag {
-  display: inline-block;
-  font-size: 0.8rem;
-  padding: 0.05rem 0.45rem;
-  border-radius: 0.8rem;
-  border: 1px solid #888;
-  white-space: nowrap;
-}
-.tag.watch_strong { border-color: #b00020; color: #b00020; }
-.tag.watch_possible { border-color: #b26a00; color: #8a5200; }
-.tag.no_known_concern { border-color: #2e7d32; color: #2e7d32; }
-
-.notice {
-  padding: 0.75rem;
-  border-radius: 0.4rem;
-  border: 1px solid #b26a00;
-  background: #fff6e5;
+[role='status'] {
+  color: var(--text-soft);
+  padding: 1rem;
 }
 
 .link-button {
   background: none;
   border: none;
   padding: 0.25rem;
-  color: #b00020;
+  min-height: 2.25rem;
+  color: var(--danger);
   text-decoration: underline;
   cursor: pointer;
   font: inherit;
@@ -176,13 +433,12 @@ progress {
 
 .research {
   margin: 0.5rem 0;
-  padding: 0.5rem 0.75rem;
-  border: 1px dashed #4a5fc1;
-  border-radius: 0.4rem;
+  padding: 0.6rem 0.85rem;
+  border: 1px dashed var(--mine);
+  border-radius: 0.6rem;
+  background: var(--mine-soft);
 }
 .research label { display: block; margin-top: 0.4rem; }
-.research select, .research textarea, .research input { width: 100%; box-sizing: border-box; }
-.research .caveat { font-size: 0.85rem; color: #555; }
-.add-research { color: #2f43a8; }
-/* Set by the person: a distinct blue outline so it is never mistaken for the app's own verdict. */
-.tag.mine { border-style: dashed; border-color: #2f43a8; color: #2f43a8; }
+.research select, .research textarea, .research input { width: 100%; }
+.research .caveat { font-size: 0.85rem; color: var(--text-soft); }
+.add-research { color: var(--mine); }

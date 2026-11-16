@@ -13,7 +13,7 @@ test('home shows the app name and the three ways in', async () => {
     </MemoryRouter>,
   )
   expect(await screen.findByRole('heading', { name: 'Ingredient Safety' })).toBeInTheDocument()
-  expect(screen.getByRole('link', { name: 'Take a photo' })).toHaveAttribute('href', '/capture?mode=camera')
-  expect(screen.getByRole('link', { name: 'Choose an image' })).toHaveAttribute('href', '/capture?mode=file')
-  expect(screen.getByRole('link', { name: 'Type or paste' })).toHaveAttribute('href', '/capture?mode=text')
+  expect(screen.getByRole('link', { name: /^Take a photo/ })).toHaveAttribute('href', '/capture?mode=camera')
+  expect(screen.getByRole('link', { name: /^Choose an image/ })).toHaveAttribute('href', '/capture?mode=file')
+  expect(screen.getByRole('link', { name: /^Type or paste/ })).toHaveAttribute('href', '/capture?mode=text')
 })

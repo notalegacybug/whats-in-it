@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import { Route, Routes } from 'react-router-dom'
+import { Link, Route, Routes } from 'react-router-dom'
+import { ThemeToggle } from './components/ThemeToggle'
 import { createLocalStore } from '../products/localStore'
 import type { ProductStore } from '../products/types'
 import type { RefIndex } from '../reference'
@@ -30,6 +31,12 @@ export function App({
     <StoreContext.Provider value={activeStore}>
       <ReferenceGate load={loadReference}>
         <ScanDraftProvider>
+          <header className="app-bar">
+            <Link to="/" className="app-name">
+              Ingredient Safety
+            </Link>
+            <ThemeToggle />
+          </header>
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/capture" element={<Capture />} />
