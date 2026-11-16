@@ -339,3 +339,17 @@ describe('common names from lower-ranked name sources', () => {
     expect(aliasesOf(r, 'cas:8001-31-8')).toEqual([])
   })
 })
+
+test('hand-checked label words rank above every other name source', () => {
+  const parfum = cat('PARFUM', [])
+  const { reference } = mergeReference({
+    flagged: [],
+    catalogue: [parfum, cat('Mystery Musk', ['1-1-1'])],
+    commonNames: [
+      [{ joinNames: ['PARFUM'], commonNames: ['Fragrance'] }],
+      [{ joinNames: ['Mystery Musk'], commonNames: ['Fragrance'] }],
+    ],
+    ...base,
+  })
+  expect(reference.entries.find((e) => e.name === 'PARFUM')!.aliases).toContain('fragrance')
+})

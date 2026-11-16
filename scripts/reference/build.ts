@@ -19,6 +19,7 @@ import { checkSourceFile } from './guard'
 import { mergeReference } from './merge'
 import { withEdition } from './util'
 import { checkNotes } from './notesCheck'
+import { parseAliasOverrides } from './overrides'
 import type { CatalogueRecord, CommonNameGroup, NotesFile, Row, SourceRecord } from './types'
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..', '..')
@@ -167,7 +168,9 @@ function main(): number {
   }
   const catalogue: CatalogueRecord[] = []
   for (const s of catalogueSources) catalogue.push(...(load(s, false, config) ?? []))
-  const commonNames = nameSources.map((s) => load(s, false, config) ?? [])
+  const overridesFile = path('data', 'overrides', 'aliases.csv')
+  const aliasOverrides = existsSync(overridesFile) ? parseAliasOverrides(readCsv(overridesFile).rows) : []
+  const commonNames = [aliasOverrides, ...nameSources.map((s) => load(s, false, config) ?? [])]
 
   const caslessAllow = loadCaslessAllow()
   const notes = readJson<NotesFile>(path('data', 'notes', 'notes.json'))

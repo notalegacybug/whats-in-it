@@ -173,6 +173,11 @@ reconstructed from memory. When the real files arrive, compare their headers wit
   reach several unflagged entries it joins the shortest-named (base) one; if a flagged entry is among them it is
   skipped. Codes, "impurity" names, dotted chemical names and single vague words ("oil") are not added.
 
+## Hand-checked aliases (`data/overrides/aliases.csv`)
+
+Columns `name` (an existing official name) and `alias` (a label word). Ranked above GSRS and below official
+names, with the same clash rules. Current rows: Fragrance and Perfume for PARFUM, Vitamin E for TOCOPHEROL.
+
 ## e-numbers.csv - MISSING
 
 - **Source intended:** an official EU list of approved food additives and their E numbers (Regulation (EC)

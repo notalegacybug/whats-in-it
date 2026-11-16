@@ -128,5 +128,8 @@
   },
   "cas:94-59-7": {
     "note": "A compound found in sassafras oil and in nutmeg and some other spices. It was once used to flavor root beer."
+  },
+  "name:parfum": {
+    "note": "A blend of scent ingredients listed under one word. The individual chemicals in the blend are usually not named, so they cannot be checked here."
   }
 }

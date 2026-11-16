@@ -66,3 +66,9 @@ test('a description phrase that is the end of one full name is picked up, as wri
   const text = 'We have included Ginseng Root Extract and Glutathione in our cream, to help your skin feel firm, while we keep it light.'
   expect(readIngredients(text, idx).ingredients).toEqual(['Ginseng Root Extract', 'Glutathione'])
 })
+
+test('a few short real ingredient names are found in prose', () => {
+  const idx = buildIndex({ version: 't', builtAt: '2026-01-01', entries: [entry('Parfum'), entry('Talc'), entry('Linalool')] })
+  const text = 'Our blend features Parfum and Linalool with a touch of Talc, so your hair feels soft while we keep it light.'
+  expect(readIngredients(text, idx).ingredients).toEqual(['Parfum', 'Linalool', 'Talc'])
+})

@@ -6,6 +6,8 @@ import { fullNameEnding } from './suggest'
 const MAX_WORDS_IN_NAME = 6
 // Short single words ("cream", "water", "honey") are CosIng names but also everyday words in prose.
 const MIN_SINGLE_WORD_LENGTH = 7
+// Short names that are real ingredients and rarely ordinary words in marketing copy.
+const SHORT_NAMES = new Set(['parfum', 'talc', 'silica'])
 const SENTENCE_WORDS = /\b(?:our|your|we|you|helps?|is|are|with|that)\b/i
 const SENTENCE_LENGTH = 7
 const DESCRIPTION_SHARE = 0.4
@@ -31,7 +33,7 @@ export function findIngredientNames(text: string, index: RefIndex): string[] {
   const found: string[] = []
   for (let i = 0; i < words.length; i++) {
     for (let n = Math.min(MAX_WORDS_IN_NAME, words.length - i); n >= 1; n--) {
-      if (n === 1 && words[i].length < MIN_SINGLE_WORD_LENGTH) continue
+      if (n === 1 && words[i].length < MIN_SINGLE_WORD_LENGTH && !SHORT_NAMES.has(words[i].toLowerCase())) continue
       const phrase = words.slice(i, i + n).join(' ')
       // An exact name, or (2+ words) the end of exactly one full name, which Review then offers to complete.
       const id = index.byKey.get(normalizeName(phrase))?.id ?? (n >= 2 ? fullNameEnding(phrase, index)?.entry.id : null)
