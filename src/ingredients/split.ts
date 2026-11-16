@@ -31,6 +31,24 @@ function splitTopLevel(text: string, separators: string): string[] {
   return parts
 }
 
+// Photo text picks up marks from box edges and print: symbols (§ ‘ ™ |) and, on capital-letter labels,
+// short lowercase scraps ("Ei]", "vl") that no all-caps label contains.
+const STRAY_SYMBOL = /[^\p{L}\p{N}\s,;()[\]/\-.'%&+:*]/gu
+const CAPS_SHARE = 0.8
+const MIN_LETTERS_FOR_CAPS = 6
+const MAX_SCRAP_LENGTH = 3
+
+function cleanPhotoNoise(part: string): string {
+  const text = part.replace(STRAY_SYMBOL, ' ').replace(/\s+/g, ' ').trim()
+  const letters = text.replace(/[^\p{L}]/gu, '')
+  const capitals = letters.replace(/[^\p{Lu}]/gu, '').length
+  if (letters.length < MIN_LETTERS_FOR_CAPS || capitals / letters.length < CAPS_SHARE) return text
+  return text
+    .split(' ')
+    .filter((token) => !(token.length <= MAX_SCRAP_LENGTH && /\p{Ll}/u.test(token)))
+    .join(' ')
+}
+
 export function extractIngredients(text: string): string[] {
   let body = text
   const start = START.exec(body)
@@ -45,7 +63,7 @@ export function extractIngredients(text: string): string[] {
   const seen = new Set<string>()
   const items: string[] = []
   for (const part of splitTopLevel(body, ',;•·')) {
-    const display = part.replace(/\s+/g, ' ').trim()
+    const display = cleanPhotoNoise(part)
     const key = normalizeName(display)
     if (!key || seen.has(key)) continue
     seen.add(key)

@@ -1,3 +1,4 @@
+import { normalizeName } from '../ingredients/normalize'
 import { matchGroups } from '../ingredients/split'
 import type { RefIndex } from './index'
 import type { IngredientResult, Match, RefEntry, Verdict } from './types'
@@ -28,8 +29,14 @@ export function analyseIngredient(input: string, index: RefIndex): IngredientRes
   if (wholeHit) return { input, verdict: wholeHit.verdict, matches: [wholeHit] }
 
   // Food labels often name the function first ("Preservative: Formaldehyde"); check what follows.
+  // If that fails, the colon may be photo noise inside one name ("SYNTHETIC: FLUORPHLOGOPITE").
   const prefixed = FUNCTION_PREFIX.exec(input)
-  if (prefixed) return { ...analyseIngredient(prefixed[1], index), input }
+  if (prefixed) {
+    const rest = { ...analyseIngredient(prefixed[1], index), input }
+    if (rest.verdict !== 'not_recognised') return rest
+    const joined = hit(normalizeName(input.replace(':', ' ')), index)
+    return joined ? { input, verdict: joined.verdict, matches: [joined] } : rest
+  }
 
   // Alternatives resolve only if every hit is the same entry ("Water/Formaldehyde" is unrecognised).
   const matches: Match[] = groups.map((alternatives) => {

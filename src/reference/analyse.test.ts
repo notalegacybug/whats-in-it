@@ -174,3 +174,8 @@ describe('a single bracketed term is another name for the same thing', () => {
     expect(v('Fragrance (Linalool, Titanium Dioxide)')).toBe('watch_possible')
   })
 })
+
+test('a stray colon inside a name falls back to the whole name', () => {
+  const idx2 = buildIndex({ version: 't', builtAt: '2026-01-01', entries: [entry({ id: 'name:sf', name: 'Synthetic Fluorphlogopite' })] })
+  expect(analyseIngredient('SYNTHETIC: FLUORPHLOGOPITE', idx2).verdict).toBe('no_known_concern')
+})

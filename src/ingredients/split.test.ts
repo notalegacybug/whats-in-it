@@ -87,3 +87,22 @@ test('marketing claim lines before an unheaded list are dropped', () => {
 test('a one-line list with a function prefix is not treated as a claim line', () => {
   expect(extractIngredients('Preservative: Formaldehyde, Water')).toEqual(['Preservative: Formaldehyde', 'Water'])
 })
+
+test('stray symbols from a photo are removed', () => {
+  expect(extractIngredients('Ingredients: Glycerin, § Mica, Tin ‘Oxide, Water™')).toEqual(['Glycerin', 'Mica', 'Tin Oxide', 'Water'])
+})
+
+test('in an all-capitals label, short lowercase scraps are photo noise and are dropped', () => {
+  expect(extractIngredients('INGREDIENTS: GLYCERIN, CETYL Ei] PEG/PPG-10/1 vl DIMETHICONE, MICA')).toEqual([
+    'GLYCERIN',
+    'CETYL PEG/PPG-10/1 DIMETHICONE',
+    'MICA',
+  ])
+})
+
+test('mixed-case labels keep their short words', () => {
+  expect(extractIngredients('Ingredients: Vitamin E (as dl-alpha Tocopherol), Aloe vera')).toEqual([
+    'Vitamin E (as dl-alpha Tocopherol)',
+    'Aloe vera',
+  ])
+})
