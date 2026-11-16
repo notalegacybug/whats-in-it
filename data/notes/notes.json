@@ -1,9 +1,18 @@
 {
+  "cas:100-41-4": {
+    "note": "A solvent made from petroleum, used in paints, inks and making plastics. It is also found in petrol and cigarette smoke, and is used in some fragrances."
+  },
   "cas:100-42-5": {
     "note": "A colorless liquid chemical used mainly to make plastics and rubber, such as polystyrene. It is also found in some foods, such as cinnamon."
   },
   "cas:10124-43-3": {
     "note": "A salt of the metal cobalt. It is used in pigments, electroplating and batteries, and as a source of cobalt in animal feed."
+  },
+  "cas:103-11-7": {
+    "note": "A building block for plastics and acrylic glues, such as pressure-sensitive adhesives. In cosmetics it can be a leftover from making acrylic polymers."
+  },
+  "cas:10453-86-8": {
+    "note": "A synthetic insecticide of the pyrethroid family, used in household and garden insect sprays."
   },
   "cas:107-06-2": {
     "note": "An industrial liquid, also called 1,2-dichloroethane, used mainly to make vinyl chloride for PVC plastic."
@@ -12,12 +21,62 @@
     "note": "An industrial chemical used to make other chemicals, such as ion-exchange resins.",
     "caveat": "The listing covers technical-grade chloromethyl methyl ether, grouped with the related chemical bis(chloromethyl) ether."
   },
+  "cas:108-05-4": {
+    "note": "A chemical used to make polymers such as polyvinyl acetate (PVA) for glues, paints and coatings. It can remain as a leftover in those polymers."
+  },
+  "cas:108-10-1": {
+    "note": "A solvent, also called methyl isobutyl ketone (MIBK), used in paints, varnishes and cleaning products, and sometimes in nail products and fragrances."
+  },
+  "cas:110-86-1": {
+    "note": "A solvent and chemical building block. It also forms when foods such as coffee are roasted or cooked, and is used as a flavouring."
+  },
+  "cas:111-42-2": {
+    "note": "A chemical used to adjust acidity and to make foaming agents (such as cocamide DEA) in shampoos and soaps, and in industrial products."
+  },
   "cas:117-81-7": {
     "note": "A plasticiser, also called DEHP, used to make PVC plastic soft and flexible, for example in tubing, flooring and packaging."
+  },
+  "cas:119-34-6": {
+    "note": "A dye used in some permanent and semi-permanent hair colours."
+  },
+  "cas:119-61-9": {
+    "note": "A chemical that absorbs ultraviolet light, used to protect products and packaging from sunlight, and as a fragrance ingredient. It also occurs in some fruits."
+  },
+  "cas:120-80-9": {
+    "note": "A chemical, also called catechol, used in some hair dyes and in making other chemicals. It occurs in coffee and some fruits and vegetables."
+  },
+  "cas:12174-11-7": {
+    "note": "A clay mineral, also called attapulgite or palygorskite, used to absorb oils and thicken products, and in cat litter.",
+    "caveat": "Prop 65 lists long airborne fibres of this mineral (over 5 micrometres), mainly breathed in at work, not clay mixed into a product."
+  },
+  "cas:123-35-3": {
+    "note": "A scent compound found in hops, bay leaves, lemongrass and other plants, used in fragrances and flavourings."
   },
   "cas:1314-20-1": {
     "note": "An oxide of thorium, a radioactive metal. It was used in gas lamp mantles, special glass and an old medical imaging agent.",
     "caveat": "Listed under ionizing radiation: the concern is the radiation given off by thorium."
+  },
+  "cas:132-27-4": {
+    "note": "The sodium salt of o-phenylphenol, used as a preservative and disinfectant, including on harvested fruit."
+  },
+  "cas:133-06-2": {
+    "note": "A fungicide used on crops and in some paints and products to stop mould."
+  },
+  "cas:1333-86-4": {
+    "note": "A fine black powder of carbon, used as a pigment in mascara, eyeliner, inks, plastics and tyres.",
+    "caveat": "Prop 65 lists fine airborne carbon black dust that can be breathed in, mainly in workplaces, not pigment bound in a product."
+  },
+  "cas:136-45-8": {
+    "note": "An insect repellent, also called R-326, used in some fly and insect sprays, often together with other repellents."
+  },
+  "cas:137-41-7": {
+    "note": "A soil fumigant, also called metam-potassium, used in farming to control pests, weeds and fungi before planting."
+  },
+  "cas:140-67-0": {
+    "note": "A scent compound, also called estragole, found in tarragon, basil, fennel and anise, used in flavourings and fragrances."
+  },
+  "cas:140-88-5": {
+    "note": "A building block for acrylic plastics, paints and adhesives. It has also been used as a flavouring and can remain as a leftover in acrylic polymers."
   },
   "cas:14464-46-1": {
     "note": "A crystalline form of silica (silicon dioxide) that forms at high temperatures. It occurs in some volcanic rocks and in heat-treated diatomaceous earth.",
@@ -34,6 +93,12 @@
   "cas:15468-32-3": {
     "note": "A crystalline form of silica (silicon dioxide) that forms at high temperatures. It occurs in some volcanic rocks.",
     "caveat": "Listed for breathing in fine crystalline silica dust, mainly in workplaces. The listing does not describe silica in other forms."
+  },
+  "cas:1694-09-3": {
+    "note": "A violet dye (Benzyl Violet 4B) once used in food and cosmetics in the US. It is no longer permitted in US food."
+  },
+  "cas:2092-56-0": {
+    "note": "A red pigment (D&C Red No. 8) used in some cosmetics such as lipsticks and nail polish."
   },
   "cas:2475-45-8": {
     "note": "A blue synthetic dye that has been used in hair dyes and to colour fabrics and plastics."
@@ -52,6 +117,15 @@
     "note": "A chemical containing bromine, used as a flame retardant in plastics such as unsaturated polyester resins.",
     "caveat": "Listed for the technical-grade product, a less purified commercial form."
   },
+  "cas:331-39-5": {
+    "note": "A plant compound found in coffee, fruits, vegetables and herbs, used in some products as an antioxidant."
+  },
+  "cas:3468-63-1": {
+    "note": "An orange pigment (D&C Orange No. 17) that has been used in cosmetics and inks."
+  },
+  "cas:3564-09-8": {
+    "note": "A red dye (Ponceau 3R) once used to colour food. It is no longer permitted in US food."
+  },
   "cas:50-00-0": {
     "note": "A simple chemical, a gas at room temperature, used to make resins for wood products and as a preservative. It also forms in the body and occurs in many foods."
   },
@@ -59,9 +133,22 @@
     "note": "The main female sex hormone, made in the body and also made for medicines such as hormone therapy.",
     "caveat": "Listed as part of steroidal estrogens, mainly for their use as medicines."
   },
+  "cas:5160-02-1": {
+    "note": "A red pigment (D&C Red No. 9) used in some cosmetics such as lipsticks and nail polish."
+  },
+  "cas:52-01-7": {
+    "note": "A prescription medicine that lowers fluid build-up and blocks some hormone effects, used for heart conditions, high blood pressure and acne."
+  },
+  "cas:53973-98-1": {
+    "note": "Carrageenan, a seaweed extract, broken down into smaller pieces. It is used in some skin products to condition skin.",
+    "caveat": "Prop 65 lists degraded carrageenan (poligeenan). Regular carrageenan used to thicken food is a different form and is not on the list."
+  },
   "cas:542-75-6": {
     "note": "A liquid soil fumigant used on farms before planting to control nematodes, tiny worms that damage crop roots.",
     "caveat": "Listed for the technical-grade product, a less purified commercial form."
+  },
+  "cas:548-62-9": {
+    "note": "A purple dye, also called gentian violet or crystal violet, used as an antiseptic, in some hair dyes and as a laboratory stain."
   },
   "cas:57-63-6": {
     "note": "A synthetic form of estrogen, a female sex hormone, used mainly in birth control pills.",
@@ -70,17 +157,35 @@
   "cas:57-83-0": {
     "note": "A female sex hormone made in the body, also made for medicines used in pregnancy support, hormone therapy and birth control."
   },
+  "cas:57018-52-7": {
+    "note": "A solvent used in cleaning products, inks and coatings."
+  },
+  "cas:58-22-0": {
+    "note": "The main male sex hormone, made in the body and also made for hormone medicines."
+  },
+  "cas:59-87-0": {
+    "note": "An antibacterial medicine, also called nitrofural, once used on wounds and burns and in animal care."
+  },
+  "cas:60-35-5": {
+    "note": "A chemical used as a solvent and in making plastics and other chemicals. It also forms in some foods such as roasted coffee and milk."
+  },
   "cas:62-44-2": {
     "note": "A pain and fever medicine, used in the past and since withdrawn in many countries. It has also been used as a stabiliser in some products."
   },
   "cas:62-56-6": {
     "note": "An organic compound containing sulfur, used in photographic processing, textile finishing, metal cleaners and making resins."
   },
+  "cas:6358-53-8": {
+    "note": "A red dye used in the US to colour the skins of some oranges. It is not used inside the fruit."
+  },
   "cas:67-66-3": {
     "note": "A dense, sweet-smelling liquid used mainly to make refrigerant chemicals. It also forms when chlorine is used to treat water."
   },
   "cas:71-43-2": {
     "note": "A colorless liquid made mainly from crude oil, used to make plastics, resins, nylon and other chemicals. It is also present in gasoline and tobacco smoke."
+  },
+  "cas:71-55-6": {
+    "note": "A solvent, also called 1,1,1-trichloroethane or methyl chloroform, once widely used for cleaning metal and in sprays and glues."
   },
   "cas:7440-02-0": {
     "note": "A silvery metal used in stainless steel and other alloys, coins, plating and batteries. It is also used as a catalyst to harden vegetable oils."
@@ -117,17 +222,44 @@
   "cas:77-09-8": {
     "note": "A chemical used as an acid-base indicator in laboratories and formerly as a laxative medicine."
   },
+  "cas:7758-01-2": {
+    "note": "A chemical used to strengthen bread dough in some flours. It is not allowed in bread in the EU, the UK and several other countries."
+  },
   "cas:79-01-6": {
     "note": "A chlorinated solvent used mainly to remove grease from metal parts, and to make refrigerant chemicals."
   },
   "cas:8007-45-2": {
     "note": "A thick dark liquid made from coal. It has been used in medicated shampoos and skin treatments for dandruff and psoriasis, and in road and roof tar."
   },
+  "cas:81-88-9": {
+    "note": "A pink-red dye, also called Rhodamine B, used in inks, plastics and laboratory work, and in some cosmetic colours."
+  },
+  "cas:87-29-6": {
+    "note": "A flavouring that tastes like fruit. It is prohibited in food in the US."
+  },
+  "cas:89-82-7": {
+    "note": "A scent compound found in pennyroyal and some mint oils, used in fragrances and flavourings."
+  },
+  "cas:90-43-7": {
+    "note": "A preservative and disinfectant, also called 2-phenylphenol, used in cosmetics, household cleaners and on harvested citrus fruit."
+  },
   "cas:93-15-2": {
     "note": "Also called methyleugenol, a compound found in basil, tarragon, nutmeg and other herbs and spices, and in some essential oils."
   },
   "cas:94-59-7": {
     "note": "A compound found in sassafras oil and in nutmeg and some other spices. It was once used to flavor root beer."
+  },
+  "cas:95-85-2": {
+    "note": "A chemical used in making hair dyes and other dyes."
+  },
+  "cas:96-33-3": {
+    "note": "A building block for acrylic plastics, coatings and adhesives. It can remain as a leftover in acrylic polymers."
+  },
+  "cas:98-00-0": {
+    "note": "A chemical used to make resins and as a solvent. It also forms when foods such as coffee, bread and fruit juices are heated."
+  },
+  "cas:99-97-8": {
+    "note": "A chemical that makes acrylic resins harden quickly, used in acrylic nails, dental materials and bone cement."
   },
   "name:parfum": {
     "note": "A blend of scent ingredients listed under one word. The individual chemicals in the blend are usually not named, so they cannot be checked here."

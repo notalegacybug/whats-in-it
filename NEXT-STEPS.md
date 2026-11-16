@@ -26,9 +26,8 @@
    dust, or a substance listed only as part of a mixture). Today the result shows the listing with its qualifier and a caveat
    where one was written. Decide whether such listings should keep the same "Watch for" heading or be shown differently.
 
-6. **43 notes to write** for Prop 65 cancer-listed ingredients (listed in `data/notes/missing.json`). Until then
-   they show their function text. Write them in `data/notes/notes.json`, bump the version, rebuild without
-   `--allow-missing-notes`.
+6. **Review 43 drafted notes** (~10 min) for Prop 65 cancer listings: `docs/notes-review-prop65.md`. Edit any in
+   `data/notes/notes.json`, bump the version, rebuild.
 7. **Reuse terms** for the EU Endocrine Disruptor Lists and Prop 65: confirm before a wide public release.
 
 ## After that
