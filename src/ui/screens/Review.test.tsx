@@ -80,3 +80,14 @@ test('review: a description with no known names explains what to look for', asyn
   await user.click(screen.getByRole('button', { name: 'Use this list' }))
   expect(screen.getByRole('note')).toHaveTextContent(/no ingredient names we know/)
 })
+
+test('review: a "may contain" line is picked up and shown, separate from the ingredients', async () => {
+  renderReview([])
+  await user.click(await screen.findByLabelText('Paste a list'))
+  await user.paste('Ingredients: Sugar, Cocoa Butter. May contain: nuts, milk.')
+  await user.click(screen.getByRole('button', { name: 'Use this list' }))
+  expect(screen.getByLabelText('Ingredient 1')).toHaveValue('Sugar')
+  expect(screen.getByLabelText('Ingredient 2')).toHaveValue('Cocoa Butter')
+  expect(screen.queryByLabelText('Ingredient 3')).not.toBeInTheDocument()
+  expect(screen.getByTestId('may-contain')).toHaveTextContent('Label says it may contain: milk, tree nuts')
+})

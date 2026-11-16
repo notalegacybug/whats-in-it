@@ -19,6 +19,7 @@ import { analyse, CANCER_ONLY, SEVERITY } from '../../reference/analyse'
 import type { Hazard } from '../../reference/types'
 import { addScan } from '../../scans/myScans'
 import type { ResearchActions } from '../components/MyResearch'
+import { MayContain } from '../components/MayContain'
 import { ResultItem } from '../components/ResultItem'
 import { useReference } from '../ReferenceGate'
 import { useScanDraft } from '../ScanDraft'
@@ -118,7 +119,7 @@ export function Result() {
   // Fixing a misread name starts a new version of this product; the saved one is kept.
   function editIngredients() {
     if (!record) return
-    load(record.ingredients, !!record.fromDescription, { name: record.name, brand: record.brand, type: record.type })
+    load(record.ingredients, !!record.fromDescription, { name: record.name, brand: record.brand, type: record.type }, record.mayContain)
     navigate('/review')
   }
 
@@ -142,6 +143,7 @@ export function Result() {
           {summary}
         </p>
       )}
+      <MayContain groups={record.mayContain ?? []} />
       {SEVERITY.map((verdict) => {
         const items = results.filter((r) => r.verdict === verdict)
         if (items.length === 0) return null

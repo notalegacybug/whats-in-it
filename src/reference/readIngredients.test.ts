@@ -47,6 +47,7 @@ test('readIngredients keeps a real list as a list', () => {
   expect(readIngredients('Ingredients: Aqua, Glycerin, Niacinamide', index)).toEqual({
     ingredients: ['Aqua', 'Glycerin', 'Niacinamide'],
     fromDescription: false,
+    mayContain: [],
   })
 })
 
@@ -54,6 +55,7 @@ test('readIngredients turns a description into the names it mentions', () => {
   expect(readIngredients(PASSAGE, index)).toEqual({
     ingredients: ['Niacinamide', 'Hyaluronic Acid', 'Squalane', 'Hydrolyzed Collagen'],
     fromDescription: true,
+    mayContain: [],
   })
 })
 

@@ -279,3 +279,10 @@ describe('allergen tags', () => {
     expect(screen.queryByRole('heading', { name: /Watch for/ })).not.toBeInTheDocument()
   })
 })
+
+test('result: a saved "may contain" warning shows as allergen tags under the summary', async () => {
+  const store = fakeStore([record({ ingredients: ['Glycerin'], mayContain: ['Peanuts', 'Tree nuts'] })])
+  renderScreen(<Result />, { route: '/result/p1', path: '/result/:id', store })
+  await screen.findByRole('heading', { level: 1 })
+  expect(screen.getByTestId('may-contain')).toHaveTextContent('Label says it may contain: peanuts, tree nuts')
+})

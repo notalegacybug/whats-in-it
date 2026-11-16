@@ -163,3 +163,15 @@ test('details: editing a saved product pre-fills its name, brand and type', asyn
   expect(screen.getByLabelText('Brand')).toHaveValue('Acme')
   expect(screen.getByLabelText('Cosmetic')).toBeChecked()
 })
+
+test('details: a "may contain" warning from the scan is saved with the product', async () => {
+  const userEvent = (await import('@testing-library/user-event')).default
+  const user = userEvent.setup()
+  const store = fakeStore()
+  renderScreen(<Details />, { route: '/details', path: '/details', draft: ['Sugar'], draftMayContain: ['Peanuts'], store })
+  await user.type(await screen.findByLabelText('Product name'), 'Bar')
+  await user.type(screen.getByLabelText('Brand'), 'Acme')
+  await user.click(screen.getByLabelText('Food'))
+  await user.click(screen.getByRole('button', { name: 'Save and see result' }))
+  expect(store.save).toHaveBeenCalledWith(expect.objectContaining({ mayContain: ['Peanuts'] }))
+})

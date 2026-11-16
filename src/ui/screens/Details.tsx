@@ -9,7 +9,7 @@ import { useScanDraft } from '../ScanDraft'
 import { useProductStore } from '../StoreContext'
 
 export function Details() {
-  const { ingredients, fromDescription, details, clear } = useScanDraft()
+  const { ingredients, fromDescription, mayContain, details, clear } = useScanDraft()
   const { index } = useReference()
   const store = useProductStore()
   const navigate = useNavigate()
@@ -35,6 +35,7 @@ export function Details() {
     ingredients,
     referenceVersion: index!.version,
     ...(fromDescription && { fromDescription: true }),
+    ...(mayContain.length > 0 && { mayContain }),
   })
 
   // Stays locked on success (we navigate away); unlocks on failure or `release`.

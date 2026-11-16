@@ -89,13 +89,13 @@ function Where() {
 
 export function renderScreen(
   ui: ReactElement,
-  opts: { route: string; path: string; draft?: string[]; draftDetails?: DraftDetails; store?: ProductStore; index?: RefIndex },
+  opts: { route: string; path: string; draft?: string[]; draftDetails?: DraftDetails; draftMayContain?: string[]; store?: ProductStore; index?: RefIndex },
 ) {
   return render(
     <MemoryRouter initialEntries={[opts.route]}>
       <StoreContext.Provider value={opts.store ?? fakeStore()}>
         <ReferenceGate load={() => Promise.resolve(opts.index ?? testIndex)}>
-          <ScanDraftProvider initial={opts.draft} initialDetails={opts.draftDetails}>
+          <ScanDraftProvider initial={opts.draft} initialDetails={opts.draftDetails} initialMayContain={opts.draftMayContain}>
             <Routes>
               <Route path={opts.path} element={ui} />
               <Route path="*" element={<Where />} />

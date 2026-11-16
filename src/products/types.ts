@@ -12,6 +12,8 @@ export interface NewProduct {
   referenceVersion: string
   /** True when the names were picked out of a product description, so the check is partial. */
   fromDescription?: boolean
+  /** Allergen groups from the label's "may contain" warning (e.g. "Peanuts"); not ingredients. */
+  mayContain?: string[]
   /** Extra checks the person turned on for this product (cancer is always checked). */
   checks?: Hazard[]
 }

@@ -29,7 +29,7 @@ const GROUPS: { group: string; words: RegExp }[] = [
   { group: 'Molluscs', words: /\b(?:molluscs?|mollusks?|mussels?|oysters?|clams?|squids?|octopus|scallops?|snails?)\b/ },
 ]
 
-const ORDER = ['Milk', 'Egg', 'Peanuts', 'Tree nuts', 'Gluten (wheat, rye, barley, oats)', 'Soy', 'Fish', 'Crustaceans', 'Molluscs', 'Celery', 'Mustard', 'Sesame', 'Lupin', 'Sulphites']
+export const ORDER = ['Milk', 'Egg', 'Peanuts', 'Tree nuts', 'Gluten (wheat, rye, barley, oats)', 'Soy', 'Fish', 'Crustaceans', 'Molluscs', 'Celery', 'Mustard', 'Sesame', 'Lupin', 'Sulphites']
 
 export function foodAllergens(ingredient: string): string[] {
   // Brackets and punctuation become spaces, so "Butyrospermum Parkii (Shea) Butter" reads "... shea butter".

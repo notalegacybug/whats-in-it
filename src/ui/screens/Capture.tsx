@@ -10,7 +10,7 @@ export function Capture() {
   const [params] = useSearchParams()
   const mode = params.get('mode')
   const navigate = useNavigate()
-  const { setIngredients, clear } = useScanDraft()
+  const { setIngredients, setMayContain, clear } = useScanDraft()
   const { index } = useReference()
   const [progress, setProgress] = useState<number | null>(null)
 
@@ -31,6 +31,7 @@ export function Capture() {
     try {
       const read = readIngredients(await readImage(file, setProgress), index!)
       setIngredients(read.ingredients, read.fromDescription)
+      setMayContain(read.mayContain)
     } catch {
       // An unreadable image is not a dead end: Review explains it and lets the person type the list.
       setIngredients([], false)

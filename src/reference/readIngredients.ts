@@ -1,6 +1,7 @@
 import { normalizeName } from '../ingredients/normalize'
 import { extractIngredients } from '../ingredients/split'
 import type { RefIndex } from './index'
+import { mayContainAllergens } from './mayContain'
 import { fullNameEnding } from './suggest'
 
 const MAX_WORDS_IN_NAME = 6
@@ -50,8 +51,13 @@ export function findIngredientNames(text: string, index: RefIndex): string[] {
 }
 
 // A real list stays as written; a description becomes only the names it mentions, flagged as partial.
-export function readIngredients(text: string, index: RefIndex): { ingredients: string[]; fromDescription: boolean } {
+// The label's "may contain" warning is read separately: it is not an ingredient, but it matters to allergic people.
+export function readIngredients(
+  text: string,
+  index: RefIndex,
+): { ingredients: string[]; fromDescription: boolean; mayContain: string[] } {
   const items = extractIngredients(text)
-  if (!looksLikeDescription(items)) return { ingredients: items, fromDescription: false }
-  return { ingredients: findIngredientNames(text, index), fromDescription: true }
+  const mayContain = mayContainAllergens(text)
+  if (!looksLikeDescription(items)) return { ingredients: items, fromDescription: false, mayContain }
+  return { ingredients: findIngredientNames(text, index), fromDescription: true, mayContain }
 }

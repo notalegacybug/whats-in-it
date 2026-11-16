@@ -5,10 +5,11 @@ import { readIngredients } from '../../reference/readIngredients'
 import { suggest } from '../../reference/suggest'
 import { IngredientRow } from '../components/IngredientRow'
 import { useReference } from '../ReferenceGate'
+import { MayContain } from '../components/MayContain'
 import { useScanDraft } from '../ScanDraft'
 
 export function Review() {
-  const { ingredients, fromDescription, setIngredients } = useScanDraft()
+  const { ingredients, fromDescription, mayContain, setIngredients, setMayContain } = useScanDraft()
   const { index } = useReference()
   const navigate = useNavigate()
   const [pasted, setPasted] = useState('')
@@ -36,6 +37,7 @@ export function Review() {
         </p>
       )}
       {ingredients.length === 0 && !fromDescription && <p>{OCR_EMPTY_MESSAGE}</p>}
+      <MayContain groups={mayContain} />
       <ul className="rows">
         {ingredients.map((text, i) => (
           <IngredientRow
@@ -62,6 +64,7 @@ export function Review() {
         onClick={() => {
           const read = readIngredients(pasted, index!)
           setIngredients(read.ingredients, read.fromDescription)
+          setMayContain(read.mayContain)
           setPasted('')
         }}
       >
