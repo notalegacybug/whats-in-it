@@ -1,4 +1,5 @@
-import { SOURCE_LABEL, USED_AS, VERDICT_TAG } from '../../copy'
+import { MY_TAG_LABEL, SOURCE_LABEL, USED_AS, VERDICT_TAG } from '../../copy'
+import { MyResearch, type ResearchActions } from './MyResearch'
 import type { IngredientResult, Listing, Match } from '../../reference/types'
 
 function ListingLine({ listing }: { listing: Listing }) {
@@ -32,12 +33,15 @@ function WatchMatch({ input, match }: { input: string; match: Match }) {
   )
 }
 
-export function ResultItem({ result }: { result: IngredientResult }) {
+export function ResultItem({ result, research }: { result: IngredientResult; research?: ResearchActions }) {
   const watching = result.matches.filter((m) => m.verdict === 'watch_strong' || m.verdict === 'watch_possible')
   const first = result.matches[0]?.entry
   // When some parts were recognised, name only the ones that were not, so the person knows what to look at.
   const someRecognised = result.matches.some((m) => m.entry !== null)
   const unchecked = result.matches.filter((m) => m.verdict === 'not_recognised').map((m) => m.key)
+  // A wholly unrecognised item is named as written; a part of a partly recognised one by its key.
+  const labelFor = (key: string) => (!someRecognised && unchecked.length === 1 ? result.input : key)
+  const yourTags = [...new Set(unchecked.map((k) => research?.notes.get(k)?.tag).filter((t) => t === 'no_concern' || t === 'watch'))]
 
   return (
     <li className="item">
@@ -45,9 +49,18 @@ export function ResultItem({ result }: { result: IngredientResult }) {
       <span className={`tag ${result.verdict}`} data-testid="verdict-tag">
         {VERDICT_TAG[result.verdict]}
       </span>
+      {yourTags.map((t) => (
+        <span key={t}>
+          {' '}
+          <span className={`tag mine ${t}`}>{MY_TAG_LABEL[t]}</span>
+        </span>
+      ))}
       {result.verdict === 'not_recognised' && (
         <p>{someRecognised && unchecked.length ? `We couldn't check: ${unchecked.join(', ')}` : "We couldn't check this one."}</p>
       )}
+      {result.verdict === 'not_recognised' &&
+        research &&
+        unchecked.map((k) => <MyResearch key={k} ingredientKey={k} label={labelFor(k)} actions={research} />)}
       {result.verdict === 'no_known_concern' && first?.note && <p>{first.note}</p>}
       {result.verdict === 'no_known_concern' && !first?.note && first?.functionNote && (
         <p>

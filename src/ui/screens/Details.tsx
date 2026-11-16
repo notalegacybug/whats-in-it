@@ -9,15 +9,16 @@ import { useScanDraft } from '../ScanDraft'
 import { useProductStore } from '../StoreContext'
 
 export function Details() {
-  const { ingredients, fromDescription, clear } = useScanDraft()
+  const { ingredients, fromDescription, details, clear } = useScanDraft()
   const { index } = useReference()
   const store = useProductStore()
   const navigate = useNavigate()
   // Decided once on arrival: saving clears the draft, which must not bounce us home mid-navigation.
   const [arrivedEmpty] = useState(ingredients.length === 0)
-  const [name, setName] = useState('')
-  const [brand, setBrand] = useState('')
-  const [type, setType] = useState<ProductType | null>(null)
+  // Pre-filled when editing a saved product, so the edit is offered as its newer version.
+  const [name, setName] = useState(details?.name ?? '')
+  const [brand, setBrand] = useState(details?.brand ?? '')
+  const [type, setType] = useState<ProductType | null>(details?.type ?? null)
   const [existing, setExisting] = useState<ProductRecord | null>(null)
   const [error, setError] = useState<string | null>(null)
   // The ref is the guard (two events in one tick both see stale state); state only disables the buttons.

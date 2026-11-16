@@ -163,3 +163,26 @@ progress {
   border: 1px solid #b26a00;
   background: #fff6e5;
 }
+
+.link-button {
+  background: none;
+  border: none;
+  padding: 0.25rem;
+  color: #b00020;
+  text-decoration: underline;
+  cursor: pointer;
+  font: inherit;
+}
+
+.research {
+  margin: 0.5rem 0;
+  padding: 0.5rem 0.75rem;
+  border: 1px dashed #4a5fc1;
+  border-radius: 0.4rem;
+}
+.research label { display: block; margin-top: 0.4rem; }
+.research select, .research textarea, .research input { width: 100%; box-sizing: border-box; }
+.research .caveat { font-size: 0.85rem; color: #555; }
+.add-research { color: #2f43a8; }
+/* Set by the person: a distinct blue outline so it is never mistaken for the app's own verdict. */
+.tag.mine { border-style: dashed; border-color: #2f43a8; color: #2f43a8; }

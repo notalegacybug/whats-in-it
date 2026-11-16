@@ -96,3 +96,22 @@ describe('local product store', () => {
     ).rejects.toThrow(/ingredient/)
   })
 })
+
+describe('deleting a product', () => {
+  it('removes the product and its scan history row', async () => {
+    const store = createLocalStore()
+    const saved = await store.save(product)
+    const { addScan, listScans } = await import('../scans/myScans')
+    await addScan(saved.id)
+    await store.delete(saved.id)
+    expect(await store.get(saved.id)).toBeNull()
+    expect(await listScans()).toEqual([])
+  })
+})
+
+describe('product type', () => {
+  it('must be food or cosmetic', async () => {
+    const store = createLocalStore()
+    await expect(store.save({ ...product, type: null as unknown as 'food' })).rejects.toThrow(/type/)
+  })
+})

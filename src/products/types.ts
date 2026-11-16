@@ -22,5 +22,7 @@ export interface ProductStore {
   findMatches(p: NewProduct): Promise<ProductRecord[]>
   save(p: NewProduct): Promise<ProductRecord>
   get(id: string): Promise<ProductRecord | null>
+  /** Removes the product and its scan history row from this device. */
+  delete(id: string): Promise<void>
   search(text: string): Promise<ProductRecord[]>
 }

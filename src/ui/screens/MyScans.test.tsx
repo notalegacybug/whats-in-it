@@ -67,3 +67,23 @@ test('my scans: one product failing to load skips only that row', async () => {
   expect(await screen.findByRole('link', { name: 'Acme Lotion' })).toBeInTheDocument()
   expect(screen.queryByRole('alert')).not.toBeInTheDocument()
 })
+
+test('my scans: delete asks first, then removes the product from the list and the phone', async () => {
+  const userEvent = (await import('@testing-library/user-event')).default
+  const user = userEvent.setup()
+  vi.mocked(listScans).mockResolvedValue([
+    { productId: 'b', scannedAt: '2026-03-02T00:00:00Z' },
+    { productId: 'a', scannedAt: '2026-03-01T00:00:00Z' },
+  ])
+  const store = fakeStore([record({ id: 'a', brand: 'Acme', name: 'Lotion' }), record({ id: 'b', brand: 'Zed', name: 'Soap' })])
+  renderScans(store)
+  await user.click(await screen.findByRole('button', { name: 'Delete Zed Soap' }))
+  expect(screen.getByRole('alertdialog')).toHaveTextContent("Delete Zed Soap? It is removed from this phone and can't be undone.")
+  await user.click(screen.getByRole('button', { name: 'Cancel' }))
+  expect(store.delete).not.toHaveBeenCalled()
+  await user.click(screen.getByRole('button', { name: 'Delete Zed Soap' }))
+  await user.click(screen.getByRole('button', { name: 'Yes, delete' }))
+  expect(store.delete).toHaveBeenCalledWith('b')
+  expect(screen.queryByRole('link', { name: 'Zed Soap' })).not.toBeInTheDocument()
+  expect(screen.getByRole('link', { name: 'Acme Lotion' })).toBeInTheDocument()
+})

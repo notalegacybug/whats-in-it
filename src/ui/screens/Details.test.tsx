@@ -151,3 +151,15 @@ test.each([
   expect(await screen.findByTestId('where')).toHaveTextContent('/result/id-2')
   expect(store.save).toHaveBeenCalledWith(expect.objectContaining({ name: 'Lotion Plus' }))
 })
+
+test('details: editing a saved product pre-fills its name, brand and type', async () => {
+  renderScreen(<Details />, {
+    route: '/details',
+    path: '/details',
+    draft: ['Water'],
+    draftDetails: { name: 'Lotion', brand: 'Acme', type: 'cosmetic' },
+  })
+  expect(await screen.findByLabelText('Product name')).toHaveValue('Lotion')
+  expect(screen.getByLabelText('Brand')).toHaveValue('Acme')
+  expect(screen.getByLabelText('Cosmetic')).toBeChecked()
+})

@@ -17,6 +17,13 @@ export const VERDICT_TAG: Record<Verdict, string> = {
 
 export const USED_AS = 'Used as: ';
 
+export const MY_TAG_LABEL = {
+  no_concern: 'Your research: no concern',
+  watch: 'Your research: watch for',
+} as const;
+
+export const YOUR_RESEARCH_CAVEAT = 'Set by you, not checked by the app. Kept on this phone only.';
+
 export const PARTIAL_CHECK =
   'Partial check: only the ingredients named in a product description were checked. The full ingredient list may contain others.';
 

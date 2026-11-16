@@ -5,7 +5,7 @@ import { buildIndex } from '../reference'
 import type { RefIndex } from '../reference'
 import type { NewProduct, ProductRecord, ProductStore } from '../products/types'
 import { ReferenceGate } from './ReferenceGate'
-import { ScanDraftProvider } from './ScanDraft'
+import { ScanDraftProvider, type DraftDetails } from './ScanDraft'
 import { StoreContext } from './StoreContext'
 
 export const testIndex: RefIndex = buildIndex({
@@ -55,6 +55,10 @@ export function fakeStore(seed: ProductRecord[] = []) {
       return rec
     }),
     get: vi.fn(async (id: string) => rows.find((r) => r.id === id) ?? null),
+    delete: vi.fn(async (id: string) => {
+      const i = rows.findIndex((r) => r.id === id)
+      if (i >= 0) rows.splice(i, 1)
+    }),
     search: vi.fn(async (_text: string): Promise<ProductRecord[]> => []),
   }
   return store satisfies ProductStore
@@ -81,13 +85,13 @@ function Where() {
 
 export function renderScreen(
   ui: ReactElement,
-  opts: { route: string; path: string; draft?: string[]; store?: ProductStore; index?: RefIndex },
+  opts: { route: string; path: string; draft?: string[]; draftDetails?: DraftDetails; store?: ProductStore; index?: RefIndex },
 ) {
   return render(
     <MemoryRouter initialEntries={[opts.route]}>
       <StoreContext.Provider value={opts.store ?? fakeStore()}>
         <ReferenceGate load={() => Promise.resolve(opts.index ?? testIndex)}>
-          <ScanDraftProvider initial={opts.draft}>
+          <ScanDraftProvider initial={opts.draft} initialDetails={opts.draftDetails}>
             <Routes>
               <Route path={opts.path} element={ui} />
               <Route path="*" element={<Where />} />

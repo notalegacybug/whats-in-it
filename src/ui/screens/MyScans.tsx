@@ -13,6 +13,23 @@ export function MyScans() {
   const store = useProductStore()
   const [rows, setRows] = useState<Row[] | null>(null)
   const [failed, setFailed] = useState(false)
+  const [confirming, setConfirming] = useState<string | null>(null)
+  const [deleting, setDeleting] = useState(false)
+  const [deleteError, setDeleteError] = useState(false)
+
+  async function remove(id: string) {
+    setDeleting(true)
+    setDeleteError(false)
+    try {
+      await store.delete(id)
+      setRows((current) => current?.filter((r) => r.product.id !== id) ?? null)
+      setConfirming(null)
+    } catch {
+      setDeleteError(true)
+    } finally {
+      setDeleting(false)
+    }
+  }
 
   useEffect(() => {
     let live = true
@@ -42,6 +59,7 @@ export function MyScans() {
     <main>
       <p><Link to="/">Home</Link></p>
       <h1>My scans</h1>
+      {deleteError && <p role="alert">Couldn't delete that product. Try again.</p>}
       {failed ? (
         <p role="alert">Couldn't load your saved scans.</p>
       ) : rows === null ? (
@@ -49,13 +67,30 @@ export function MyScans() {
       ) : rows.length === 0 ? (
         <p>Nothing scanned yet.</p>
       ) : (
-        <ul>
-          {rows.map(({ product, scannedAt }) => (
-            <li key={product.id}>
-              <Link to={`/result/${product.id}`}>{`${product.brand} ${product.name}`}</Link>{' '}
-              <span>{new Date(scannedAt).toLocaleDateString()}</span>
-            </li>
-          ))}
+        <ul className="scans">
+          {rows.map(({ product, scannedAt }) => {
+            const title = `${product.brand} ${product.name}`
+            return (
+              <li key={product.id}>
+                <Link to={`/result/${product.id}`}>{title}</Link>{' '}
+                <span>{new Date(scannedAt).toLocaleDateString()}</span>{' '}
+                <button type="button" className="link-button" aria-label={`Delete ${title}`} onClick={() => setConfirming(product.id)}>
+                  Delete
+                </button>
+                {confirming === product.id && (
+                  <div role="alertdialog" aria-label={`Delete ${title}`} className="notice">
+                    <p>{`Delete ${title}? It is removed from this phone and can't be undone.`}</p>
+                    <button type="button" disabled={deleting} onClick={() => void remove(product.id)}>
+                      Yes, delete
+                    </button>{' '}
+                    <button type="button" onClick={() => setConfirming(null)}>
+                      Cancel
+                    </button>
+                  </div>
+                )}
+              </li>
+            )
+          })}
         </ul>
       )}
     </main>

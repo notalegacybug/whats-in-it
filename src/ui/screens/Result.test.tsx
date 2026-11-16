@@ -1,3 +1,4 @@
+import userEvent from '@testing-library/user-event'
 import { screen, within } from '@testing-library/react'
 import { resultSummary } from '../../copy'
 import { buildIndex } from '../../reference'
@@ -6,6 +7,19 @@ import { fakeStore, record, renderScreen } from '../test-helpers'
 import { Result } from './Result'
 
 vi.mock('../../scans/myScans', () => ({ addScan: vi.fn().mockResolvedValue(undefined) }))
+
+const notesStore = vi.hoisted(() => new Map<string, import('../../notes/myNotes').MyNote>())
+vi.mock('../../notes/myNotes', () => ({
+  getNotes: vi.fn(async () => new Map(notesStore)),
+  saveNote: vi.fn(async (n: Omit<import('../../notes/myNotes').MyNote, 'updatedAt'>) => {
+    const row = { ...n, updatedAt: 'now' }
+    notesStore.set(n.key, row)
+    return row
+  }),
+  deleteNote: vi.fn(async (key: string) => {
+    notesStore.delete(key)
+  }),
+}))
 
 const rec = record({ ingredients: ['Water', 'Glycerin', 'Formaldehyde', 'Aloe vera', 'Zorbex'] })
 const renderResult = (id = 'p1') =>
@@ -147,4 +161,44 @@ test('result: a product read from a description is labelled as a partial check',
   expect(screen.getByRole('note')).toHaveTextContent(
     'Partial check: only the ingredients named in a product description were checked. The full ingredient list may contain others.',
   )
+})
+
+describe('your own research on ingredients the app could not check', () => {
+  const user = userEvent.setup()
+  beforeEach(() => {
+    notesStore.clear()
+  })
+
+  test('add a tag, note and link; it shows as set by you, and the app verdict stays', async () => {
+    renderResult()
+    await user.click(await screen.findByRole('button', { name: 'Add your research for Zorbex' }))
+    await user.selectOptions(screen.getByLabelText('Your tag'), 'no_concern')
+    await user.type(screen.getByLabelText('Your note'), 'Maker study, 2024.')
+    await user.type(screen.getByLabelText('Link (optional)'), 'https://example.org/zorbex')
+    await user.click(screen.getByRole('button', { name: 'Save research' }))
+    const mine = await screen.findByRole('region', { name: 'Your research for Zorbex' })
+    expect(mine).toHaveTextContent('Your research: no concern')
+    expect(mine).toHaveTextContent('Set by you, not checked by the app')
+    expect(mine).toHaveTextContent('Maker study, 2024.')
+    expect(within(mine).getByRole('link', { name: 'https://example.org/zorbex' })).toHaveAttribute('rel', 'noopener noreferrer')
+    expect(screen.getByRole('heading', { name: 'Not recognised (2)' })).toBeInTheDocument()
+    expect(screen.getByTestId('result-summary')).toHaveTextContent('You added your own research for 1.')
+  })
+
+  test('saved research shows on load and can be deleted', async () => {
+    notesStore.set('zorbex', { key: 'zorbex', label: 'Zorbex', tag: 'watch', note: 'Found a warning.', link: '', updatedAt: 'x' })
+    renderResult()
+    const mine = await screen.findByRole('region', { name: 'Your research for Zorbex' })
+    expect(mine).toHaveTextContent('Your research: watch for')
+    await user.click(within(mine).getByRole('button', { name: 'Delete' }))
+    expect(screen.queryByRole('region', { name: 'Your research for Zorbex' })).not.toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Add your research for Zorbex' })).toBeInTheDocument()
+  })
+})
+
+test('result: edit ingredients opens the review screen with this product loaded', async () => {
+  const user = userEvent.setup()
+  renderResult()
+  await user.click(await screen.findByRole('button', { name: 'Edit ingredients' }))
+  expect(screen.getByTestId('where')).toHaveTextContent('/review')
 })

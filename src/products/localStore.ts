@@ -29,6 +29,7 @@ export function createLocalStore(): ProductStore {
       const brand = p.brand.trim()
       checkText('name', name)
       checkText('brand', brand)
+      if (p.type !== 'food' && p.type !== 'cosmetic') throw new Error('type must be food or cosmetic')
       if (p.ingredients.length < 1 || p.ingredients.length > MAX_INGREDIENTS) {
         throw new Error(`ingredients must have 1 to ${MAX_INGREDIENTS} items`)
       }
@@ -44,6 +45,13 @@ export function createLocalStore(): ProductStore {
       }
       await withDb((db) => db.put('products', record))
       return record
+    },
+
+    async delete(id) {
+      await withDb(async (db) => {
+        const tx = db.transaction(['products', 'scans'], 'readwrite')
+        await Promise.all([tx.objectStore('products').delete(id), tx.objectStore('scans').delete(id), tx.done])
+      })
     },
 
     async get(id) {
