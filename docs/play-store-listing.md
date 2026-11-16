@@ -11,7 +11,7 @@ on 16 November 2026). Wording avoids health claims: the app never says a product
   `Check food and cosmetic labels against cancer, hormone and allergen lists.` (74)
 - **Category:** Tools (Health & Fitness is possible, but Tools avoids health-app declarations the app does not need).
 - **Contact email:** owner's choice (shown publicly on the listing).
-- **Privacy policy URL:** `https://whats-in-it.pages.dev/privacy.html`
+- **Privacy policy URL:** `https://whats-in-it.pages.dev/privacy`
 
 ## Full description (4000 max)
 
