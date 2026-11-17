@@ -11,3 +11,5 @@ public/tesseract/
 *.keystore
 *.jks
 signing-key-info.txt
+# Personal resume notes, kept local only
+NEXT-STEPS.md
