@@ -2,14 +2,19 @@
 
 ## Resume here
 
-**Next task: build the Android package (plan step 2 of the Play Store route).**
-1. On https://www.pwabuilder.com enter `https://whats-in-it.pages.dev`, choose Android, "Google Play" (Trusted Web
-   Activity), package id e.g. `dev.pages.whatsinit`. Download the zip (signed .aab + signing key + `assetlinks.json`).
-   Keep the signing key safe and private (losing it means you cannot update the app).
-2. Put the generated `assetlinks.json` in `public/.well-known/assetlinks.json`, push to `main`, check
-   https://whats-in-it.pages.dev/.well-known/assetlinks.json loads (this removes the browser bar in the app).
-3. Play Console: create the app, upload the .aab to **Closed testing**, fill the listing from
-   `docs/play-store-listing.md`, invite 12 testers, run 14 days, then apply for production.
+**Next task: Play Console closed test (step 3 of the Play Store route).** Done on the owner's personal computer
+(no installs on the work machine).
+1. Play Console: create the app, upload `whats-in-it.aab` to **Closed testing**, fill the listing from
+   `docs/play-store-listing.md`.
+2. Play Console > App integrity: copy the **App signing key** SHA-256 and add it as a second entry in
+   `sha256_cert_fingerprints` in `public/.well-known/assetlinks.json`, push to `main`. (Google re-signs the app,
+   so without this the Play-installed app shows a browser bar.)
+3. Invite 12 testers, run 14 days, then apply for production.
+
+Done 2026-11-16: PWABuilder package built (package id `dev.pages.whats_in_it.twa`, upload-key fingerprint in
+`assetlinks.json`), file live at https://whats-in-it.pages.dev/.well-known/assetlinks.json. The signing key
+(`signing.keystore` + `signing-key-info.txt`) is kept privately by the owner, never in git (`.gitignore` blocks it);
+losing it means the app cannot be updated.
 
 Ready already: privacy policy (https://whats-in-it.pages.dev/privacy), Play-ready manifest, listing draft.
 
