@@ -37,6 +37,10 @@ export function Review() {
         </p>
       )}
       {ingredients.length === 0 && !fromDescription && <p>{OCR_EMPTY_MESSAGE}</p>}
+      {/* TEMP DEBUG (remove after phone diagnosis) */}
+      {sessionStorage.getItem('ocr-debug') && (
+        <pre style={{ whiteSpace: 'pre-wrap', fontSize: '0.75rem' }}>{sessionStorage.getItem('ocr-debug')}</pre>
+      )}
       <MayContain groups={mayContain} />
       <ul className="rows">
         {ingredients.map((text, i) => (

@@ -28,11 +28,18 @@ export function Capture() {
     const file = e.target.files?.[0]
     if (!file) return
     setProgress(0)
+    // TEMP DEBUG (remove after phone diagnosis): record what OCR did on this device.
+    const t0 = performance.now()
+    const device = `${navigator.userAgent} | mem ${(navigator as { deviceMemory?: number }).deviceMemory ?? '?'} GB | file ${file.type} ${(file.size / 1e6).toFixed(1)} MB`
+    const debug = (s: string) => sessionStorage.setItem('ocr-debug', `${s}\n${((performance.now() - t0) / 1000).toFixed(1)} s | ${device}`)
     try {
-      const read = readIngredients(await readImage(file, setProgress), index!)
+      const text = await readImage(file, setProgress)
+      debug(`OK, ${text.length} chars:\n${text.slice(0, 300)}`)
+      const read = readIngredients(text, index!)
       setIngredients(read.ingredients, read.fromDescription)
       setMayContain(read.mayContain)
-    } catch {
+    } catch (e) {
+      debug(`ERROR: ${e instanceof Error ? `${e.name}: ${e.message}` : JSON.stringify(e) ?? String(e)}`)
       // An unreadable image is not a dead end: Review explains it and lets the person type the list.
       setIngredients([], false)
     }
